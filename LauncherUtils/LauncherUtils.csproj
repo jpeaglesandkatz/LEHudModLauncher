@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>x64</Platforms>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <Title>LEHuDMoDLauncher</Title>
+    <Description>LEHuDMoDLauncher
+Last Epoch HUD Mod</Description>
+    <Copyright>Ash</Copyright>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <Configurations>Debug;DebugNew</Configurations>
+    <ApplicationIcon>gooey-daemon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="gooey-daemon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LogUtils\LogUtils.csproj" />
+  </ItemGroup>
+
+
+</Project>
