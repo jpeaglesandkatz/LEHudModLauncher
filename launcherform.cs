@@ -12,8 +12,8 @@ namespace LEHuDModLauncher
     public partial class Launcherform : Form
     {
         public static string GameFilename = "Last Epoch.exe";
-        public static string VersionFilename = @"version.dll";
-        public static string VersionBackFilename = @"version.dll.back";
+        public static string VersionFilename = @"\version.dll";
+        public static string VersionBackFilename = @"\version.dll.back";
 
         private Process _gameProcess;
         public Logger Dlog = new Logger();
@@ -35,7 +35,11 @@ namespace LEHuDModLauncher
                 Logger.Global.Debug("Initializing Launcherform");
                 if (SettingsManager.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(this);
                 else ThemeUtils.ApplyLightTheme(this);
+
+                if ((SettingsManager.Instance.Settings.MainWindowX <0) || (SettingsManager.Instance.Settings.MainWindowY < 0)) 
+                        { SettingsManager.Instance.UpdateMainWindowPosition(500, 500);  }
                 
+
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string iconPath = Path.Combine(exeDir, "Resources", "gooey-daemon.ico");
                 if (File.Exists(iconPath))
@@ -285,15 +289,16 @@ namespace LEHuDModLauncher
                 MessageBox.Show("Set a valid game folder first!!!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            string gamedir = SettingsManager.Instance.Settings.GameDir;
             try
             {
                 if (online)
                 {
-                    string gamedir = SettingsManager.Instance.Settings.GameDir;
+                    
                     if (File.Exists(gamedir + VersionFilename))
                     {
-                        if (File.Exists(gamedir + VersionBackFilename)) { File.Delete(gamedir + VersionFilename); }
-                        else { File.Move(gamedir + VersionFilename, gamedir + VersionBackFilename); }
+                        if (File.Exists(gamedir + VersionBackFilename)) { File.Delete(gamedir + VersionBackFilename); }
+                        File.Move(gamedir + VersionFilename, gamedir + VersionBackFilename);
                     }
 
                     var processStartInfo = new ProcessStartInfo
@@ -318,12 +323,12 @@ namespace LEHuDModLauncher
                 }
                 else
                 {
-                    string gamedir = SettingsManager.Instance.Settings.GameDir;
                     if (!File.Exists(gamedir + VersionFilename))
                     {
                         if (File.Exists(gamedir + VersionBackFilename))
                         {
                             File.Move(gamedir + VersionBackFilename, gamedir + VersionFilename);
+                            File.Delete(gamedir + VersionBackFilename);
                         }
                     }
                     else if (File.Exists(gamedir + VersionBackFilename)) { File.Delete(gamedir + VersionBackFilename); }

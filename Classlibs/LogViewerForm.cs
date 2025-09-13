@@ -9,6 +9,8 @@ namespace LEHuDModLauncher
         private readonly string _logFilePath;
         private readonly System.Windows.Forms.Timer _timer;
         private long _lastFileLength = 0;
+        private int _lastLineCount = 0; // Track number of lines processed
+        private string _partialLine = string.Empty; // Store incomplete lines between reads
         public AppSettings settings = SettingsManager.Instance.Settings;
 
         // Add this field near the top with other private fields
@@ -82,7 +84,7 @@ namespace LEHuDModLauncher
             ThemeUtils.ApplyDarkTheme(this);
             _logFilePath = logFilePath;
             _timer = new System.Windows.Forms.Timer();
-            _timer.Interval = 1000; // update every second
+            _timer.Interval = 500; // Check more frequently for better responsiveness
             _timer.Tick += async (s, e) => await UpdateLogAsync();
             _timer.Start();
         }
@@ -182,14 +184,14 @@ namespace LEHuDModLauncher
                     var fileInfo = new FileInfo(_logFilePath);
                     if (fileInfo.Length != _lastFileLength)
                     {
-                        string[] logLines;
-                        using (var stream = new FileStream(_logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                        using (var reader = new StreamReader(stream))
+                        // Read only the new content since last position
+                        string newContent = await ReadNewContentAsync();
+                        
+                        if (!string.IsNullOrEmpty(newContent))
                         {
-                            var logContent = await reader.ReadToEndAsync();
-                            logLines = logContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                            richTextBoxLog.Invoke((Action)(() => ProcessNewContent(newContent)));
                         }
-                        richTextBoxLog.Invoke((Action)(() => DisplayColoredLog(logLines)));
+                        
                         _lastFileLength = fileInfo.Length;
                     }
                 }
@@ -200,6 +202,8 @@ namespace LEHuDModLauncher
                         richTextBoxLog.Clear();
                         richTextBoxLog.SelectionColor = Color.Red;
                         richTextBoxLog.AppendText("Log file not found.");
+                        _lastFileLength = 0;
+                        _partialLine = string.Empty;
                     }));
                 }
             }
@@ -210,8 +214,160 @@ namespace LEHuDModLauncher
                     richTextBoxLog.Clear();
                     richTextBoxLog.SelectionColor = Color.Red;
                     richTextBoxLog.AppendText($"Error reading log file:\n{ex.Message}");
+                    _lastFileLength = 0;
+                    _partialLine = string.Empty;
                 }));
             }
+        }
+
+        private async Task<string> ReadNewContentAsync()
+        {
+            const int maxRetries = 3;
+            const int retryDelayMs = 50;
+
+            for (int retry = 0; retry < maxRetries; retry++)
+            {
+                try
+                {
+                    using var stream = new FileStream(_logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    
+                    // Seek to the last known position
+                    if (_lastFileLength > 0 && stream.Length >= _lastFileLength)
+                    {
+                        stream.Seek(_lastFileLength, SeekOrigin.Begin);
+                    }
+                    else if (_lastFileLength > stream.Length)
+                    {
+                        // File was truncated, start from beginning
+                        _lastFileLength = 0;
+                        _partialLine = string.Empty;
+                        stream.Seek(0, SeekOrigin.Begin);
+                        
+                        // If file was truncated, we need to rebuild the entire display
+                        using var reader = new StreamReader(stream);
+                        var allContent = await reader.ReadToEndAsync();
+                        richTextBoxLog.Invoke((Action)(() =>
+                        {
+                            var lines = allContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                            DisplayColoredLog(lines);
+                        }));
+                        return string.Empty; // Already processed
+                    }
+
+                    using var newReader = new StreamReader(stream);
+                    return await newReader.ReadToEndAsync();
+                }
+                catch (IOException) when (retry < maxRetries - 1)
+                {
+                    // File might be locked, wait and retry
+                    await Task.Delay(retryDelayMs);
+                    continue;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private void ProcessNewContent(string newContent)
+        {
+            if (string.IsNullOrEmpty(newContent)) return;
+
+            // Combine any partial line from previous read with new content
+            string fullContent = _partialLine + newContent;
+            
+            // Split into lines
+            string[] lines = fullContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            
+            // Check if the last line is complete (ends with newline)
+            bool lastLineComplete = newContent.EndsWith("\n") || newContent.EndsWith("\r\n");
+            
+            richTextBoxLog.SuspendLayout();
+            
+            // Process all complete lines
+            int linesToProcess = lastLineComplete ? lines.Length : lines.Length - 1;
+            
+            for (int i = 0; i < linesToProcess; i++)
+            {
+                AppendColoredLine(lines[i]);
+            }
+            
+            // Store the incomplete last line for next iteration
+            if (!lastLineComplete && lines.Length > 0)
+            {
+                _partialLine = lines[lines.Length - 1];
+            }
+            else
+            {
+                _partialLine = string.Empty;
+            }
+            
+            // Keep scrolled to bottom
+            richTextBoxLog.SelectionStart = richTextBoxLog.Text.Length;
+            richTextBoxLog.ScrollToCaret();
+            richTextBoxLog.ResumeLayout();
+        }
+
+        // New method to append a single colored line
+        private void AppendColoredLine(string line)
+        {
+            // Check if any bracketed content in the line matches a hidden tag
+            if (_hiddenTags.Count > 0)
+            {
+                var matches = BracketRegex.Matches(line);
+                bool shouldHide = false;
+                
+                foreach (Match match in matches)
+                {
+                    // Don't hide based on timestamps, only actual tags
+                    if (!IsTimestamp(match.Value) && IsTagHidden(match.Value))
+                    {
+                        shouldHide = true;
+                        break;
+                    }
+                }
+                
+                if (shouldHide) return; // skip whole line
+            }
+
+            // Determine the color for the line based on tags (including overflow lines)
+            Color lineColor = GetLineColorFromTags(line);
+
+            int lastIndex = 0;
+            foreach (Match match in BracketRegex.Matches(line))
+            {
+                // Write text before the bracketed content in line color
+                if (match.Index > lastIndex)
+                {
+                    richTextBoxLog.SelectionColor = lineColor;
+                    richTextBoxLog.AppendText(line.Substring(lastIndex, match.Index - lastIndex));
+                }
+
+                string bracketContent = match.Value;
+                
+                // Check if this is a timestamp
+                if (IsTimestamp(bracketContent))
+                {
+                    richTextBoxLog.SelectionColor = Color.Blue; // Timestamp color
+                    richTextBoxLog.AppendText(bracketContent);
+                }
+                else
+                {
+                    // For non-timestamp brackets (tags), use the line color
+                    richTextBoxLog.SelectionColor = lineColor;
+                    richTextBoxLog.AppendText(bracketContent);
+                }
+                
+                lastIndex = match.Index + match.Length;
+            }
+            
+            // Write the rest of the line after the last bracketed content in line color
+            if (lastIndex < line.Length)
+            {
+                richTextBoxLog.SelectionColor = lineColor;
+                richTextBoxLog.AppendText(line.Substring(lastIndex));
+            }
+            
+            richTextBoxLog.AppendText(Environment.NewLine);
         }
 
         // Helper function to check if a tag is hidden, accounting for wildcards
@@ -243,72 +399,21 @@ namespace LEHuDModLauncher
             return null;
         }
 
-        // Updated DisplayColoredLog to better handle timestamps in overflow lines
+        // Updated DisplayColoredLog to better handle timestamps in overflow lines (used for initial load and rebuilds)
         private void DisplayColoredLog(string[] lines)
         {
             richTextBoxLog.SuspendLayout();
             richTextBoxLog.Clear();
             
-            foreach (var line in lines)
+            for (int i = 0; i < lines.Length; i++)
             {
-                // Check if any bracketed content in the line matches a hidden tag
-                if (_hiddenTags.Count > 0)
-                {
-                    var matches = BracketRegex.Matches(line);
-                    bool shouldHide = false;
-                    
-                    foreach (Match match in matches)
-                    {
-                        // Don't hide based on timestamps, only actual tags
-                        if (!IsTimestamp(match.Value) && IsTagHidden(match.Value))
-                        {
-                            shouldHide = true;
-                            break;
-                        }
-                    }
-                    
-                    if (shouldHide) continue; // skip whole line
-                }
-
-                // Determine the color for the line based on tags (including overflow lines)
-                Color lineColor = GetLineColorFromTags(line);
-
-                int lastIndex = 0;
-                foreach (Match match in BracketRegex.Matches(line))
-                {
-                    // Write text before the bracketed content in line color
-                    if (match.Index > lastIndex)
-                    {
-                        richTextBoxLog.SelectionColor = lineColor;
-                        richTextBoxLog.AppendText(line.Substring(lastIndex, match.Index - lastIndex));
-                    }
-
-                    string bracketContent = match.Value;
-                    
-                    // Check if this is a timestamp
-                    if (IsTimestamp(bracketContent))
-                    {
-                        richTextBoxLog.SelectionColor = Color.Blue; // Timestamp color
-                        richTextBoxLog.AppendText(bracketContent);
-                    }
-                    else
-                    {
-                        // For non-timestamp brackets (tags), use the line color
-                        richTextBoxLog.SelectionColor = lineColor;
-                        richTextBoxLog.AppendText(bracketContent);
-                    }
-                    
-                    lastIndex = match.Index + match.Length;
-                }
+                string line = lines[i];
                 
-                // Write the rest of the line after the last bracketed content in line color
-                if (lastIndex < line.Length)
-                {
-                    richTextBoxLog.SelectionColor = lineColor;
-                    richTextBoxLog.AppendText(line.Substring(lastIndex));
-                }
-                
-                richTextBoxLog.AppendText(Environment.NewLine);
+                // Only skip the very last line if it's empty (incomplete line)
+                if (string.IsNullOrEmpty(line) && i == lines.Length - 1)
+                    continue;
+                    
+                AppendColoredLine(line);
             }
             
             richTextBoxLog.SelectionStart = richTextBoxLog.Text.Length;
