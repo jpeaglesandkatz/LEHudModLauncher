@@ -13,7 +13,7 @@ namespace LEHuDModLauncher
     {
         public static string GameFilename = "Last Epoch.exe";
         public static string VersionFilename = @"\version.dll";
-        public static string VersionBackFilename = @"\version.dll.back";
+        public static string VersionBackFilename = @"\version.dll.bak";
 
         private Process _gameProcess;
         public Logger Dlog = new Logger();
@@ -33,38 +33,43 @@ namespace LEHuDModLauncher
             {
                 InitializeComponent();
                 Logger.Global.Debug("Initializing Launcherform");
+
+                if ((SettingsManager.Instance.Settings.MainWindowX < 0) || (SettingsManager.Instance.Settings.MainWindowY < 0))
+                { SettingsManager.Instance.UpdateMainWindowPosition(500, 500); }
+                this.StartPosition = FormStartPosition.Manual;
+                this.Location = new System.Drawing.Point(
+                    SettingsManager.Instance.Settings.MainWindowX,
+                    SettingsManager.Instance.Settings.MainWindowY
+                );
+
                 if (SettingsManager.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(this);
                 else ThemeUtils.ApplyLightTheme(this);
 
-                if ((SettingsManager.Instance.Settings.MainWindowX <0) || (SettingsManager.Instance.Settings.MainWindowY < 0)) 
-                        { SettingsManager.Instance.UpdateMainWindowPosition(500, 500);  }
-                
-
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
                 string iconPath = Path.Combine(exeDir, "Resources", "gooey-daemon.ico");
+                var asm = Assembly.GetExecutingAssembly();
+
                 if (File.Exists(iconPath))
                 {
                     this.Icon = new Icon(iconPath);
                 }
                 else
                 {
-                    var asm = Assembly.GetExecutingAssembly();
                     using var stream = asm.GetManifestResourceStream("LEHuDModLauncher.Resources.gooey-daemon.ico");
                     if (stream != null) this.Icon = new Icon(stream);
                 }
                 //InitializeTrayIcon();
                 //this.Resize += Launcherform_Resize;
 
-                var assembly = Assembly.GetExecutingAssembly();
                 this.Text =
-                    $"{assembly.GetName().Name} - {assembly.GetName().Version} for Last Epoch Hud Mod by Ash, launcher by JP";
+                    $"{asm.GetName().Name} - {asm.GetName().Version} for Last Epoch Hud Mod by Ash, launcher by JP";
                 Logger.Global.Info(this.Text);
                 Logger.Global.Info("==========  LE Hud Mod Launcher started ============ ");
 
                 SettingsManager.Instance.Load();
 
                 var gameDir = GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 899770", "Installlocation");
-                if (SettingsManager.Instance.Settings.GameDir == null) SettingsManager.Instance.UpdateGameDir(gameDir);
+                if ((SettingsManager.Instance.Settings.GameDir == null) && (gameDir != null)) SettingsManager.Instance.UpdateGameDir(gameDir);
 
                 var steamPath = GetPathFromRegistry("HKEY_CURRENT_USER\\Software\\Valve\\Steam", "SteamPath");
                 if (!string.IsNullOrEmpty(steamPath))
@@ -100,13 +105,6 @@ namespace LEHuDModLauncher
                 else textGameVersion.Text = "Unknown";
 
                 ShowStartupMessage();
-
-                // Set window position from settings
-                this.StartPosition = FormStartPosition.Manual;
-                this.Location = new System.Drawing.Point(
-                    SettingsManager.Instance.Settings.MainWindowX,
-                    SettingsManager.Instance.Settings.MainWindowY
-                );
             }
             catch (Exception ex)
             {
@@ -213,14 +211,14 @@ namespace LEHuDModLauncher
 
                 if (Directory.Exists(melonLoaderPath))
                     Directory.Delete(melonLoaderPath, true);
-                else Logger.Global.Info($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
+                else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
 
                 if (!Directory.Exists(modsPath))
                 {
                     Directory.CreateDirectory(modsPath);
                     Logger.Global.Info($"[{nameof(CleanupDirs)}] Created Mods directory: {modsPath}");
                 }
-                else Logger.Global.Info($"[{nameof(CleanupDirs)}] Mods directory already exists: {modsPath}");
+                else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Mods directory already exists: {modsPath}");
             }
             catch (Exception ex)
             {
@@ -272,7 +270,11 @@ namespace LEHuDModLauncher
                     textGamePath.Text = dialog.SelectedPath;
                     SettingsManager.Instance.UpdateGameDir(dialog.SelectedPath);
                 }
-                if (File.Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename))) ShowGameVersion();
+                if (File.Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+                {
+                    SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+                    ShowGameVersion();
+                }
                 else textGameVersion.Text = "Unknown";
             }
             catch (Exception ex)
@@ -314,6 +316,8 @@ namespace LEHuDModLauncher
                         process.Exited += GameProcess_Exited;
                         process.Start();
                         statusStripLabel.Text = "Last Epoch started...";
+                        buttonOnline.Enabled = false;
+                        buttonOffline.Enabled = false;
                     }
                     catch (Exception ex)
                     {
@@ -348,6 +352,8 @@ namespace LEHuDModLauncher
                         _gameProcess.Exited += GameProcess_Exited;
                         _gameProcess.Start();
                         statusStripLabel.Text = "Last Epoch started...";
+                        buttonOnline.Enabled = false;
+                        buttonOffline.Enabled = false;
 
                     }
                     catch (Exception ex)
@@ -373,9 +379,12 @@ namespace LEHuDModLauncher
                 BeginInvoke(new Action(() => GameProcess_Exited(sender, e)));
                 statusStripLabel.Text = "Game Exited!";
                 _gameProcess.Exited -= GameProcess_Exited;
+
                 return;
             }
             statusStripLabel.Text = "Game Exited!";
+            buttonOnline.Enabled = true;
+            buttonOffline.Enabled = true;
         }
         private void buttonOnline_Click(object sender, EventArgs e)
         {
@@ -402,7 +411,11 @@ namespace LEHuDModLauncher
         private void textPath_TextChanged(object sender, EventArgs e)
         {
             SettingsManager.Instance.UpdateGameDir(textGamePath.Text);
-            if (File.Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename))) ShowGameVersion();
+            if (File.Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+            {
+                SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+                ShowGameVersion();
+            }
 
         }
 
@@ -417,7 +430,7 @@ namespace LEHuDModLauncher
 
             SettingsManager.Instance.UpdateErrorCount(0);
 
-            Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
+            
 
             // Pick either keyboard or gamepad version
             if (radioKb.Checked)
@@ -435,7 +448,17 @@ namespace LEHuDModLauncher
             toolStripStatus.Enabled = true;
             toolStripStatus.Enabled = true;
             toolStripStatus.Text = "Installing...";
+            
+            var mbresult = CustomMessageBox.Show(
+                "Install modloader AND mod or just the mod? You can choose mod only if there has been a new mod release, no need to also update the modloader.",
+                "Installation Type", 
+                "Melonloader and mod", 
+                "Mod only",
+                "Cancel"
+            );
 
+            if (mbresult == DialogResult.Yes) Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
+            if (mbresult == DialogResult.Retry) return;
 
             if (Directory.Exists(SettingsManager.Instance.Settings.GameDir + @"\Melonloader")) Directory.Delete(SettingsManager.Instance.Settings.GameDir + @"\Melonloader", true);
 
@@ -443,10 +466,14 @@ namespace LEHuDModLauncher
             Utils.RunExtraction();
             toolStripStatus.Text = "Done!";
 
-            if (SettingsManager.Instance.Settings.ErrorCount == 0) MessageBox.Show("All done! You can now start Last Epoch with the HUD mod installed.\n\n" +
-                "But make sure to run the game at least once and exit. This should fix most common issues."
-                , "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            else MessageBox.Show("Finished with errors. Please check the log.", "Errors occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            if ((SettingsManager.Instance.Settings.ErrorCount == 0) && (mbresult == DialogResult.Yes))
+                MessageBox.Show("All done! You can now click Start game OFFLINE to play the game with the HUD mod enabled.\n\n" +
+                                "BUT MAKE SURE TO RUN THE GAME ONCE, EXIT WHEN THE GAME IS LOADED.. THIS SHOULD PREVENT MOST COMMON ISSUES."
+                    , "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else if ((SettingsManager.Instance.Settings.ErrorCount == 0) && (mbresult == DialogResult.No))
+                    MessageBox.Show("All done! Just click Start game OFFLINE to play the game!"
+                        , "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            else if (SettingsManager.Instance.Settings.ErrorCount>0) MessageBox.Show("Finished with errors. Please check the log.", "Errors occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             toolStripStatus.Text = "Installation finished... Run the game once and exit the game!";
         }
 
