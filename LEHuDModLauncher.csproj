@@ -2,8 +2,8 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    <ApplicationIcon>Resources\gooey-daemon.ico</ApplicationIcon>
-    <AssemblyVersion>1.0</AssemblyVersion>
+    <ApplicationIcon>gooey-daemon.ico</ApplicationIcon>
+    <AssemblyVersion>1.1</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -12,12 +12,11 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Platforms>x64</Platforms>
-    <PackageIcon>gooey-daemon.png</PackageIcon>
+    <PackageIcon></PackageIcon>
     <NuGetAudit>False</NuGetAudit>
     <SignAssembly>False</SignAssembly>
     <FileVersion>1.0</FileVersion>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
-    <StartupObject>LEHudModLauncher.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
@@ -37,24 +36,10 @@
   <ItemGroup>
     <None Remove="gooey-daemon.png" />
     <None Remove="gooey-daemon.svg" />
-    <None Remove="Resources\7z.dll" />
-    <None Remove="Resources\gooey-daemon.ico" />
-    <None Remove="Resources\StartUpMessage.zip" />
-    <EmbeddedResource Include="Resources\7z.dll" />
-    <None Remove="Resources\7z.exe" />
-    <EmbeddedResource Include="Resources\7z.exe" />
-    <None Remove="Resources\curl.exe" />
-    <EmbeddedResource Include="Resources\curl.exe" />
-    <None Remove="Resources\curl-ca-bundle.crt" />
-    <EmbeddedResource Include="Resources\curl-ca-bundle.crt" />
-    <None Remove="Resources\LELauncher.zip" />
-    <EmbeddedResource Include="Resources\gooey-daemon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <None Remove="Resources\libcurl-x64.def" />
-    <EmbeddedResource Include="Resources\libcurl-x64.def" />
-    <None Remove="Resources\libcurl-x64.dll" />
-    <EmbeddedResource Include="Resources\libcurl-x64.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="gooey-daemon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -79,7 +64,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Resources\gooey-daemon.ico" />
+    <PackageReference Include="SharpCompress" Version="0.40.0" />
   </ItemGroup>
 
 </Project>

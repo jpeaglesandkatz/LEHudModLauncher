@@ -14,5 +14,8 @@
   <ItemGroup>
     <Content Include="gooey-daemon.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SharpCompress" Version="0.40.0" />
+  </ItemGroup>
 
 </Project>

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using static LauncherUtils.Utils;
+using DownloadUtils;
+using System.Threading.Tasks;
 
 namespace LEHuDModLauncher
 {
@@ -18,6 +20,7 @@ namespace LEHuDModLauncher
         private Process _gameProcess;
         public Logger Dlog = new Logger();
         public Utils Utils = new Utils();
+        public FileDownloader fileDownloader = new FileDownloader();
 
         // Tray icon + menu
         private NotifyIcon? trayIcon;
@@ -49,22 +52,13 @@ namespace LEHuDModLauncher
                 string iconPath = Path.Combine(exeDir, "Resources", "gooey-daemon.ico");
                 var asm = Assembly.GetExecutingAssembly();
 
-                if (File.Exists(iconPath))
-                {
-                    this.Icon = new Icon(iconPath);
-                }
-                else
-                {
-                    using var stream = asm.GetManifestResourceStream("LEHuDModLauncher.Resources.gooey-daemon.ico");
-                    if (stream != null) this.Icon = new Icon(stream);
-                }
                 //InitializeTrayIcon();
                 //this.Resize += Launcherform_Resize;
 
                 this.Text =
-                    $"{asm.GetName().Name} - {asm.GetName().Version} for Last Epoch Hud Mod by Ash, launcher by JP";
+                    $"{asm.GetName().Name} - {asm.GetName().Version.Major}.{asm.GetName().Version.Minor} for Last Epoch Hud Mod by Ash, launcher by JP";
                 Logger.Global.Info(this.Text);
-                Logger.Global.Info("==========  LE Hud Mod Launcher started ============ ");
+                Logger.Global.Info($"==========  LE Hud Mod Launcher {asm.GetName().Version.Major}.{asm.GetName().Version.Minor} started ============ ");
 
                 SettingsManager.Instance.Load();
 
@@ -76,13 +70,6 @@ namespace LEHuDModLauncher
                     SettingsManager.Instance.UpdateSteamPath(steamPath);
 
                 SettingsManager.Instance.UpdateTmpDownloadFolder(Path.GetTempPath() + @"LEModtempDir");
-
-                //if (!string.IsNullOrEmpty(SettingsManager.Instance.Settings.Steampath))
-                //{
-                //    SettingsManager.Instance.UpdateSteamPath(SettingsManager.Instance.Settings.Steampath);
-                //    Logger.Global.Debug($"GameDir: {SettingsManager.Instance.Settings.GameDir}");
-                //    Logger.Global.Debug($"Steampath: {SettingsManager.Instance.Settings.Steampath}");
-                //}
 
                 textGamePath.Text = SettingsManager.Instance.Settings.GameDir;
                 checkBoxKeepOpen.Checked = SettingsManager.Instance.Settings.KeepOpen;
@@ -97,9 +84,6 @@ namespace LEHuDModLauncher
                 toolStripTheme.Text = SettingsManager.Instance.Settings.DarkMode ? "Light theme" : "Dark theme";
                 SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
 
-                // Extract embedded resources to temp folder
-                ExtractAllResourcesToTempFolder();
-
                 if (File.Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
                     ShowGameVersion();
                 else textGameVersion.Text = "Unknown";
@@ -112,55 +96,6 @@ namespace LEHuDModLauncher
             }
         }
 
-        // Initialize tray icon + context menu
-        //private void InitializeTrayIcon()
-        //{
-        //    // Create context menu
-        //    trayMenu = new ContextMenuStrip();
-        //    var restoreItem = new ToolStripMenuItem("Restore");
-        //    restoreItem.Click += (s, e) => RestoreFromTray();
-        //    var exitItem = new ToolStripMenuItem("Exit");
-        //    exitItem.Click += (s, e) => Application.Exit();
-        //    trayMenu.Items.AddRange(new ToolStripItem[] { restoreItem, exitItem });
-
-        //    // Create the NotifyIcon
-        //    trayIcon = new NotifyIcon
-        //    {
-        //        Icon = this.Icon ?? SystemIcons.Application,
-        //        ContextMenuStrip = trayMenu,
-        //        Text = $"{Assembly.GetExecutingAssembly().GetName().Name} - LE Hud Mod Launcher",
-        //        Visible = true
-        //    };
-
-        //    trayIcon.DoubleClick += (s, e) => RestoreFromTray();
-        //}
-
-        //// Restore window from tray
-        //private void RestoreFromTray()
-        //{
-        //    if (InvokeRequired)
-        //    {
-        //        BeginInvoke(new Action(RestoreFromTray));
-        //        return;
-        //    }
-
-        //    Show();
-        //    WindowState = FormWindowState.Normal;
-        //    ShowInTaskbar = true;
-        //    Activate();
-        //    trayIcon!.Visible = true;
-        //}
-
-        //// Minimize to tray behavior
-        //private void Launcherform_Resize(object? sender, EventArgs e)
-        //{
-        //    if (WindowState == FormWindowState.Minimized)
-        //    {
-        //        Hide();
-        //        ShowInTaskbar = false;
-        //        if (trayIcon != null) trayIcon.Visible = true;
-        //    }
-        //}
 
         public void ShowGameVersion()
         {
@@ -173,32 +108,6 @@ namespace LEHuDModLauncher
             }
         }
 
-        //public void Showgameversion()
-        //{
-        //    try
-        //    {
-        //        string exe = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Last Epoch.exe");
-        //        var candidates = UnityVersionExtractor.ExtractVersionsFromGlobalGameManagers(exe);
-
-        //        if (candidates.Count == 0)
-        //        {
-        //            Logger.Global.Error("No version-like strings found in globalgamemanagers.\nTry checking app.info, version.txt, or Steam appmanifest as a fallback.");
-        //            return;
-        //        }
-
-        //        Logger.Global.Info("Version candidates (best first):");
-        //        foreach (var c in candidates)
-        //        {
-        //            Logger.Global.Info($" - {c.version}  (score={c.score})\ncontext: {Truncate(c.context, 140)}");
-        //        }
-
-        //        Logger.Global.Info("Best guess: " + UnityVersionExtractor.GetBestGuessVersion(exe));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.Global.Info("Error: " + ex.Message);
-        //    }
-        //}
 
         private void CleanupDirs()
         {
@@ -227,35 +136,34 @@ namespace LEHuDModLauncher
             }
         }
 
-
         // Extract all embedded resources to the temporary folder
-        public void ExtractAllResourcesToTempFolder()
-        {
-            try
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                string resourcePrefix = "LEHuDModLauncher.Resources.";
+        //public void ExtractAllResourcesToTempFolder()
+        //{
+        //    try
+        //    {
+        //        var assembly = Assembly.GetExecutingAssembly();
+        //        string resourcePrefix = "LEHuDModLauncher.Resources.";
 
-                foreach (var resourceName in assembly.GetManifestResourceNames())
-                {
-                    string fileName = resourceName.StartsWith(resourcePrefix)
-                        ? resourceName.Substring(resourcePrefix.Length)
-                        : resourceName;
+        //        foreach (var resourceName in assembly.GetManifestResourceNames())
+        //        {
+        //            string fileName = resourceName.StartsWith(resourcePrefix)
+        //                ? resourceName.Substring(resourcePrefix.Length)
+        //                : resourceName;
 
-                    var outputPath = SettingsManager.Instance.Settings.TmpDownloadFolder;
+        //            var outputPath = SettingsManager.Instance.Settings.TmpDownloadFolder;
 
-                    using var stream = assembly.GetManifestResourceStream(resourceName);
-                    if (stream == null) continue;
-                    using var fileStream = new FileStream(Path.Combine(outputPath, fileName), FileMode.Create, FileAccess.Write);
-                    stream.CopyTo(fileStream);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Global.Error($"ExtractAllResourcesToTempFolder error: {ex}");
-                MessageBox.Show($"Failed to extract resources:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        //            using var stream = assembly.GetManifestResourceStream(resourceName);
+        //            if (stream == null) continue;
+        //            using var fileStream = new FileStream(Path.Combine(outputPath, fileName), FileMode.Create, FileAccess.Write);
+        //            stream.CopyTo(fileStream);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.Global.Error($"ExtractAllResourcesToTempFolder error: {ex}");
+        //        MessageBox.Show($"Failed to extract resources:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         // select Game folder
         private void buttonBrowse_Click(object sender, EventArgs e)
@@ -524,7 +432,7 @@ namespace LEHuDModLauncher
                 {
                     if (!Utils.IsLocalFileUpToDate((rtfPath + @"StartupMessage.zip"), Utils.GetRemoteFileDate(dlurl)))
                     {
-                        Utils.RunCurl(dlurl, false, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip");
+                        Utils.DownloadFile(dlurl, false, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip");
                         Utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.BaseDirectory, false);
                         // force display of status message once if newer message found                        
                         showMessage = true;
@@ -537,7 +445,7 @@ namespace LEHuDModLauncher
                 }
                 else if (!File.Exists(rtfPath + @"StartupMessage.zip"))
                 {
-                    Utils.RunCurl(dlurl, false, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip");
+                    Utils.DownloadFile(dlurl, false, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip");
                     Utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.BaseDirectory, false);
                     showMessage = true;
                 }

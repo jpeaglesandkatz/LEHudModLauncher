@@ -1,10 +1,14 @@
 ﻿using LogUtils;
 using Microsoft.Win32;
+using SharpCompress.Archives;
+using SharpCompress.Common;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Text.Json;
 using static Microsoft.Win32.Registry;
-using System.Net.Http;
+using DownloadUtils;
+
 
 namespace LauncherUtils
 {
@@ -14,6 +18,8 @@ namespace LauncherUtils
 
         private List<DownloadTask> QueDownloads { get; set; } = new List<DownloadTask>();
         private List<ExtractItem> QueExtracts { get; set; } = new List<ExtractItem>();
+
+        public FileDownloader fileDownloader = new FileDownloader();
 
         public class DownloadTask
         {
@@ -505,12 +511,41 @@ namespace LauncherUtils
                 QueExtracts = QueExtracts.OrderBy(p => p.Priority).ToList();
                 foreach (var extractitem in QueExtracts)
                 {
-                    ExtractFile(extractitem.FileName, extractitem.SourcePath, extractitem.DestinationPath, extractitem.DelOriginal);
+                    ExtractFileLib(extractitem.FileName, extractitem.SourcePath, extractitem.DestinationPath, extractitem.DelOriginal);
                 }
                 QueExtracts.Clear();
             }
         }
 
+
+        public void ExtractFileLib(string filename, string? sourcepath, string? destinationpath, bool deloriginal = false)
+        {
+            var archive = ArchiveFactory.Open(Path.Combine(sourcepath, filename)); //@"C:\Code\sharpcompress\TestArchives\sharpcompress.zip");
+            try
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (!entry.IsDirectory)
+                    {
+                        Logger.Global.Info(entry.Key);
+                        entry.WriteToDirectory(destinationpath, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Global.Error($"Extraction failed: {ex.Message}");
+                SettingsManager.Instance.Settings.ErrorCount++;
+            }
+            finally
+            {
+                archive.Dispose();
+            }
+            if (deloriginal)
+            {
+                File.Delete(Path.Combine(sourcepath, filename));
+            }
+        }
 
         public void ExtractFile(string filename, string? sourcepath, string? destinationpath, bool deloriginal = false)
         {
@@ -523,35 +558,15 @@ namespace LauncherUtils
                     //if (File.Exists(Path.Combine(destinationpath, filename))) File.Delete(Path.Combine(destinationpath, filename));
                     if (settings?.TmpDownloadFolder != null)
                     {
-                        var processStartInfo = new ProcessStartInfo
-                        {
-                            FileName = Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "7z.exe"),
-                            Arguments = $"x \"{Path.Combine(sourcepath, filename)}\" -o\"{destinationpath}\" -y",
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
-                        Logger.Global.Debug(
-                            $"FILENAME: {Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "7z.exe")}");
-                        using var process = new Process();
-                        process.StartInfo = processStartInfo;
-                        process.Start();
-                        process.WaitForExit();
-                        if (process.ExitCode != 0)
-                            Logger.Global.Error($"Error during extraction: {process.StandardError.ReadToEnd()}");
-                        else if (File.Exists(Path.Combine(sourcepath, filename)) && deloriginal) File.Delete(Path.Combine(sourcepath, filename));
-
+                        ExtractFileLib(filename, sourcepath, destinationpath, deloriginal);
                     }
                 }
-
-                Console.WriteLine($"Extracted to {destinationpath}");
             }
             catch (Exception ex)
             {
-                SettingsManager.Instance.Settings.ErrorCount++;
                 Logger.Global.Error($"Extraction failed: {ex.Message}");
             }
+            Logger.Global.Info($"Extracted {filename}");
         }
 
         public void AddDownload(int priority, string type, string url, string? downloadpath, string? destination, string filename, bool deloriginal, bool skipifexist)
@@ -573,7 +588,25 @@ namespace LauncherUtils
             Logger.Global.Debug($"Added download: {url} to {downloadpath} as {filename} skipifexist: {skipifexist}");
         }
 
-        public void StartDownloads()
+        public async Task DownloadFile(string url, bool skipifexist, string? downloadpath, string filename)
+
+        {
+            var progress = new Progress<double>(p => Console.WriteLine($"Progress: {p}%"));
+
+            try
+            {
+                await fileDownloader.DownloadFileAsync(url, Path.Combine(downloadpath, filename), progress);
+                Logger.Global.Info($"Download completed! {url} --> {downloadpath}\\{filename}");
+            }
+            catch (Exception ex)
+            {
+                Logger.Global.Info($"Download failed {url}: {ex.Message}");
+            }
+
+        }
+
+
+        public async Task StartDownloads()
         {
             int tprogress = 1;
             SettingsManager.Instance.Settings.ErrorCount = 0;
@@ -587,7 +620,7 @@ namespace LauncherUtils
             {
                 try
                 {
-                    string localPath = Path.Combine(item.DownloadPath, item.Filename);
+                    string localPath = item.DownloadPath;
 
                     // Get remote file date and size from server (HTTP HEAD)
                     string quefilepath = Path.Combine(item.DownloadPath, item.Filename);
@@ -598,11 +631,11 @@ namespace LauncherUtils
                         if (!IsLocalFileUpToDate(quefilepath, remoteFileDate, remoteFileSize))
                         {
                             Logger.Global.Debug($"Local file: {quefilepath} is not up to date. Downloading {item.Url} to {item.DownloadPath} as {item.Filename} (download count: {QueDownloads.Count})");
-                            RunCurl(item.Url, item.SkipIfExist, item.DownloadPath, item.Filename);
+                            await DownloadFile(item.Url, item.SkipIfExist, item.DownloadPath, item.Filename);
                         }
                         else Logger.Global.Debug($"Local file: {quefilepath} is up to date. Skipping download of {item.Url} (download count: {QueDownloads.Count})");
                     }
-                    else RunCurl(item.Url, item.SkipIfExist, item.DownloadPath, item.Filename);
+                    else await DownloadFile(item.Url, item.SkipIfExist, item.DownloadPath, item.Filename);
                     // Add downloads to extaction que
 
                 }
@@ -621,45 +654,45 @@ namespace LauncherUtils
             }
             QueDownloads.Clear();
         }
-        public void RunCurl(string url, bool skipifexist, string? downloadpath, string filename)
-        {
-            try
-            {
-                if (downloadpath != null)
-                {
-                    var processStartInfo = new ProcessStartInfo
-                    {
-                        FileName = $"{SettingsManager.Instance.Settings.TmpDownloadFolder}\\curl.exe",
-                        Arguments = $"-L \"{url}\" -o \"{Path.Combine(downloadpath, filename)}\"",
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        WorkingDirectory = downloadpath
+        //public void RunCurl(string url, bool skipifexist, string? downloadpath, string filename)
+        //{
+        //    try
+        //    {
+        //        if (downloadpath != null)
+        //        {
+        //            var processStartInfo = new ProcessStartInfo
+        //            {
+        //                FileName = $"{SettingsManager.Instance.Settings.TmpDownloadFolder}\\curl.exe",
+        //                Arguments = $"-L \"{url}\" -o \"{Path.Combine(downloadpath, filename)}\"",
+        //                RedirectStandardOutput = true,
+        //                RedirectStandardError = true,
+        //                UseShellExecute = false,
+        //                CreateNoWindow = true,
+        //                WorkingDirectory = downloadpath
 
-                    };
-                    Logger.Global.Debug($"CURL.EXE {SettingsManager.Instance.Settings.TmpDownloadFolder}\\curl.exe");
-                    Logger.Global.Debug($"CURL.EXE {url}");
-                    Logger.Global.Debug($"CURL.EXE {downloadpath}");
+        //            };
+        //            Logger.Global.Debug($"CURL.EXE {SettingsManager.Instance.Settings.TmpDownloadFolder}\\curl.exe");
+        //            Logger.Global.Debug($"CURL.EXE {url}");
+        //            Logger.Global.Debug($"CURL.EXE {downloadpath}");
 
-                    using var process = new Process();
-                    process.StartInfo = processStartInfo;
-                    process.Start();
-                    process.WaitForExit();
-                    if (process.ExitCode != 0)
-                        Logger.Global.Error($"CURL.EXE Error during download: {process.StandardError.ReadToEnd()}");
-                    else
-                    {
-                        Logger.Global.Info($"Downloaded {filename}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                SettingsManager.Instance.Settings.ErrorCount++;
-                Logger.Global.Error($"Error during download: {ex.Message}\n{ex.Source}\n{ex.StackTrace}");
-            }
-        }
+        //            using var process = new Process();
+        //            process.StartInfo = processStartInfo;
+        //            process.Start();
+        //            process.WaitForExit();
+        //            if (process.ExitCode != 0)
+        //                Logger.Global.Error($"CURL.EXE Error during download: {process.StandardError.ReadToEnd()}");
+        //            else
+        //            {
+        //                Logger.Global.Info($"Downloaded {filename}");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        SettingsManager.Instance.Settings.ErrorCount++;
+        //        Logger.Global.Error($"Error during download: {ex.Message}\n{ex.Source}\n{ex.StackTrace}");
+        //    }
+        //}
 
         public bool IsLocalFileUpToDate(string localFilePath, DateTime remoteFileDate, long remoteFileSize = -1)
         {

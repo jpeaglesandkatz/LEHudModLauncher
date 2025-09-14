@@ -2,8 +2,9 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using LauncherUtils;
+//using LauncherUtils;
 using LEHuDModLauncher.Classlibs;
+using LauncherUtils;
 
 namespace LEHuDModLauncher
 {
