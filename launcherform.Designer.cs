@@ -168,7 +168,7 @@
             // buttonOffline
             // 
             buttonOffline.Anchor = AnchorStyles.None;
-            buttonOffline.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            buttonOffline.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOffline.ForeColor = SystemColors.WindowText;
             buttonOffline.Location = new Point(427, 25);
             buttonOffline.Margin = new Padding(2);
@@ -203,7 +203,7 @@
             // buttonOnline
             // 
             buttonOnline.Anchor = AnchorStyles.None;
-            buttonOnline.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            buttonOnline.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOnline.ForeColor = SystemColors.WindowText;
             buttonOnline.Location = new Point(28, 25);
             buttonOnline.Margin = new Padding(2);
@@ -219,7 +219,7 @@
             buttonBrowseGameFolder.Anchor = AnchorStyles.None;
             buttonBrowseGameFolder.FlatAppearance.BorderSize = 0;
             buttonBrowseGameFolder.FlatStyle = FlatStyle.Flat;
-            buttonBrowseGameFolder.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            buttonBrowseGameFolder.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             buttonBrowseGameFolder.Location = new Point(508, 256);
             buttonBrowseGameFolder.Margin = new Padding(2);
             buttonBrowseGameFolder.Name = "buttonBrowseGameFolder";
@@ -247,13 +247,13 @@
             // 
             // statusStripLabel
             // 
-            statusStripLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            statusStripLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             statusStripLabel.Name = "statusStripLabel";
             statusStripLabel.Size = new Size(0, 18);
             // 
             // toolStripStatus
             // 
-            toolStripStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            toolStripStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             toolStripStatus.Name = "toolStripStatus";
             toolStripStatus.Size = new Size(0, 18);
             // 
@@ -270,7 +270,7 @@
             // 
             // installToolStripMenuItem
             // 
-            installToolStripMenuItem.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            installToolStripMenuItem.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             installToolStripMenuItem.ForeColor = Color.FromArgb(192, 64, 0);
             installToolStripMenuItem.Name = "installToolStripMenuItem";
             installToolStripMenuItem.Size = new Size(122, 23);

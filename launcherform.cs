@@ -319,8 +319,6 @@ namespace LEHuDModLauncher
         private void launcherform_FormClosing(object sender, FormClosingEventArgs e)
         {
             SettingsManager.Instance.Save();
-
-
         }
 
         private void textPath_TextChanged(object sender, EventArgs e)

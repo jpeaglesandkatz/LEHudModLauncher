@@ -1,6 +1,7 @@
 using LEHuDModLauncher.Classlibs;
 using System.Text.RegularExpressions;
 using static LauncherUtils.Utils;
+using System.ComponentModel;
 
 namespace LEHuDModLauncher
 {
@@ -60,6 +61,12 @@ namespace LEHuDModLauncher
         // Tags that should be removed (not shown) from the displayed log.
         // Use AddHiddenTag/RemoveHiddenTag/SetHiddenTags to manage this set.
         private readonly HashSet<string> _hiddenTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // Add this property
+        /// <summary>
+        /// Gets or sets the default color for log lines that don't match any specific tags.
+        /// </summary>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 
         // Add this property
         /// <summary>
