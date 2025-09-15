@@ -4,7 +4,7 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
@@ -23,6 +23,7 @@ Last Epoch HUD Mod</Description>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpCompress" Version="0.40.0" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.8.5" />
   </ItemGroup>
 
   <ItemGroup>

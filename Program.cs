@@ -15,7 +15,8 @@ namespace LEHudModLauncher
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Logger.Configure(folder: SettingsManager.Instance.Settings.LogPath ?? null, level: LogLevel.Info);
+            if (File.Exists(@"C:\Users\jp\AppData\Roaming\LEHuDModLauncher\debug.log")) File.Delete(@"C:\Users\jp\AppData\Roaming\LEHuDModLauncher\debug.log");
+            Logger.Configure(folder: SettingsManager.Instance.Settings.LogPath ?? null, level: LogLevel.Debug);
             Application.Run(new Launcherform());
         }
     }

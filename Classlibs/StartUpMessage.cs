@@ -61,7 +61,7 @@ namespace LEHuDModLauncher.Classlibs
             {
                 NewShowSetting = chkDontShow.Checked;
                 SettingsManager.Instance.UpdateShowStartupMessage(NewShowSetting);
-                
+                chkDontShow.Checked = SettingsManager.Instance.Settings.ShowStartupMessage;
             };
 
             Shown += (s, e) =>

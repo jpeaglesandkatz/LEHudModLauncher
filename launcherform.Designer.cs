@@ -53,6 +53,7 @@
             toolStripTheme = new ToolStripMenuItem();
             checkBoxHideConsole = new CheckBox();
             panel2 = new Panel();
+            buttonStartupMessage = new Button();
             statusStrip.SuspendLayout();
             menuStrip1.SuspendLayout();
             panel2.SuspendLayout();
@@ -117,12 +118,11 @@
             checkBoxStartUpMessage.Location = new Point(28, 115);
             checkBoxStartUpMessage.Margin = new Padding(2);
             checkBoxStartUpMessage.Name = "checkBoxStartUpMessage";
-            checkBoxStartUpMessage.Size = new Size(198, 19);
+            checkBoxStartUpMessage.Size = new Size(150, 19);
             checkBoxStartUpMessage.TabIndex = 15;
-            checkBoxStartUpMessage.Text = "Show welcome message on start";
+            checkBoxStartUpMessage.Text = "Show mod info on start";
             checkBoxStartUpMessage.UseVisualStyleBackColor = true;
             checkBoxStartUpMessage.CheckedChanged += checkBoxStartUpMessage_CheckedChanged;
-            checkBoxStartUpMessage.Click += checkBoxStartUpMessage_Click;
             // 
             // checkBoxKeepOpen
             // 
@@ -318,6 +318,7 @@
             // 
             // panel2
             // 
+            panel2.Controls.Add(buttonStartupMessage);
             panel2.Controls.Add(buttonBrowseGameFolder);
             panel2.Controls.Add(buttonOnline);
             panel2.Controls.Add(checkBoxHideConsole);
@@ -337,6 +338,18 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(662, 322);
             panel2.TabIndex = 22;
+            // 
+            // buttonStartupMessage
+            // 
+            buttonStartupMessage.Anchor = AnchorStyles.None;
+            buttonStartupMessage.Location = new Point(260, 153);
+            buttonStartupMessage.Margin = new Padding(2);
+            buttonStartupMessage.Name = "buttonStartupMessage";
+            buttonStartupMessage.Size = new Size(154, 28);
+            buttonStartupMessage.TabIndex = 21;
+            buttonStartupMessage.Text = "Show latest mod info";
+            buttonStartupMessage.UseVisualStyleBackColor = true;
+            buttonStartupMessage.Click += buttonStartupMessage_Click;
             // 
             // Launcherform
             // 
@@ -396,5 +409,6 @@
         private Button buttonAttachLog;
         private CheckBox checkBoxHideConsole;
         private Panel panel2;
+        private Button buttonStartupMessage;
     }
 }

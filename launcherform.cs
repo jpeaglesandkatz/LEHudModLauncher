@@ -1,13 +1,14 @@
-﻿using LauncherUtils;
+﻿using DownloadUtils;
+using LauncherUtils;
 using LEHudModLauncher;
 using LEHuDModLauncher.Classlibs;
 using LogUtils;
+using Microsoft.VisualBasic.ApplicationServices;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using static LauncherUtils.Utils;
-using DownloadUtils;
 using System.Threading.Tasks;
+using static LauncherUtils.Utils;
 
 namespace LEHuDModLauncher
 {
@@ -18,7 +19,6 @@ namespace LEHuDModLauncher
         public static string VersionBackFilename = @"\version.dll.bak";
 
         private Process _gameProcess;
-        public Logger Dlog = new Logger();
         public Utils Utils = new Utils();
         public FileDownloader fileDownloader = new FileDownloader();
 
@@ -35,6 +35,9 @@ namespace LEHuDModLauncher
             try
             {
                 InitializeComponent();
+
+
+
                 Logger.Global.Debug("Initializing Launcherform");
 
                 if ((SettingsManager.Instance.Settings.MainWindowX < 0) || (SettingsManager.Instance.Settings.MainWindowY < 0))
@@ -88,7 +91,7 @@ namespace LEHuDModLauncher
                     ShowGameVersion();
                 else textGameVersion.Text = "Unknown";
 
-                ShowStartupMessage();
+                ShowStartupMessage(false);
             }
             catch (Exception ex)
             {
@@ -118,8 +121,7 @@ namespace LEHuDModLauncher
                 var melonLoaderPath = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Melonloader");
                 var modsPath = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Mods");
 
-                if (Directory.Exists(melonLoaderPath))
-                    Directory.Delete(melonLoaderPath, true);
+                if (Directory.Exists(melonLoaderPath)) Directory.Delete(melonLoaderPath, true);
                 else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
 
                 if (!Directory.Exists(modsPath))
@@ -204,7 +206,7 @@ namespace LEHuDModLauncher
             {
                 if (online)
                 {
-                    
+
                     if (File.Exists(gamedir + VersionFilename))
                     {
                         if (File.Exists(gamedir + VersionBackFilename)) { File.Delete(gamedir + VersionBackFilename); }
@@ -334,33 +336,30 @@ namespace LEHuDModLauncher
                 MessageBox.Show("Please select a valid Last Epoch game folder first!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            CleanupDirs();
 
             SettingsManager.Instance.UpdateErrorCount(0);
-
-            
 
             // Pick either keyboard or gamepad version
             if (radioKb.Checked)
             {
                 var result = MessageBox.Show("Installing Keyboard version of the mod.\nUse this version if you mainly play the game with your keyboard/mouse.\nProceed?", "Info", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (result == DialogResult.No) return;
-                else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.Keyboard.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud(Keyboard).rar", true, false);
+                else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.Keyboard.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud(Keyboard).rar", false, false);
             }
             else
             {
                 var result = MessageBox.Show("Installing Gamepad version of the mod.\nUse this version if you mainly play the game with your gamepad.\nProceed?", "Info", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (result == DialogResult.No) return;
-                else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.WinGamepad.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud.WinGamepad.rar", true, false);
+                else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.WinGamepad.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud.WinGamepad.rar", false, false);
             }
             toolStripStatus.Enabled = true;
             toolStripStatus.Enabled = true;
             toolStripStatus.Text = "Installing...";
-            
+
             var mbresult = CustomMessageBox.Show(
                 "Install modloader AND mod or just the mod? You can choose mod only if there has been a new mod release, no need to also update the modloader.",
-                "Installation Type", 
-                "Melonloader and mod", 
+                "Installation Type",
+                "Melonloader and mod",
                 "Mod only",
                 "Cancel"
             );
@@ -368,8 +367,8 @@ namespace LEHuDModLauncher
             if (mbresult == DialogResult.Yes) Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
             if (mbresult == DialogResult.Retry) return;
 
-            if (Directory.Exists(SettingsManager.Instance.Settings.GameDir + @"\Melonloader")) Directory.Delete(SettingsManager.Instance.Settings.GameDir + @"\Melonloader", true);
-
+            
+            CleanupDirs();
             Utils.StartDownloads();
             Utils.RunExtraction();
             toolStripStatus.Text = "Done!";
@@ -378,10 +377,10 @@ namespace LEHuDModLauncher
                 MessageBox.Show("All done! You can now click Start game OFFLINE to play the game with the HUD mod enabled.\n\n" +
                                 "BUT MAKE SURE TO RUN THE GAME ONCE, EXIT WHEN THE GAME IS LOADED.. THIS SHOULD PREVENT MOST COMMON ISSUES."
                     , "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                else if ((SettingsManager.Instance.Settings.ErrorCount == 0) && (mbresult == DialogResult.No))
-                    MessageBox.Show("All done! Just click Start game OFFLINE to play the game!"
-                        , "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            else if (SettingsManager.Instance.Settings.ErrorCount>0) MessageBox.Show("Finished with errors. Please check the log.", "Errors occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else if ((SettingsManager.Instance.Settings.ErrorCount == 0) && (mbresult == DialogResult.No))
+                MessageBox.Show("All done! Just click Start game OFFLINE to play the game!"
+                    , "Success", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            else if (SettingsManager.Instance.Settings.ErrorCount > 0) MessageBox.Show("Finished with errors. Please check the log.", "Errors occurred", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             toolStripStatus.Text = "Installation finished... Run the game once and exit the game!";
         }
 
@@ -417,12 +416,13 @@ namespace LEHuDModLauncher
             SettingsManager.Instance.UpdateKeepOpen(checkBoxKeepOpen.Checked);
         }
 
-        public void ShowStartupMessage()
+        public void ShowStartupMessage(bool forced = false)
 
         {
             var rtfPath = AppDomain.CurrentDomain.BaseDirectory;
             string messageFileToLoad = "";
             bool showMessage = false;
+            showMessage = forced;
             Logger.Global.Debug($"{settings}  ->>  {AppDomain.CurrentDomain.BaseDirectory}");
             Logger.Global.Debug(rtfPath);
             string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/StartUpMessage.zip";
@@ -430,30 +430,30 @@ namespace LEHuDModLauncher
             {
                 if ((File.Exists(rtfPath + @"StartupMessage.zip")) && (!Utils.IsLocalFileUpToDate((rtfPath + @"StartupMessage.zip"), Utils.GetRemoteFileDate(dlurl))))
                 {
-                    if (!Utils.IsLocalFileUpToDate((rtfPath + @"StartupMessage.zip"), Utils.GetRemoteFileDate(dlurl)))
+                    if (!Utils.IsLocalFileUpToDate((Path.Combine(rtfPath, "StartupMessage.zip")), Utils.GetRemoteFileDate(dlurl)))
                     {
-                        Utils.DownloadFile(dlurl, false, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip");
+                        fileDownloader.DownloadFile(dlurl, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip", 5);
                         Utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.BaseDirectory, false);
                         // force display of status message once if newer message found                        
                         showMessage = true;
                     }
-                    else if ((File.Exists(rtfPath + @"StartupMessage.zip")))
+                    else if ((File.Exists(Path.Combine(rtfPath, "StartupMessage.zip"))))
                     {
                         Utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.BaseDirectory, false);
                         showMessage = true;
                     }
                 }
-                else if (!File.Exists(rtfPath + @"StartupMessage.zip"))
+                else if (!File.Exists(Path.Combine(rtfPath, "StartupMessage.zip")))
                 {
-                    Utils.DownloadFile(dlurl, false, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip");
+                    fileDownloader.DownloadFile(dlurl, AppDomain.CurrentDomain.BaseDirectory, "StartupMessage.zip", 5);
                     Utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.BaseDirectory, false);
                     showMessage = true;
                 }
 
-                if ((showMessage && File.Exists(rtfPath + @"StartupMessage.rtf")) ||
-                    (SettingsManager.Instance.Settings.ShowStartupMessage) && (File.Exists(rtfPath + @"StartupMessage.rtf")))
+                if ((showMessage && File.Exists(Path.Combine(rtfPath, "StartupMessage.rtf")) ||
+                    (SettingsManager.Instance.Settings.ShowStartupMessage) && (File.Exists(rtfPath + @"StartupMessage.rtf"))))
                 {
-                    messageFileToLoad = rtfPath + @"StartupMessage.rtf";
+                    messageFileToLoad = Path.Combine(rtfPath, "StartupMessage.rtf");
                     if (messageFileToLoad != null)
                     {
                         using (var dlg = new StartupDialog(messageFileToLoad,
@@ -593,7 +593,14 @@ namespace LEHuDModLauncher
         private void checkBoxStartUpMessage_Click(object sender, EventArgs e)
         {
             SettingsManager.Instance.UpdateShowStartupMessage(checkBoxStartUpMessage.Checked);
-            ShowStartupMessage();
+            ShowStartupMessage(false);
+        }
+
+        
+
+        private void buttonStartupMessage_Click(object sender, EventArgs e)
+        {
+            ShowStartupMessage(true);
         }
     }
 }

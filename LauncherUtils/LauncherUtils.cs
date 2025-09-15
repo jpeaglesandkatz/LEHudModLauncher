@@ -588,24 +588,7 @@ namespace LauncherUtils
             Logger.Global.Debug($"Added download: {url} to {downloadpath} as {filename} skipifexist: {skipifexist}");
         }
 
-        public async Task DownloadFile(string url, bool skipifexist, string? downloadpath, string filename)
-
-        {
-            var progress = new Progress<double>(p => Console.WriteLine($"Progress: {p}%"));
-
-            try
-            {
-                await fileDownloader.DownloadFileAsync(url, Path.Combine(downloadpath, filename), progress);
-                Logger.Global.Info($"Download completed! {url} --> {downloadpath}\\{filename}");
-            }
-            catch (Exception ex)
-            {
-                Logger.Global.Info($"Download failed {url}: {ex.Message}");
-            }
-
-        }
-
-
+        
         public async Task StartDownloads()
         {
             int tprogress = 1;
@@ -631,11 +614,11 @@ namespace LauncherUtils
                         if (!IsLocalFileUpToDate(quefilepath, remoteFileDate, remoteFileSize))
                         {
                             Logger.Global.Debug($"Local file: {quefilepath} is not up to date. Downloading {item.Url} to {item.DownloadPath} as {item.Filename} (download count: {QueDownloads.Count})");
-                            await DownloadFile(item.Url, item.SkipIfExist, item.DownloadPath, item.Filename);
+                            fileDownloader.DownloadFile(item.Url, item.DownloadPath, item.Filename, 5);
                         }
                         else Logger.Global.Debug($"Local file: {quefilepath} is up to date. Skipping download of {item.Url} (download count: {QueDownloads.Count})");
                     }
-                    else await DownloadFile(item.Url, item.SkipIfExist, item.DownloadPath, item.Filename);
+                    else fileDownloader.DownloadFile(item.Url, item.DownloadPath, item.Filename, 5);
                     // Add downloads to extaction que
 
                 }
@@ -654,45 +637,6 @@ namespace LauncherUtils
             }
             QueDownloads.Clear();
         }
-        //public void RunCurl(string url, bool skipifexist, string? downloadpath, string filename)
-        //{
-        //    try
-        //    {
-        //        if (downloadpath != null)
-        //        {
-        //            var processStartInfo = new ProcessStartInfo
-        //            {
-        //                FileName = $"{SettingsManager.Instance.Settings.TmpDownloadFolder}\\curl.exe",
-        //                Arguments = $"-L \"{url}\" -o \"{Path.Combine(downloadpath, filename)}\"",
-        //                RedirectStandardOutput = true,
-        //                RedirectStandardError = true,
-        //                UseShellExecute = false,
-        //                CreateNoWindow = true,
-        //                WorkingDirectory = downloadpath
-
-        //            };
-        //            Logger.Global.Debug($"CURL.EXE {SettingsManager.Instance.Settings.TmpDownloadFolder}\\curl.exe");
-        //            Logger.Global.Debug($"CURL.EXE {url}");
-        //            Logger.Global.Debug($"CURL.EXE {downloadpath}");
-
-        //            using var process = new Process();
-        //            process.StartInfo = processStartInfo;
-        //            process.Start();
-        //            process.WaitForExit();
-        //            if (process.ExitCode != 0)
-        //                Logger.Global.Error($"CURL.EXE Error during download: {process.StandardError.ReadToEnd()}");
-        //            else
-        //            {
-        //                Logger.Global.Info($"Downloaded {filename}");
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        SettingsManager.Instance.Settings.ErrorCount++;
-        //        Logger.Global.Error($"Error during download: {ex.Message}\n{ex.Source}\n{ex.StackTrace}");
-        //    }
-        //}
 
         public bool IsLocalFileUpToDate(string localFilePath, DateTime remoteFileDate, long remoteFileSize = -1)
         {
