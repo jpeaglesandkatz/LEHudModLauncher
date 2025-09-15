@@ -36,10 +36,16 @@ namespace LEHuDModLauncher
             {
                 InitializeComponent();
 
-
-
                 Logger.Global.Debug("Initializing Launcherform");
 
+                if (!SettingsManager.Instance.Settings.ShowedOnce)
+                {
+                    MessageBox.Show("If this is the first time running this app\nand you haven't installed the mod and modloader before,\n" +
+                    "you may want to click install/reinstall in this launcher app first!!!", "Hello",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    SettingsManager.Instance.UpdateShowOnce(true);
+                }
+                
                 if ((SettingsManager.Instance.Settings.MainWindowX < 0) || (SettingsManager.Instance.Settings.MainWindowY < 0))
                 { SettingsManager.Instance.UpdateMainWindowPosition(500, 500); }
                 this.StartPosition = FormStartPosition.Manual;

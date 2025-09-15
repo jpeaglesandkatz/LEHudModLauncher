@@ -186,6 +186,20 @@ namespace LauncherUtils
                 }
             }
 
+            private bool _ShowedOnce = false;
+            public bool ShowedOnce
+            {
+                get => _ShowedOnce;
+                set
+                {
+                    if (_ShowedOnce != value)
+                    {
+                        _ShowedOnce = value;
+                        OnPropertyChanged(nameof(ShowedOnce));
+                    }
+                }
+            }
+
             private int _logWindowWidth = 800;
             public int LogWindowWidth
             {
@@ -407,6 +421,13 @@ namespace LauncherUtils
                 _settings.DarkMode = darkMode;
                 Save();
             }
+
+            public void UpdateShowOnce(bool showOnce)
+            {
+                _settings.ShowedOnce = showOnce;
+                Save();
+            }
+
 
             public void UpdateKbGamePadSelect(int value)
             {
