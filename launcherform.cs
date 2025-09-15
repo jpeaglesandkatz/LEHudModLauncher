@@ -15,8 +15,8 @@ namespace LEHuDModLauncher
     public partial class Launcherform : Form
     {
         public static string GameFilename = "Last Epoch.exe";
-        public static string VersionFilename = @"\version.dll";
-        public static string VersionBackFilename = @"\version.dll.bak";
+        public static string VersionFilename = "version.dll";
+        public static string VersionBakFilename = "version.dll.bak";
 
         private Process _gameProcess;
         public Utils Utils = new Utils();
@@ -38,6 +38,7 @@ namespace LEHuDModLauncher
 
                 Logger.Global.Debug("Initializing Launcherform");
 
+                // display a messagebox only once to the user
                 if (!SettingsManager.Instance.Settings.ShowedOnce)
                 {
                     MessageBox.Show("If this is the first time running this app\nand you haven't installed the mod and modloader before,\n" +
@@ -46,6 +47,7 @@ namespace LEHuDModLauncher
                     SettingsManager.Instance.UpdateShowOnce(true);
                 }
                 
+                // fix occasional bug where form position isn't saved
                 if ((SettingsManager.Instance.Settings.MainWindowX < 0) || (SettingsManager.Instance.Settings.MainWindowY < 0))
                 { SettingsManager.Instance.UpdateMainWindowPosition(500, 500); }
                 this.StartPosition = FormStartPosition.Manual;
@@ -208,15 +210,17 @@ namespace LEHuDModLauncher
                 return;
             }
             string gamedir = SettingsManager.Instance.Settings.GameDir;
+            string gameversion = Path.Combine(gamedir, VersionFilename);
+            string gameversionbak = Path.Combine(gamedir, VersionBakFilename);
             try
             {
                 if (online)
                 {
 
-                    if (File.Exists(gamedir + VersionFilename))
+                    if (File.Exists(gameversion))
                     {
-                        if (File.Exists(gamedir + VersionBackFilename)) { File.Delete(gamedir + VersionBackFilename); }
-                        File.Move(gamedir + VersionFilename, gamedir + VersionBackFilename);
+                        if (File.Exists(gameversion)) { File.Delete(gameversionbak); }
+                        File.Move(gameversion, gameversionbak);
                     }
 
                     var processStartInfo = new ProcessStartInfo
@@ -243,15 +247,15 @@ namespace LEHuDModLauncher
                 }
                 else
                 {
-                    if (!File.Exists(gamedir + VersionFilename))
+                    if (!File.Exists(gameversion))
                     {
-                        if (File.Exists(gamedir + VersionBackFilename))
+                        if (File.Exists(gameversionbak))
                         {
-                            File.Move(gamedir + VersionBackFilename, gamedir + VersionFilename);
-                            File.Delete(gamedir + VersionBackFilename);
+                            File.Move(gameversionbak, gameversion);
+                            File.Delete(gameversionbak);
                         }
                     }
-                    else if (File.Exists(gamedir + VersionBackFilename)) { File.Delete(gamedir + VersionBackFilename); }
+                    else if (File.Exists(gameversionbak)) { File.Delete(gameversionbak); }
                     Directory.SetCurrentDirectory(gamedir);
                     var processStartInfo = new ProcessStartInfo
                     {
@@ -314,14 +318,9 @@ namespace LEHuDModLauncher
 
         private void launcherform_FormClosing(object sender, FormClosingEventArgs e)
         {
+            SettingsManager.Instance.Save();
 
-            // Dispose tray icon and menu to free native resources
-            try
-            {
-                trayIcon?.Dispose();
-                trayMenu?.Dispose();
-            }
-            catch { /* swallow */ }
+
         }
 
         private void textPath_TextChanged(object sender, EventArgs e)
@@ -335,7 +334,7 @@ namespace LEHuDModLauncher
 
         }
 
-        private void installToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void installToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (File.Exists(SettingsManager.ReferenceEquals(SettingsManager.Instance.Settings.GameDir, "") ? "" : Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)) == false)
             {

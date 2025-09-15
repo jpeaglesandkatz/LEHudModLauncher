@@ -256,6 +256,37 @@ namespace LauncherUtils
                 }
             }
 
+            private int _modinfoWindowX = 1600;
+            public int ModInfoWindowX
+            {
+                get => _modinfoWindowX;
+                set
+                {
+                    if (_modinfoWindowX != value)
+                    {
+                        _modinfoWindowX = value;
+                        OnPropertyChanged(nameof(ModInfoWindowX));
+                    }
+                }
+            }
+
+            private int _modinfoWindowY = 800;
+            public int ModInfoWindowY
+            {
+                get => _modinfoWindowY;
+                set
+                {
+                    if (_modinfoWindowY != value)
+                    {
+                        _modinfoWindowY = value;
+                        OnPropertyChanged(nameof(ModInfoWindowY));
+                    }
+                }
+            }
+
+
+
+
             public event PropertyChangedEventHandler? PropertyChanged;
 
             protected void OnPropertyChanged(string propertyName)
@@ -263,7 +294,7 @@ namespace LauncherUtils
                 try
                 {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                    Logger.Global.Debug($"AppSettings: property changed: {propertyName}");
+                    //Logger.Global.Debug($"AppSettings: property changed: {propertyName}");
                 }
                 catch
                 {
@@ -369,7 +400,7 @@ namespace LauncherUtils
                             Directory.CreateDirectory(SettingsPath);
 
                         string json = JsonSerializer.Serialize(_settings, new JsonSerializerOptions { WriteIndented = true });
-                        Logger.Global.Debug($"Saving settings -> {SettingsFilePath}");
+                        //Logger.Global.Debug($"Saving settings -> {SettingsFilePath}");
                         File.WriteAllText(SettingsFilePath, json);
                     }
                     catch (Exception ex)
@@ -452,6 +483,12 @@ namespace LauncherUtils
                 _settings.MainWindowX = x;
                 _settings.MainWindowY = y;
                 Save();
+            }
+
+            public void UpdateModInfoWindowPosition(int x, int y)
+            {
+                _settings.ModInfoWindowX = x;
+                _settings.ModInfoWindowY = y;
             }
 
             public void UpdateHideConsole(bool hideconsole)
@@ -610,7 +647,7 @@ namespace LauncherUtils
         }
 
         
-        public async Task StartDownloads()
+        public void StartDownloads()
         {
             int tprogress = 1;
             SettingsManager.Instance.Settings.ErrorCount = 0;

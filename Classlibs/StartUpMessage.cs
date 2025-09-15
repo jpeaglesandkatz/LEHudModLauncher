@@ -29,12 +29,13 @@ namespace LEHuDModLauncher.Classlibs
             else ThemeUtils.ApplyLightTheme(this);
             
             Text = "Welcome";
-            Width = 1800;
-            Height = 900;
+            Width = SettingsManager.Instance.Settings.ModInfoWindowX;
+            Height = SettingsManager.Instance.Settings.ModInfoWindowY;
             StartPosition = FormStartPosition.CenterScreen;
-            FormBorderStyle = FormBorderStyle.FixedDialog;
-            MaximizeBox = false;
-            MinimizeBox = false;
+            FormBorderStyle = FormBorderStyle.Sizable;
+            MinimumSize = new Size(1000, 700);
+            MaximizeBox = true;
+            MinimizeBox = true;
 
             rtb = new RichTextBox() { Dock = DockStyle.Top, ReadOnly = true, Height = ClientSize.Height - 80, BorderStyle = BorderStyle.FixedSingle };
             chkDontShow = new CheckBox() { Text = "Show this message on startup", Dock = DockStyle.Bottom, Height = 24 };
@@ -51,6 +52,13 @@ namespace LEHuDModLauncher.Classlibs
             Controls.Add(btnClose);
             Controls.Add(chkDontShow);
             Controls.Add(rtb);
+
+            this.Resize += (s, e) => 
+            {
+                rtb.Size= new Size(ClientSize.Width - 5, ClientSize.Height - 80);
+                SettingsManager.Instance.UpdateModInfoWindowPosition(ClientSize.Width - 5, ClientSize.Height - 80);
+                rtb.Update();
+            };
 
             LoadMessageFile(messageFilePath);
 

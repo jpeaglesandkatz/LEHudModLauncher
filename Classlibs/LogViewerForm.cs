@@ -74,7 +74,18 @@ namespace LEHuDModLauncher
         public LogViewerForm(string logFilePath)
         {
             InitializeComponent();
-            
+
+            if ((SettingsManager.Instance.Settings.LogWindowHeight< 0) || (SettingsManager.Instance.Settings.LogWindowWidth < 0))
+            { 
+                SettingsManager.Instance.UpdateLogWindowHeight(500);
+                SettingsManager.Instance.UpdateLogWindowWidth(900);
+               
+            }
+            this.StartPosition = FormStartPosition.Manual;
+            this.Location = new System.Drawing.Point(
+                SettingsManager.Instance.Settings.LogWindowWidth,
+                SettingsManager.Instance.Settings.LogWindowHeight);
+
             // Don't show lines with the following tags
             AddHiddenTag("[DEBUG]");
             AddHiddenTag("[BS DEBUG]");
