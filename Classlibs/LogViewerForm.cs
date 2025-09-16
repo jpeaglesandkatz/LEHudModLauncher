@@ -59,19 +59,10 @@ namespace LEHuDModLauncher
         };
 
         // Tags that should be removed (not shown) from the displayed log.
-        // Use AddHiddenTag/RemoveHiddenTag/SetHiddenTags to manage this set.
-        private readonly HashSet<string> _hiddenTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+       private readonly HashSet<string> _hiddenTags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        // Add this property
-        /// <summary>
-        /// Gets or sets the default color for log lines that don't match any specific tags.
-        /// </summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 
-        // Add this property
-        /// <summary>
-        /// Gets or sets the default color for log lines that don't match any specific tags.
-        /// </summary>
         public Color DefaultLineColor
         {
             get => _defaultLineColor;
@@ -134,12 +125,6 @@ namespace LEHuDModLauncher
             return Regex.IsMatch(lineTag, pattern, RegexOptions.IgnoreCase);
         }
 
-        // Modify the existing methods to handle tags without brackets and wildcards
-
-        /// <summary>
-        /// Add a hidden tag. Supports wildcards (* and ?) and accepts tags with or without brackets.
-        /// Examples: "DEBUG", "[DEBUG]", "Il2Cpp*", "[Il2Cpp*]"
-        /// </summary>
         public void AddHiddenTag(string tag)
         {
             if (string.IsNullOrWhiteSpace(tag)) return;
@@ -156,9 +141,6 @@ namespace LEHuDModLauncher
             }
         }
 
-        /// <summary>
-        /// Remove a previously hidden tag. Accepts either "TAG" or "[TAG]".
-        /// </summary>
         public void RemoveHiddenTag(string tag)
         {
             if (string.IsNullOrWhiteSpace(tag)) return;
@@ -168,9 +150,6 @@ namespace LEHuDModLauncher
             _hiddenTags.Remove(tag);
         }
 
-        /// <summary>
-        /// Replace hidden tags with the provided collection. Accepts tags with or without brackets.
-        /// </summary>
         public void SetHiddenTags(IEnumerable<string> tags)
         {
             _hiddenTags.Clear();
@@ -178,15 +157,8 @@ namespace LEHuDModLauncher
             foreach (var t in tags) AddHiddenTag(t);
         }
 
-        /// <summary>
-        /// Returns a snapshot of hidden tags.
-        /// </summary>
         public IReadOnlyCollection<string> GetHiddenTags() => new List<string>(_hiddenTags).AsReadOnly();
 
-        // Add method to add custom tag colors with wildcard support
-        /// <summary>
-        /// Add or update a tag color. Supports wildcards and tags with or without brackets.
-        /// </summary>
         public void SetTagColor(string tag, Color color)
         {
             if (string.IsNullOrWhiteSpace(tag)) return;
@@ -550,9 +522,6 @@ namespace LEHuDModLauncher
             return _defaultLineColor;
         }
 
-        /// <summary>
-        /// Utility that returns the given line with any configured hidden bracket-tags removed.
-        /// </summary>
         private string RemoveHiddenTagsFromLine(string line)
         {
             if (_hiddenTags.Count == 0) return line;

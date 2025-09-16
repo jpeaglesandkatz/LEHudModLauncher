@@ -646,7 +646,6 @@ namespace LauncherUtils
             Logger.Global.Debug($"Added download: {url} to {downloadpath} as {filename} skipifexist: {skipifexist}");
         }
 
-        
         public void StartDownloads()
         {
             int tprogress = 1;

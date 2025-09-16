@@ -10,14 +10,11 @@ namespace DownloadUtils
 {
     public class FileDownloader
     {
-        //Logger logger = new Logger();
 
         public void DownloadFile(string url, string destinationPath, string filename, int maxRedirects = 5)
         {
-            
             try
             {
-                //Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
                 Logger.Global.Info($"Downloading file...{url} --- > {destinationPath}");
                 string currentUrl = url;
                 int redirectCount = 0;
@@ -56,7 +53,7 @@ namespace DownloadUtils
                             Logger.Global.Error($"ERROR {response.StatusCode} Downloading file...{url} --- > {destinationPath}");
                             throw new Exception($"Server returned status code {response.StatusCode}");
                         }
-                        
+
 
                         long totalBytes = response.ContentLength;
                         long receivedBytes = 0;

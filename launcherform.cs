@@ -46,7 +46,7 @@ namespace LEHuDModLauncher
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                     SettingsManager.Instance.UpdateShowOnce(true);
                 }
-                
+
                 // fix occasional bug where form position isn't saved
                 if ((SettingsManager.Instance.Settings.MainWindowX < 0) || (SettingsManager.Instance.Settings.MainWindowY < 0))
                 { SettingsManager.Instance.UpdateMainWindowPosition(500, 500); }
@@ -120,7 +120,7 @@ namespace LEHuDModLauncher
         }
 
 
-        private void CleanupDirs()
+        private void CleanupDirs(bool melclean)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace LEHuDModLauncher
                 var melonLoaderPath = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Melonloader");
                 var modsPath = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Mods");
 
-                if (Directory.Exists(melonLoaderPath)) Directory.Delete(melonLoaderPath, true);
+                if ((Directory.Exists(melonLoaderPath) && melclean)) Directory.Delete(melonLoaderPath, true);
                 else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
 
                 if (!Directory.Exists(modsPath))
@@ -367,11 +367,15 @@ namespace LEHuDModLauncher
                 "Cancel"
             );
 
-            if (mbresult == DialogResult.Yes) Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
+            if (mbresult == DialogResult.Yes) 
+            {
+                Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
+                CleanupDirs(true);
+            } else if (mbresult == DialogResult.No) CleanupDirs(false);
+
             if (mbresult == DialogResult.Retry) return;
 
             
-            CleanupDirs();
             Utils.StartDownloads();
             Utils.RunExtraction();
             toolStripStatus.Text = "Done!";
@@ -572,8 +576,6 @@ namespace LEHuDModLauncher
             }
             base.OnFormClosing(e);
         }
-
-        // Save position when moved
         protected override void OnLocationChanged(EventArgs e)
         {
             base.OnLocationChanged(e);
@@ -599,7 +601,6 @@ namespace LEHuDModLauncher
             ShowStartupMessage(false);
         }
 
-        
 
         private void buttonStartupMessage_Click(object sender, EventArgs e)
         {
