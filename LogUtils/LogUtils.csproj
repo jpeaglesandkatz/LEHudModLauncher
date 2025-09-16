@@ -9,14 +9,10 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
-    <ApplicationIcon>gooey-daemon.ico</ApplicationIcon>
+    <ApplicationIcon>gooey-daemon_multi.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="gooey-daemon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SharpCompress" Version="0.40.0" />
-    <PackageReference Include="ZstdSharp.Port" Version="0.8.5" />
+    <Content Include="gooey-daemon_multi.ico" />
   </ItemGroup>
 
 </Project>

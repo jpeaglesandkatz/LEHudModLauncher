@@ -16,10 +16,10 @@ Last Epoch HUD Mod</Description>
     <AssemblyVersion>1.0.1</AssemblyVersion>
     <FileVersion>1.0.1</FileVersion>
     <Configurations>Debug;DebugNew</Configurations>
-    <ApplicationIcon>gooey-daemon.ico</ApplicationIcon>
+    <ApplicationIcon>gooey-daemon_multi.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="gooey-daemon.ico" />
+    <Content Include="gooey-daemon_multi.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpCompress" Version="0.40.0" />
