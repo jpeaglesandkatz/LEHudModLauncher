@@ -1,13 +1,9 @@
 ﻿using DownloadUtils;
 using LauncherUtils;
-using LEHudModLauncher;
 using LEHuDModLauncher.Classlibs;
 using LogUtils;
-using Microsoft.VisualBasic.ApplicationServices;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Threading.Tasks;
 using static LauncherUtils.Utils;
 
 namespace LEHuDModLauncher

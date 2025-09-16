@@ -3,10 +3,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 //using LauncherUtils;
-using LEHuDModLauncher.Classlibs;
 using LauncherUtils;
 
-namespace LEHuDModLauncher
+namespace LEHuDModLauncher.Classlibs
 {
     public partial class CustomMessageBox : Form
     {
@@ -15,13 +14,13 @@ namespace LEHuDModLauncher
         public CustomMessageBox(string message, string title, string button1Text, string button2Text, string button3Text = null)
         {
             InitializeComponent();
-            
-            this.Text = title;
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.ShowInTaskbar = false;
+
+            Text = title;
+            StartPosition = FormStartPosition.CenterParent;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            ShowInTaskbar = false;
             
             // Apply theme
             if (Utils.SettingsManager.Instance.Settings.DarkMode)
@@ -40,7 +39,7 @@ namespace LEHuDModLauncher
             };
             
             // Measure the text properly with larger dimensions
-            using (var g = this.CreateGraphics())
+            using (var g = CreateGraphics())
             {
                 var maxWidth = 800; // Increased maximum message width
                 var messageSize = g.MeasureString(message, lblMessage.Font, maxWidth);
@@ -74,7 +73,7 @@ namespace LEHuDModLauncher
             }
             
             // Measure button text and set appropriate sizes - making buttons larger
-            using (var g = this.CreateGraphics())
+            using (var g = CreateGraphics())
             {
                 var btn1TextSize = g.MeasureString(button1Text, btn1.Font);
                 var btn2TextSize = g.MeasureString(button2Text, btn2.Font);
@@ -117,16 +116,16 @@ namespace LEHuDModLauncher
                 totalButtonWidth += btn3.Width + buttonSpacing;
             
             // Form width should accommodate either the message or the buttons (whichever is wider)
-            var formWidth = Math.Max(lblMessage.Width + (margin * 2), totalButtonWidth + (margin * 2));
+            var formWidth = Math.Max(lblMessage.Width + margin * 2, totalButtonWidth + margin * 2);
             formWidth = Math.Max(formWidth, 600); // Increased minimum form width
             
             var formHeight = lblMessage.Top + lblMessage.Height + buttonAreaHeight + margin;
             formHeight = Math.Max(formHeight, 250); // Increased minimum form height
-            
-            this.ClientSize = new Size(formWidth, formHeight);
+
+            ClientSize = new Size(formWidth, formHeight);
             
             // Center the message label horizontally if form is wider than the message
-            if (formWidth > lblMessage.Width + (margin * 2))
+            if (formWidth > lblMessage.Width + margin * 2)
             {
                 lblMessage.Location = new Point((formWidth - lblMessage.Width) / 2, lblMessage.Top);
             }
@@ -140,22 +139,22 @@ namespace LEHuDModLauncher
             
             if (btn3 != null)
             {
-                btn3.Location = new Point(buttonsStartX + btn1.Width + btn2.Width + (buttonSpacing * 2), buttonY);
+                btn3.Location = new Point(buttonsStartX + btn1.Width + btn2.Width + buttonSpacing * 2, buttonY);
             }
             
             // Set up button events and dialog results
             btn1.Click += (s, e) => 
             {
                 CustomResult = DialogResult.Yes;
-                this.DialogResult = DialogResult.Yes;
-                this.Close();
+                DialogResult = DialogResult.Yes;
+                Close();
             };
             
             btn2.Click += (s, e) => 
             {
                 CustomResult = DialogResult.No;
-                this.DialogResult = DialogResult.No;
-                this.Close();
+                DialogResult = DialogResult.No;
+                Close();
             };
             
             if (btn3 != null)
@@ -163,21 +162,21 @@ namespace LEHuDModLauncher
                 btn3.Click += (s, e) => 
                 {
                     CustomResult = DialogResult.Retry; // Using Retry for the third button
-                    this.DialogResult = DialogResult.Retry;
-                    this.Close();
+                    DialogResult = DialogResult.Retry;
+                    Close();
                 };
             }
-            
+
             // Add controls to form
-            this.Controls.Add(lblMessage);
-            this.Controls.Add(btn1);
-            this.Controls.Add(btn2);
+            Controls.Add(lblMessage);
+            Controls.Add(btn1);
+            Controls.Add(btn2);
             if (btn3 != null)
-                this.Controls.Add(btn3);
-            
+                Controls.Add(btn3);
+
             // Set button properties
-            this.AcceptButton = btn1;
-            this.CancelButton = btn2;
+            AcceptButton = btn1;
+            CancelButton = btn2;
             btn1.TabIndex = 0;
             btn2.TabIndex = 1;
             if (btn3 != null)
@@ -232,8 +231,8 @@ namespace LEHuDModLauncher
         
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-            this.ResumeLayout(false);
+            SuspendLayout();
+            ResumeLayout(false);
         }
     }
 }
