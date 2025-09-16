@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
@@ -32,11 +32,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebugType>full</DebugType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="gooey-daemon.png" />
-    <None Remove="gooey-daemon.svg" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="gooey-daemon_multi.ico">
