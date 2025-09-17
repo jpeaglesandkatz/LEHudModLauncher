@@ -1,4 +1,5 @@
 **Launcher / Installer for Last Epoch Hud Mod made by ASH**
+
 Launcher by JP
 
 Unrar the launcher archive somewhere on your computer and run the app
