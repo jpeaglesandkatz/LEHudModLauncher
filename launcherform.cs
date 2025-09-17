@@ -458,7 +458,7 @@ namespace LEHuDModLauncher
 			showMessage = forced;
 			Logger.Global.Debug($"{settings}  ->>  {AppDomain.CurrentDomain.BaseDirectory}");
 			Logger.Global.Debug(rtfPath);
-			string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/StartUpMessage.zip";
+			string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0.0/StartUpMessage.zip";
 
 			try
 			{
