@@ -94,7 +94,7 @@ namespace LEHuDModLauncher
 			ThemeUtils.ApplyDarkTheme(this);
 			_logFilePath = logFilePath;
 			_timer = new System.Windows.Forms.Timer();
-			_timer.Interval = 1500; // Check more frequently for better responsiveness
+			_timer.Interval = 1000; // Check more frequently for better responsiveness
 			_timer.Tick += async (s, e) => await UpdateLogAsync();
 			_timer.Start();
 		}

@@ -156,12 +156,12 @@
             // buttonGetGameFolder
             // 
             buttonGetGameFolder.Anchor = AnchorStyles.None;
-            buttonGetGameFolder.Location = new Point(28, 222);
+            buttonGetGameFolder.Location = new Point(28, 233);
             buttonGetGameFolder.Margin = new Padding(2);
             buttonGetGameFolder.Name = "buttonGetGameFolder";
-            buttonGetGameFolder.Size = new Size(123, 28);
+            buttonGetGameFolder.Size = new Size(186, 28);
             buttonGetGameFolder.TabIndex = 11;
-            buttonGetGameFolder.Text = "Get GameFolder";
+            buttonGetGameFolder.Text = "Get Steam GameFolder";
             buttonGetGameFolder.UseVisualStyleBackColor = true;
             buttonGetGameFolder.Click += buttonGetGameFolder_Click;
             // 
@@ -373,7 +373,6 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "launcherform";
             FormClosing += launcherform_FormClosing;
-            Load += Launcherform_Load;
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
             menuStrip1.ResumeLayout(false);

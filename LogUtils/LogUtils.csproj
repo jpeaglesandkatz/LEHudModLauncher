@@ -9,10 +9,10 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
-    <ApplicationIcon>gooey-daemon_multi.ico</ApplicationIcon>
+    <ApplicationIcon>gooey-daemon_multi2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="gooey-daemon_multi.ico" />
+    <Content Include="gooey-daemon_multi2.ico" />
   </ItemGroup>
 
 </Project>

@@ -2,8 +2,10 @@
 using LauncherUtils;
 using LEHuDModLauncher.Classlibs;
 using LogUtils;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using static LauncherUtils.Utils;
 
 namespace LEHuDModLauncher
@@ -18,8 +20,10 @@ namespace LEHuDModLauncher
 		public Utils Utils = new Utils();
 		public FileDownloader fileDownloader = new FileDownloader();
 
-		// Tray icon + menu
-		private NotifyIcon? trayIcon;
+        static string IconPath => Path.Combine(Application.StartupPath, "gooey-daemon_multi2.ico");
+
+        // Tray icon + menu
+        private NotifyIcon? trayIcon;
 		private ContextMenuStrip? trayMenu;
 
 		public bool userHasInternet = true;
@@ -58,27 +62,14 @@ namespace LEHuDModLauncher
 				else ThemeUtils.ApplyLightTheme(this);
 
 				string exeDir = AppDomain.CurrentDomain.BaseDirectory;
-				string iconPath = Path.Combine(exeDir, "Resources", "gooey-daemon.ico");
-				var asm = Assembly.GetExecutingAssembly();
-
 				this.Resize += Launcherform_Resize;
 				this.Activated += Launcherform_activated;
 
-				this.Text =
+                var asm = Assembly.GetExecutingAssembly();
+                this.Text =
 					$"{asm.GetName().Name} - {asm.GetName().Version.Major}.{asm.GetName().Version.Minor} for Last Epoch Hud Mod by Ash, launcher by JP";
 				Logger.Global.Info(this.Text);
 				Logger.Global.Info($"==========  LE Hud Mod Launcher {asm.GetName().Version.Major}.{asm.GetName().Version.Minor} started ============ ");
-
-				SettingsManager.Instance.Load();
-
-				var gameDir = GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 899770", "Installlocation");
-				if ((SettingsManager.Instance.Settings.GameDir == null) && (gameDir != null)) SettingsManager.Instance.UpdateGameDir(gameDir);
-
-				var steamPath = GetPathFromRegistry("HKEY_CURRENT_USER\\Software\\Valve\\Steam", "SteamPath");
-				if (!string.IsNullOrEmpty(steamPath))
-					SettingsManager.Instance.UpdateSteamPath(steamPath);
-
-				SettingsManager.Instance.UpdateTmpDownloadFolder(Path.GetTempPath() + @"LEModtempDir");
 
 				textGamePath.Text = SettingsManager.Instance.Settings.GameDir;
 				checkBoxKeepOpen.Checked = SettingsManager.Instance.Settings.KeepOpen;
@@ -105,7 +96,42 @@ namespace LEHuDModLauncher
 			}
 		}
 
-		private void Launcherform_activated(object? sender, EventArgs e)
+        public static string? GetGamePath(string steamPath, string gameFolderName)
+        {
+            string libraryFile = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
+            if (!File.Exists(libraryFile))
+                throw new FileNotFoundException("libraryfolders.vdf not found", libraryFile);
+
+            var libraries = new List<string>();
+
+            // Default Steam library
+            libraries.Add(steamPath);
+
+            // Parse additional Steam libraries from libraryfolders.vdf
+            foreach (var line in File.ReadAllLines(libraryFile))
+            {
+                // Matches: "1"    "D:\\Games\\Steam"
+                var match = Regex.Match(line, "\"\\d+\"\\s+\"(.+?)\"");
+                if (match.Success)
+                {
+                    string libPath = match.Groups[1].Value.Replace(@"\\", @"\");
+                    libraries.Add(libPath);
+                }
+            }
+
+            // Check each library for the game folder
+            foreach (var lib in libraries)
+            {
+                string candidate = Path.Combine(lib, "steamapps", "common", gameFolderName);
+                if (Directory.Exists(candidate))
+                    return candidate;
+            }
+
+            return null; // Game not found
+        }
+
+
+        private void Launcherform_activated(object? sender, EventArgs e)
 		{
 			if (this.WindowState == FormWindowState.Minimized)
 			{
@@ -118,7 +144,6 @@ namespace LEHuDModLauncher
 			}
 		}
 
-
 		private void Launcherform_Resize(object? sender, EventArgs e)
 		{
 			foreach (Form child in this.MdiChildren)
@@ -127,8 +152,7 @@ namespace LEHuDModLauncher
 			}
 		}
 
-
-		public void ShowGameVersion()
+        public void ShowGameVersion()
 		{
 			var candidates = UnityVersionExtractor.ExtractVersionsFromGlobalGameManagers(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename));
 			if (candidates.Count == 0) textGameVersion.Text = "Unknown";
@@ -166,36 +190,6 @@ namespace LEHuDModLauncher
 			}
 		}
 
-		// Extract all embedded resources to the temporary folder
-		//public void ExtractAllResourcesToTempFolder()
-		//{
-		//    try
-		//    {
-		//        var assembly = Assembly.GetExecutingAssembly();
-		//        string resourcePrefix = "LEHuDModLauncher.Resources.";
-
-		//        foreach (var resourceName in assembly.GetManifestResourceNames())
-		//        {
-		//            string fileName = resourceName.StartsWith(resourcePrefix)
-		//                ? resourceName.Substring(resourcePrefix.Length)
-		//                : resourceName;
-
-		//            var outputPath = SettingsManager.Instance.Settings.TmpDownloadFolder;
-
-		//            using var stream = assembly.GetManifestResourceStream(resourceName);
-		//            if (stream == null) continue;
-		//            using var fileStream = new FileStream(Path.Combine(outputPath, fileName), FileMode.Create, FileAccess.Write);
-		//            stream.CopyTo(fileStream);
-		//        }
-		//    }
-		//    catch (Exception ex)
-		//    {
-		//        Logger.Global.Error($"ExtractAllResourcesToTempFolder error: {ex}");
-		//        MessageBox.Show($"Failed to extract resources:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-		//    }
-		//}
-
-		// select Game folder
 		private void buttonBrowse_Click(object sender, EventArgs e)
 		{
 			try
@@ -428,8 +422,17 @@ namespace LEHuDModLauncher
 
 		private void buttonGetGameFolder_Click(object sender, EventArgs e)
 		{
-			SettingsManager.Instance.UpdateGameDir(GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 899770", "Installlocation"));
-			textGamePath.Text = SettingsManager.Instance.Settings.GameDir;
+            var steamPath = GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam", "InstallPath");
+            if (!string.IsNullOrEmpty(steamPath))
+                SettingsManager.Instance.UpdateSteamPath(steamPath);
+
+            string tempgamedir = GetGamePath(steamPath, "Last Epoch");
+            if (tempgamedir != null)
+            {
+                SettingsManager.Instance.UpdateGameDir(tempgamedir);
+                textGamePath.Text = tempgamedir;
+            } else MessageBox.Show("Game folder not found. Please select it manually.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
 		}
 
 		private void buttonGetSteamFolder_Click(object sender, EventArgs e)
@@ -580,7 +583,7 @@ namespace LEHuDModLauncher
 			if (_attachedLogForm != null && !_attachedLogForm.IsDisposed)
 			{
 				_attachedLogForm.Location = new System.Drawing.Point(
-					this.Location.X + this.Width,
+					this.Location.X + this.Width -16,
 					this.Location.Y
 				);
 				// Do NOT set _attachedLogForm.Height here; let it keep its own dimensions.
@@ -606,10 +609,6 @@ namespace LEHuDModLauncher
 			SettingsManager.Instance.UpdateMainWindowPosition(this.Location.X, this.Location.Y);
 		}
 
-		private void Launcherform_Load(object sender, EventArgs e)
-		{
-
-		}
 
 		private void checkBoxHideConsole_CheckedChanged(object sender, EventArgs e)
 		{
