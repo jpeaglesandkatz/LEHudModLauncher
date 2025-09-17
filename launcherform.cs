@@ -107,13 +107,11 @@ namespace LEHuDModLauncher
 
             var libraries = new List<string>();
 
-            // Default Steam library
+
             libraries.Add(steamPath);
 
-            // Parse additional Steam libraries from libraryfolders.vdf
             foreach (var line in File.ReadAllLines(libraryFile))
             {
-                // Matches: "1"    "D:\\Games\\Steam"
                 var match = Regex.Match(line, "\"\\d+\"\\s+\"(.+?)\"");
                 if (match.Success)
                 {
@@ -122,7 +120,6 @@ namespace LEHuDModLauncher
                 }
             }
 
-            // Check each library for the game folder
             foreach (var lib in libraries)
             {
                 string candidate = Path.Combine(lib, "steamapps", "common", gameFolderName);
