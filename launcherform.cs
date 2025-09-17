@@ -233,7 +233,7 @@ namespace LEHuDModLauncher
 
 					if (File.Exists(gameversion))
 					{
-						if (File.Exists(gameversion)) { File.Delete(gameversionbak); }
+						if (File.Exists(gameversionbak)) { File.Delete(gameversionbak); }
 						File.Move(gameversion, gameversionbak);
 					}
 
@@ -247,11 +247,13 @@ namespace LEHuDModLauncher
 					Logger.Global.Info($"Starting game with steam://rungameid/{899770}");
 					try
 					{
-						process.Exited += GameProcess_Exited;
+						// won't properly trigger exit because it looks at steam and not the game process
+						
+						//process.Exited += GameProcess_Exited;
 						process.Start();
 						statusStripLabel.Text = "Last Epoch started...";
-						buttonOnline.Enabled = false;
-						buttonOffline.Enabled = false;
+						//buttonOnline.Enabled = false;
+						//buttonOffline.Enabled = false;
 					}
 					catch (Exception ex)
 					{
