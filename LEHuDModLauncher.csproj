@@ -61,8 +61,5 @@
 		<!-- Only zip on Release builds -->
 		<Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(OutputPath)*&quot; -DestinationPath &quot;$(ProjectDir)bin\X64\$(Configuration)\LastEpochHudModLauncher.zip&quot; -Force" />
 	</Target>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File &quot;$(ProjectDir).publishtogithub.ps1&quot; -Version &quot;v1.0&quot;&#xA;" />
-	</Target>
 
 </Project>
