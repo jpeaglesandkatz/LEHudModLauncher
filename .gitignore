@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 .idea/
+.publishtogithub.ps1
+.github/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
