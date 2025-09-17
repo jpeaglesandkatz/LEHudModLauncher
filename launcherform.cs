@@ -363,13 +363,13 @@ namespace LEHuDModLauncher
 			{
 				var result = MessageBox.Show("Installing Keyboard version of the mod.\nUse this version if you mainly play the game with your keyboard/mouse.\nProceed?", "Info", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 				if (result == DialogResult.No) return;
-				else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0.0/LastEpoch_Hud.Keyboard.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud(Keyboard).rar", false, false);
+				else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.Keyboard.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud(Keyboard).rar", false, false);
 			}
 			else
 			{
 				var result = MessageBox.Show("Installing Gamepad version of the mod.\nUse this version if you mainly play the game with your gamepad.\nProceed?", "Info", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 				if (result == DialogResult.No) return;
-				else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0.0/LastEpoch_Hud.WinGamepad.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud.WinGamepad.rar", false, false);
+				else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.WinGamepad.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud.WinGamepad.rar", false, false);
 			}
 			toolStripStatus.Enabled = true;
 			toolStripStatus.Enabled = true;
@@ -458,7 +458,7 @@ namespace LEHuDModLauncher
 			showMessage = forced;
 			Logger.Global.Debug($"{settings}  ->>  {AppDomain.CurrentDomain.BaseDirectory}");
 			Logger.Global.Debug(rtfPath);
-			string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0.0/StartUpMessage.zip";
+			string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/StartUpMessage.zip";
 
 			try
 			{
