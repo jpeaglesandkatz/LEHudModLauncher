@@ -161,7 +161,7 @@
             buttonGetGameFolder.Name = "buttonGetGameFolder";
             buttonGetGameFolder.Size = new Size(186, 28);
             buttonGetGameFolder.TabIndex = 11;
-            buttonGetGameFolder.Text = "Get Steam GameFolder";
+            buttonGetGameFolder.Text = "Get game path from Steam";
             buttonGetGameFolder.UseVisualStyleBackColor = true;
             buttonGetGameFolder.Click += buttonGetGameFolder_Click;
             // 
