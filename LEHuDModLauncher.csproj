@@ -33,6 +33,10 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Classlibs\UnityHelper.cs" />
+    <Compile Remove="Classlibs\UnityInformationHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="gooey-daemon_multi2.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -54,8 +58,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AssetsTools.NET" Version="3.0.1" />
     <PackageReference Include="SharpCompress" Version="0.40.0" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>MelonLoader.dll</HintPath>
+    </Reference>
   </ItemGroup>
 	<Target Name="ZipOutput" AfterTargets="Build">
 		<!-- Only zip on Release builds -->

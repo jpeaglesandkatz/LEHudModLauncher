@@ -28,7 +28,7 @@ class UnityVersionExtractor
 
 		string gameDir = Path.GetDirectoryName(exePath);
 		string gameName = Path.GetFileNameWithoutExtension(exePath);
-		string ggmPath = Path.Combine(gameDir, gameName + "_Data", "globalgamemanagers");
+		string ggmPath = gameDir + @"\Last Epoch_Data\globalgamemanagers";
 
 		if (!File.Exists(ggmPath))
 			throw new FileNotFoundException("globalgamemanagers not found", ggmPath);

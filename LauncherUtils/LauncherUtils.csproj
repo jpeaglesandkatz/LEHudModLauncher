@@ -22,6 +22,7 @@ Last Epoch HUD Mod</Description>
     <Content Include="gooey-daemon_multi2.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AssetsTools.NET" Version="3.0.1" />
     <PackageReference Include="SharpCompress" Version="0.40.0" />
     <PackageReference Include="ZstdSharp.Port" Version="0.8.5" />
   </ItemGroup>

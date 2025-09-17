@@ -54,6 +54,7 @@
             checkBoxHideConsole = new CheckBox();
             panel2 = new Panel();
             buttonStartupMessage = new Button();
+            button1 = new Button();
             statusStrip.SuspendLayout();
             menuStrip1.SuspendLayout();
             panel2.SuspendLayout();
@@ -318,6 +319,7 @@
             // 
             // panel2
             // 
+            panel2.Controls.Add(button1);
             panel2.Controls.Add(buttonStartupMessage);
             panel2.Controls.Add(buttonBrowseGameFolder);
             panel2.Controls.Add(buttonOnline);
@@ -350,6 +352,16 @@
             buttonStartupMessage.Text = "Show latest mod info";
             buttonStartupMessage.UseVisualStyleBackColor = true;
             buttonStartupMessage.Click += buttonStartupMessage_Click;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(469, 174);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 22;
+            button1.Text = "button1";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
             // 
             // Launcherform
             // 
@@ -409,5 +421,6 @@
         private CheckBox checkBoxHideConsole;
         private Panel panel2;
         private Button buttonStartupMessage;
+        private Button button1;
     }
 }
