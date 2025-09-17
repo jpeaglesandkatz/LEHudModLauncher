@@ -99,8 +99,11 @@ namespace LEHuDModLauncher
         public static string? GetGamePath(string steamPath, string gameFolderName)
         {
             string libraryFile = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
-            if (!File.Exists(libraryFile))
-                throw new FileNotFoundException("libraryfolders.vdf not found", libraryFile);
+			if (!File.Exists(libraryFile))
+				{
+				Logger.Global.Error("libraryfolders.vdf not found");
+				return null;
+				}
 
             var libraries = new List<string>();
 
