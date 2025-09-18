@@ -862,12 +862,6 @@ namespace LEHuDModLauncher
             ShowStartupMessage(true);
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            string dd = NewUnityHelper.ReadGameInfo(assetsManager, SettingsManager.Instance.Settings.GameDir + @"\Last Epoch_Data");
-            
-            MessageBox.Show(dd);
-            
-        }
+
     }
 }
