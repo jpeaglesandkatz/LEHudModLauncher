@@ -12,7 +12,7 @@
 .idea/
 .publishtogithub.ps1
 .github/
-
+Tools/
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

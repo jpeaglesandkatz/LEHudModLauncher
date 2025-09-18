@@ -18,6 +18,7 @@
     <FileVersion>1.1</FileVersion>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <StartupObject>LEHudModLauncher.Program</StartupObject>
+    <BaseOutputPath>C:\modding\LE\LEHudModLauncher\Release</BaseOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>
@@ -67,13 +68,23 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="Classlibs\FileDownloaderLib\FileDownloaderLib.csproj" />
+    <ProjectReference Include="LauncherUtils\LauncherUtils.csproj" />
+    <ProjectReference Include="LogUtils\LogUtils.csproj" />
+    <ProjectReference Include="Updater\LauncherUpdater\LauncherUpdater.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="MelonLoader">
       <HintPath>MelonLoader.dll</HintPath>
     </Reference>
   </ItemGroup>
-	<Target Name="ZipOutput" AfterTargets="Build">
-		<!-- Only zip on Release builds -->
-		<Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(OutputPath)*&quot; -DestinationPath &quot;$(ProjectDir)bin\X64\$(Configuration)\LastEpochHudModLauncher.zip&quot; -Force" />
-	</Target>
+	<!--<Target Name="ZipOutput" AfterTargets="Build">
+		--><!-- Only zip on Release builds --><!--
+		<Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(BaseOutputPath)Release\x64\Release\net9.0-windows\*&quot; -DestinationPath &quot;$(BaseOutputPath)LastEpochHudModLauncher.zip&quot; -Force" />
+	</Target>-->
+	<!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;$(SolutionDir)Tools\pushbuilds.ps1&quot; ^&#xD;&#xA;    -OutputDir &quot;$(BaseOutputPath)&quot; ^&#xD;&#xA;    -Version $(AssemblyVersion) ^&#xD;&#xA;    -Repo &quot;jpeaglesandkatz/LEHudModLauncher&quot; ^&#xD;&#xA;    -Token &quot;$(GITHUB_TOKEN)&quot;" />
+	</Target>-->
 
 </Project>
