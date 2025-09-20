@@ -90,6 +90,8 @@ namespace LEHuDModLauncher
                 checkBoxKeepOpen.Checked = SettingsManager.Instance.Settings.KeepOpen;
                 checkBoxStartUpMessage.Checked = SettingsManager.Instance.Settings.ShowStartupMessage;
                 checkBoxHideConsole.Checked = SettingsManager.Instance.Settings.HideConsole;
+                toolstripAutoUpdate.Checked = SettingsManager.Instance.Settings.AutoUpdate;
+                SettingsManager.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
                 if (SettingsManager.Instance.Settings.KbGamePadSelect == 0) radioKb.Checked = true;
                 else radioGamepad.Checked = true;
                 textGameVersion.Text = "Unknown";
@@ -720,13 +722,33 @@ namespace LEHuDModLauncher
             }
 
         }
+
+        private async void checkForLauncherUpdateNowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var updater = new UpdateChecker();
+            try
+            {
+                await updater.CheckForUpdateAsync(true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error checking for updates: {ex.Message}", "Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+
+        }
+
+        private void toolstripAutoUpdate_CheckStateChanged(object sender, EventArgs e)
+        {
+            SettingsManager.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
+        }
     }
 
     public class UpdateChecker
     {
         private readonly HttpClient _httpClient = new HttpClient();
 
-        public async Task CheckForUpdateAsync()
+        public async Task CheckForUpdateAsync(bool reportstatus = false)
         {
             FileDownloader fileDownloader = new FileDownloader();
                         
@@ -761,7 +783,8 @@ namespace LEHuDModLauncher
                 }
                 else
                 {
-                    MessageBox.Show("You already have the latest version of the launcher/installer", "No Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (reportstatus) MessageBox.Show("You already have the latest version of the launcher/installer", "No Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
                 
             }

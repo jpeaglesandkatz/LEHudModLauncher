@@ -2,8 +2,8 @@
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
-    <ApplicationIcon>gooey-daemon_multi2.ico</ApplicationIcon>
-    <AssemblyVersion>1.12</AssemblyVersion>
+    <ApplicationIcon>icons\gooey-daemon_multi2.ico</ApplicationIcon>
+    <AssemblyVersion>1.13</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -15,7 +15,7 @@
     <PackageIcon></PackageIcon>
     <NuGetAudit>False</NuGetAudit>
     <SignAssembly>False</SignAssembly>
-    <FileVersion>1.12</FileVersion>
+    <FileVersion>1.13</FileVersion>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <StartupObject>LEHudModLauncher.Program</StartupObject>
     <BaseOutputPath>bin\Releases</BaseOutputPath>
@@ -35,7 +35,7 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="gooey-daemon_multi2.ico">
+    <Content Include="icons\gooey-daemon_multi2.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

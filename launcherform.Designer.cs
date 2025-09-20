@@ -48,10 +48,10 @@
             toolStripStatus = new ToolStripStatusLabel();
             menuStrip1 = new MenuStrip();
             installToolStripMenuItem = new ToolStripMenuItem();
-            changelogToolStripMenuItem = new ToolStripMenuItem();
-            checkForNewVersionToolStripMenuItem = new ToolStripMenuItem();
             toolStripTheme = new ToolStripMenuItem();
-            checkForUpdateToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripMenuItem();
+            toolstripAutoUpdate = new ToolStripMenuItem();
+            checkForLauncherUpdateNowToolStripMenuItem = new ToolStripMenuItem();
             checkBoxHideConsole = new CheckBox();
             panel2 = new Panel();
             buttonStartupMessage = new Button();
@@ -72,12 +72,12 @@
             // buttonAttachLog
             // 
             buttonAttachLog.Anchor = AnchorStyles.None;
-            buttonAttachLog.Location = new Point(28, 153);
+            buttonAttachLog.Location = new Point(28, 149);
             buttonAttachLog.Margin = new Padding(2);
             buttonAttachLog.Name = "buttonAttachLog";
-            buttonAttachLog.Size = new Size(186, 28);
+            buttonAttachLog.Size = new Size(213, 28);
             buttonAttachLog.TabIndex = 19;
-            buttonAttachLog.Text = "Attach log console window";
+            buttonAttachLog.Text = "Attach melonloader log window";
             buttonAttachLog.UseVisualStyleBackColor = true;
             buttonAttachLog.Click += buttonAttachLog_Click;
             // 
@@ -85,7 +85,7 @@
             // 
             radioGamepad.Anchor = AnchorStyles.None;
             radioGamepad.AutoSize = true;
-            radioGamepad.Location = new Point(260, 114);
+            radioGamepad.Location = new Point(260, 110);
             radioGamepad.Margin = new Padding(2);
             radioGamepad.Name = "radioGamepad";
             radioGamepad.Size = new Size(76, 19);
@@ -99,7 +99,7 @@
             radioKb.Anchor = AnchorStyles.None;
             radioKb.AutoSize = true;
             radioKb.Checked = true;
-            radioKb.Location = new Point(260, 90);
+            radioKb.Location = new Point(260, 86);
             radioKb.Margin = new Padding(2);
             radioKb.Name = "radioKb";
             radioKb.Size = new Size(116, 19);
@@ -116,7 +116,7 @@
             checkBoxStartUpMessage.AutoSize = true;
             checkBoxStartUpMessage.Checked = true;
             checkBoxStartUpMessage.CheckState = CheckState.Checked;
-            checkBoxStartUpMessage.Location = new Point(28, 115);
+            checkBoxStartUpMessage.Location = new Point(28, 111);
             checkBoxStartUpMessage.Margin = new Padding(2);
             checkBoxStartUpMessage.Name = "checkBoxStartUpMessage";
             checkBoxStartUpMessage.Size = new Size(150, 19);
@@ -132,7 +132,7 @@
             checkBoxKeepOpen.AutoSize = true;
             checkBoxKeepOpen.Checked = true;
             checkBoxKeepOpen.CheckState = CheckState.Checked;
-            checkBoxKeepOpen.Location = new Point(28, 91);
+            checkBoxKeepOpen.Location = new Point(28, 87);
             checkBoxKeepOpen.Margin = new Padding(2);
             checkBoxKeepOpen.Name = "checkBoxKeepOpen";
             checkBoxKeepOpen.Size = new Size(175, 19);
@@ -145,7 +145,7 @@
             // 
             textGameVersion.Anchor = AnchorStyles.None;
             textGameVersion.CausesValidation = false;
-            textGameVersion.Location = new Point(260, 56);
+            textGameVersion.Location = new Point(260, 52);
             textGameVersion.Margin = new Padding(2);
             textGameVersion.Name = "textGameVersion";
             textGameVersion.ReadOnly = true;
@@ -157,7 +157,7 @@
             // buttonGetGameFolder
             // 
             buttonGetGameFolder.Anchor = AnchorStyles.None;
-            buttonGetGameFolder.Location = new Point(28, 233);
+            buttonGetGameFolder.Location = new Point(28, 229);
             buttonGetGameFolder.Margin = new Padding(2);
             buttonGetGameFolder.Name = "buttonGetGameFolder";
             buttonGetGameFolder.Size = new Size(186, 28);
@@ -171,12 +171,14 @@
             buttonOffline.Anchor = AnchorStyles.None;
             buttonOffline.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOffline.ForeColor = SystemColors.WindowText;
-            buttonOffline.Location = new Point(427, 25);
+            buttonOffline.ImageAlign = ContentAlignment.MiddleLeft;
+            buttonOffline.Location = new Point(427, 21);
             buttonOffline.Margin = new Padding(2);
             buttonOffline.Name = "buttonOffline";
             buttonOffline.Size = new Size(211, 54);
             buttonOffline.TabIndex = 1;
             buttonOffline.Text = "Start game OFFLINE";
+            buttonOffline.TextImageRelation = TextImageRelation.ImageBeforeText;
             buttonOffline.UseVisualStyleBackColor = true;
             buttonOffline.Click += buttonOffline_Click;
             // 
@@ -184,7 +186,7 @@
             // 
             label3.Anchor = AnchorStyles.None;
             label3.AutoSize = true;
-            label3.Location = new Point(260, 34);
+            label3.Location = new Point(260, 30);
             label3.Margin = new Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new Size(131, 15);
@@ -194,7 +196,7 @@
             // textGamePath
             // 
             textGamePath.Anchor = AnchorStyles.None;
-            textGamePath.Location = new Point(28, 265);
+            textGamePath.Location = new Point(28, 261);
             textGamePath.Margin = new Padding(2);
             textGamePath.Name = "textGamePath";
             textGamePath.Size = new Size(469, 23);
@@ -206,7 +208,7 @@
             buttonOnline.Anchor = AnchorStyles.None;
             buttonOnline.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             buttonOnline.ForeColor = SystemColors.WindowText;
-            buttonOnline.Location = new Point(28, 25);
+            buttonOnline.Location = new Point(28, 21);
             buttonOnline.Margin = new Padding(2);
             buttonOnline.Name = "buttonOnline";
             buttonOnline.Size = new Size(213, 54);
@@ -221,7 +223,7 @@
             buttonBrowseGameFolder.FlatAppearance.BorderSize = 0;
             buttonBrowseGameFolder.FlatStyle = FlatStyle.Flat;
             buttonBrowseGameFolder.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            buttonBrowseGameFolder.Location = new Point(508, 256);
+            buttonBrowseGameFolder.Location = new Point(508, 252);
             buttonBrowseGameFolder.Margin = new Padding(2);
             buttonBrowseGameFolder.Name = "buttonBrowseGameFolder";
             buttonBrowseGameFolder.Size = new Size(36, 32);
@@ -234,34 +236,36 @@
             // 
             statusStrip.ImageScalingSize = new Size(24, 24);
             statusStrip.Items.AddRange(new ToolStripItem[] { toolStripProgress, statusStripLabel, toolStripStatus });
-            statusStrip.Location = new Point(0, 347);
+            statusStrip.Location = new Point(0, 340);
             statusStrip.Name = "statusStrip";
             statusStrip.Padding = new Padding(1, 0, 10, 0);
-            statusStrip.Size = new Size(662, 23);
+            statusStrip.Size = new Size(662, 30);
             statusStrip.TabIndex = 4;
             statusStrip.Text = "statusStrip1";
             // 
             // toolStripProgress
             // 
             toolStripProgress.Name = "toolStripProgress";
-            toolStripProgress.Size = new Size(70, 17);
+            toolStripProgress.Size = new Size(70, 24);
             // 
             // statusStripLabel
             // 
             statusStripLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             statusStripLabel.Name = "statusStripLabel";
-            statusStripLabel.Size = new Size(0, 18);
+            statusStripLabel.Size = new Size(0, 25);
             // 
             // toolStripStatus
             // 
             toolStripStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             toolStripStatus.Name = "toolStripStatus";
-            toolStripStatus.Size = new Size(0, 18);
+            toolStripStatus.Size = new Size(63, 25);
+            toolStripStatus.Text = "test text";
+            toolStripStatus.ToolTipText = "Test text";
             // 
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(24, 24);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { installToolStripMenuItem, changelogToolStripMenuItem, checkForNewVersionToolStripMenuItem, toolStripTheme, checkForUpdateToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { installToolStripMenuItem, toolStripTheme, toolStripMenuItem3 });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new Padding(4, 1, 0, 1);
@@ -279,49 +283,52 @@
             installToolStripMenuItem.ToolTipText = "Install the modloader and mod";
             installToolStripMenuItem.Click += installToolStripMenuItem_Click;
             // 
-            // changelogToolStripMenuItem
-            // 
-            changelogToolStripMenuItem.Enabled = false;
-            changelogToolStripMenuItem.Name = "changelogToolStripMenuItem";
-            changelogToolStripMenuItem.Size = new Size(77, 23);
-            changelogToolStripMenuItem.Text = "Changelog";
-            changelogToolStripMenuItem.Visible = false;
-            // 
-            // checkForNewVersionToolStripMenuItem
-            // 
-            checkForNewVersionToolStripMenuItem.Enabled = false;
-            checkForNewVersionToolStripMenuItem.Name = "checkForNewVersionToolStripMenuItem";
-            checkForNewVersionToolStripMenuItem.Size = new Size(136, 23);
-            checkForNewVersionToolStripMenuItem.Text = "Check for new version";
-            checkForNewVersionToolStripMenuItem.Visible = false;
-            // 
             // toolStripTheme
             // 
             toolStripTheme.Alignment = ToolStripItemAlignment.Right;
+            toolStripTheme.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             toolStripTheme.Name = "toolStripTheme";
-            toolStripTheme.Size = new Size(56, 23);
+            toolStripTheme.Size = new Size(58, 23);
             toolStripTheme.Text = "Theme";
             toolStripTheme.ToolTipText = "Switch between Dark and Light mode";
             toolStripTheme.Click += toolStripMenuItem1_Click;
             // 
-            // checkForUpdateToolStripMenuItem
+            // toolStripMenuItem3
             // 
-            checkForUpdateToolStripMenuItem.Alignment = ToolStripItemAlignment.Right;
-            checkForUpdateToolStripMenuItem.Name = "checkForUpdateToolStripMenuItem";
-            checkForUpdateToolStripMenuItem.Size = new Size(159, 23);
-            checkForUpdateToolStripMenuItem.Text = "Check for launcher update";
-            checkForUpdateToolStripMenuItem.Click += checkForUpdateToolStripMenuItem_Click;
+            toolStripMenuItem3.Alignment = ToolStripItemAlignment.Right;
+            toolStripMenuItem3.DropDownItems.AddRange(new ToolStripItem[] { toolstripAutoUpdate, checkForLauncherUpdateNowToolStripMenuItem });
+            toolStripMenuItem3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(62, 23);
+            toolStripMenuItem3.Text = "Options";
+            // 
+            // toolstripAutoUpdate
+            // 
+            toolstripAutoUpdate.CheckOnClick = true;
+            toolstripAutoUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            toolstripAutoUpdate.Name = "toolstripAutoUpdate";
+            toolstripAutoUpdate.Size = new Size(289, 22);
+            toolstripAutoUpdate.Text = "Automatically check for launcher update";
+            toolstripAutoUpdate.CheckStateChanged += toolstripAutoUpdate_CheckStateChanged;
+            // 
+            // checkForLauncherUpdateNowToolStripMenuItem
+            // 
+            checkForLauncherUpdateNowToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            checkForLauncherUpdateNowToolStripMenuItem.Name = "checkForLauncherUpdateNowToolStripMenuItem";
+            checkForLauncherUpdateNowToolStripMenuItem.Size = new Size(289, 22);
+            checkForLauncherUpdateNowToolStripMenuItem.Text = "Check for launcher update now";
+            checkForLauncherUpdateNowToolStripMenuItem.Click += checkForLauncherUpdateNowToolStripMenuItem_Click;
             // 
             // checkBoxHideConsole
             // 
             checkBoxHideConsole.Anchor = AnchorStyles.None;
             checkBoxHideConsole.AutoSize = true;
-            checkBoxHideConsole.Location = new Point(28, 185);
+            checkBoxHideConsole.Location = new Point(28, 181);
             checkBoxHideConsole.Margin = new Padding(2);
             checkBoxHideConsole.Name = "checkBoxHideConsole";
-            checkBoxHideConsole.Size = new Size(204, 19);
+            checkBoxHideConsole.Size = new Size(210, 19);
             checkBoxHideConsole.TabIndex = 20;
-            checkBoxHideConsole.Text = "Hide mod loader console window";
+            checkBoxHideConsole.Text = "Hide melonloader console window";
             checkBoxHideConsole.UseVisualStyleBackColor = true;
             checkBoxHideConsole.CheckedChanged += checkBoxHideConsole_CheckedChanged;
             // 
@@ -345,13 +352,13 @@
             panel2.Location = new Point(0, 25);
             panel2.Margin = new Padding(2);
             panel2.Name = "panel2";
-            panel2.Size = new Size(662, 322);
+            panel2.Size = new Size(662, 315);
             panel2.TabIndex = 22;
             // 
             // buttonStartupMessage
             // 
             buttonStartupMessage.Anchor = AnchorStyles.None;
-            buttonStartupMessage.Location = new Point(260, 153);
+            buttonStartupMessage.Location = new Point(260, 149);
             buttonStartupMessage.Margin = new Padding(2);
             buttonStartupMessage.Name = "buttonStartupMessage";
             buttonStartupMessage.Size = new Size(154, 28);
@@ -404,8 +411,6 @@
         private Button buttonOnline;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem installToolStripMenuItem;
-        private ToolStripMenuItem changelogToolStripMenuItem;
-        private ToolStripMenuItem checkForNewVersionToolStripMenuItem;
         private TextBox textGameVersion;
         private Label label3;
         private Button buttonGetGameFolder;
@@ -419,6 +424,8 @@
         private CheckBox checkBoxHideConsole;
         private Panel panel2;
         private Button buttonStartupMessage;
-        private ToolStripMenuItem checkForUpdateToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItem3;
+        private ToolStripMenuItem toolstripAutoUpdate;
+        private ToolStripMenuItem checkForLauncherUpdateNowToolStripMenuItem;
     }
 }

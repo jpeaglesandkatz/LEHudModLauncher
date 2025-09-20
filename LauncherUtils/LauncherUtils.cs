@@ -287,10 +287,24 @@ namespace LauncherUtils
 				}
 			}
 
+            private bool _autoupdate = true;
+            public bool AutoUpdate
+            {
+                get => _autoupdate;
+                set
+                {
+                    if (_autoupdate != value)
+                    {
+                        _autoupdate = value;
+                        OnPropertyChanged(nameof(AutoUpdate));
+                    }
+                }
+            }
 
 
 
-			public event PropertyChangedEventHandler? PropertyChanged;
+
+            public event PropertyChangedEventHandler? PropertyChanged;
 
 			protected void OnPropertyChanged(string propertyName)
 			{
@@ -499,7 +513,13 @@ namespace LauncherUtils
 				_settings.HideConsole = hideconsole;
 				Save();
 			}
-		}
+
+            public void UpdateAutoUpdate(bool autoupdate)
+            {
+                _settings.AutoUpdate = autoupdate;
+                Save();
+            }
+        }
 
 
 		public Utils()
