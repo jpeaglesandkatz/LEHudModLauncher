@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Platforms>x64</Platforms>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <Title>LEHuDMoDLauncher</Title>
+    <Description>LEHuDMoDLauncher Last Epoch HUD Mod</Description>
+    <Copyright>Ash</Copyright>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <Configurations>Debug;DebugNew;Release</Configurations>
+    <ApplicationIcon>gooey-daemon_multi2.ico</ApplicationIcon>
+    <BaseOutputPath>bin\Release</BaseOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AssetsTools.NET" Version="3.0.1">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <PackageReference Include="SharpCompress" Version="0.40.0" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.8.5">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FileDownloaderLib\DownloadUtils.csproj" />
+    <ProjectReference Include="..\LogUtils\LogUtils.csproj" />
+  </ItemGroup>
+
+
+</Project>

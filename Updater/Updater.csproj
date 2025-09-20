@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <StartupObject>LEHuDModLauncher.Updater.Program</StartupObject>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="SharpCompress" Version="0.40.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileDownloaderLib\DownloadUtils.csproj" />
+    <ProjectReference Include="..\LogUtils\LogUtils.csproj" />
+    <ProjectReference Include="..\UpdateReplacer\UpdaterReplacer\UpdaterReplacer.csproj" />
+  </ItemGroup>
+	
+</Project>

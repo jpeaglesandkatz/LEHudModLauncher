@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LEHuDModLauncher": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

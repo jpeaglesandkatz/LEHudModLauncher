@@ -1,0 +1,84 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <ApplicationIcon>gooey-daemon_multi2.ico</ApplicationIcon>
+    <AssemblyVersion>1.12</AssemblyVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <PackageIcon></PackageIcon>
+    <NuGetAudit>False</NuGetAudit>
+    <SignAssembly>False</SignAssembly>
+    <FileVersion>1.12</FileVersion>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <StartupObject>LEHudModLauncher.Program</StartupObject>
+    <BaseOutputPath>bin\Releases</BaseOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>True</Optimize>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Optimize>True</Optimize>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="gooey-daemon_multi2.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AssetsTools.NET" Version="3.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="SharpCompress" Version="0.40.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="FileDownloaderLib\DownloadUtils.csproj" />
+    <ProjectReference Include="LauncherUtils\LauncherUtils.csproj" />
+    <ProjectReference Include="LogUtils\LogUtils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MelonLoader">
+      <HintPath>MelonLoader.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+<Target Name="ZipOutput" AfterTargets="Build">
+    <Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(BaseOutputPath)x64\Release\net9.0-windows\*&quot; -DestinationPath &quot;$(BaseOutputPath)LastEpochHudModLauncher.zip&quot; -Force" />
+ </Target>
+	<!--<Target Name="CopyUpdaterReplacer" AfterTargets="Build">
+		<Copy SourceFiles="C:\modding\LE\LEHudModLauncher\LEHudModLauncher\UpdateReplacer\UpdaterReplacer\bin\Release\net9.0\UpdaterReplacer.exe" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+	</Target>
+	<Target Name="CopyUpdaterReplacer" AfterTargets="Build">
+		<Copy SourceFiles="C:\modding\LE\LEHudModLauncher\LEHudModLauncher\Updater\bin\x64\Release\net9.0-windows7.0\Updater.exe" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+	</Target>-->
+</Project>
