@@ -3,7 +3,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <ApplicationIcon>icons\gooey-daemon_multi2.ico</ApplicationIcon>
-    <AssemblyVersion>1.13</AssemblyVersion>
+    <AssemblyVersion>1.14</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -15,7 +15,7 @@
     <PackageIcon></PackageIcon>
     <NuGetAudit>False</NuGetAudit>
     <SignAssembly>False</SignAssembly>
-    <FileVersion>1.13</FileVersion>
+    <FileVersion>1.14</FileVersion>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <StartupObject>LEHudModLauncher.Program</StartupObject>
     <BaseOutputPath>bin\Releases</BaseOutputPath>
