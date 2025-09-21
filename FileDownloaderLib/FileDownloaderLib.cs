@@ -8,6 +8,24 @@ namespace LEHuDModLauncher.DownloadUtils
     {
         private readonly HttpClient _httpClient;
 
+        public class DownloadEntry
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public string Url { get; set; }
+            public string Destination { get; set; }
+            public string Filename { get; set; }
+        }
+
+        public class DownloadList
+        {
+            public string Version { get; set; }
+            public List<DownloadEntry> Files { get; set; }
+        }
+
+
+
+
         public FileDownloader()
         {
             var handler = new HttpClientHandler
@@ -30,6 +48,7 @@ namespace LEHuDModLauncher.DownloadUtils
 
                 while (true)
                 {
+                    
                     using (HttpResponseMessage response = await _httpClient.GetAsync(currentUrl, HttpCompletionOption.ResponseHeadersRead))
                     {
                         // ✅ Handle redirects manually
@@ -87,6 +106,7 @@ namespace LEHuDModLauncher.DownloadUtils
                         Logger.Global.Debug("Download completed successfully!");
                         break; // exit loop
                     }
+
                 }
             }
             catch (Exception ex)

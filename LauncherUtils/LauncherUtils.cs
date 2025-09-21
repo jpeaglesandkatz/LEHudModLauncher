@@ -643,7 +643,7 @@ namespace LauncherUtils
 			Logger.Global.Info($"Extracted {filename}");
 		}
 
-		public void AddDownload(int priority, string type, string url, string? downloadpath, string? destination, string filename, bool deloriginal, bool skipifexist)
+		public async Task AddDownload(int priority, string type, string url, string? downloadpath, string? destination, string filename, bool deloriginal, bool skipifexist)
 		{
 
 			var task = new DownloadTask
@@ -664,9 +664,11 @@ namespace LauncherUtils
 
 		public async Task StartDownloads()
 		{
-			int tprogress = 1;
+            SettingsManager settingsManager = SettingsManager.Instance;
+			settingsManager.Load();
+            int tprogress = 1;
 			SettingsManager.Instance.Settings.ErrorCount = 0;
-			QueDownloads = QueDownloads.OrderBy(p => p.Priority).ToList();
+			//QueDownloads = QueDownloads.OrderBy(p => p.Priority).ToList();
 			foreach (var item in QueDownloads)
 			{
 				Logger.Global.Debug($"Download que: {item.Url} to {item.DownloadPath}\\{item.Filename} skipifexist: {item.SkipIfExist}");

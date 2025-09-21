@@ -2,15 +2,17 @@
 using AssetsTools.NET.Extra;
 using LauncherUtils;
 using LEHuDModLauncher.Classlibs;
-using System.Diagnostics;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using static LauncherUtils.Utils;
 using LEHuDModLauncher.DownloadUtils;
 using LEHuDModLauncher.LogUtils;
 using LEHuDModLauncher.Updater;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Net;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using static LauncherUtils.Utils;
+using static LEHuDModLauncher.DownloadUtils.FileDownloader;
 
 namespace LEHuDModLauncher
 {
@@ -363,29 +365,67 @@ namespace LEHuDModLauncher
 
         }
 
-        private async void installToolStripMenuItem_Click(object sender, EventArgs e)
+        public async Task<DownloadList> AddDownloadsFromJson()
         {
+
+
+            //FileDownloader fileDownloader = new FileDownloader();
+
+            string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/dllist.json";
+
+            try
+            {
+                await fileDownloader.DownloadFileAsync(dlurl, SettingsManager.Instance.Settings.TmpDownloadFolder, "dllist.json", 5);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to download dllist {ex.Message}\n{ex.StackTrace}", "Error addownloadfromjson", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            string jsonContents = File.ReadAllText(Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "dllist.json"));
+
+            using (StreamReader reader = new StreamReader(Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "dllist.json")))
+            {
+                DownloadList downloadList = JsonConvert.DeserializeObject<DownloadList>(reader.ReadToEnd());
+                //File.Delete(Path.Combine(Path.GetTempPath(), "dllist.json"));
+                return downloadList;
+            }
+        }
+
+        public async void installToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DownloadList dllist = new();
+
             if (File.Exists(SettingsManager.ReferenceEquals(SettingsManager.Instance.Settings.GameDir, "") ? "" : Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)) == false)
             {
                 MessageBox.Show("Please select a valid Last Epoch game folder first!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            SettingsManager.Instance.UpdateErrorCount(0);
+            try
+            {
+                dllist = await AddDownloadsFromJson();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to download dllist {ex.Message}\n{ex.Message}", "Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
 
-            // Pick either keyboard or gamepad version
+            }
+
+            SettingsManager.Instance.UpdateErrorCount(0);
             if (radioKb.Checked)
             {
                 var result = MessageBox.Show("Installing Keyboard version of the mod.\nUse this version if you mainly play the game with your keyboard/mouse.\nProceed?", "Info", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (result == DialogResult.No) return;
-                else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.Keyboard.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud(Keyboard).rar", false, false);
             }
             else
             {
                 var result = MessageBox.Show("Installing Gamepad version of the mod.\nUse this version if you mainly play the game with your gamepad.\nProceed?", "Info", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (result == DialogResult.No) return;
-                else Utils.AddDownload(1, "Mod", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/LastEpoch_Hud.WinGamepad.rar", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir + @"\mods", "LastEpoch_Hud.WinGamepad.rar", false, false);
             }
+
             toolStripStatus.Enabled = true;
             toolStripStatus.Enabled = true;
             toolStripStatus.Text = "Installing...";
@@ -400,13 +440,43 @@ namespace LEHuDModLauncher
 
             if (mbresult == DialogResult.Yes)
             {
-                Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
+                //Utils.AddDownload(2, "Melonloader", "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/Melon.zip", SettingsManager.Instance.Settings.GameDir, SettingsManager.Instance.Settings.GameDir, "Melon.zip", false, false);
                 CleanupDirs(true);
             }
             else if (mbresult == DialogResult.No) CleanupDirs(false);
 
             if (mbresult == DialogResult.Retry) return;
 
+            SettingsManager settingsManager = SettingsManager.Instance;
+            settingsManager.Load();
+            foreach (var item in dllist.Files)
+            {
+                try
+                {
+                    if ((mbresult == DialogResult.Yes) & (item.Id.Contains("melonloader")))
+                    {
+                        CleanupDirs(true);
+                        await Utils.AddDownload(1, "melonloader", item.Url, settingsManager.Settings.GameDir, Path.Combine(settingsManager.Settings.GameDir, item.Destination), item.Filename, false, false);
+                    } else
+                    if ((mbresult == DialogResult.Yes | mbresult == DialogResult.No) & (item.Id.Contains("keyboard") & radioKb.Checked))
+                    {
+                        CleanupDirs(false);
+                        await Utils.AddDownload(1, "keyboard", item.Url, settingsManager.Settings.GameDir, Path.Combine(settingsManager.Settings.GameDir, item.Destination), item.Filename, false, false);
+                    }
+                    else
+                    if ((mbresult == DialogResult.Yes | mbresult == DialogResult.No) & (item.Id.Contains("gamepad") & !radioKb.Checked))
+                    {
+                        CleanupDirs(false);
+                        await Utils.AddDownload(1, "gamepad", item.Url, settingsManager.Settings.GameDir, Path.Combine(settingsManager.Settings.GameDir, item.Destination), item.Filename, false, false);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to download {item.Name} {ex.Message}\n{ex.StackTrace}", "Error downloading", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
 
             await Utils.StartDownloads();
             await Utils.RunExtraction();
@@ -423,21 +493,7 @@ namespace LEHuDModLauncher
             toolStripStatus.Text = "Installation finished... Run the game once and exit the game!";
         }
 
-        // private void buttonBrowseSteamFolder_Click(object sender, EventArgs e)
-        // {
-        //     using var dialog = new FolderBrowserDialog();
-        //     dialog.Description = "Select steam folder";
-        //     dialog.SelectedPath = SettingsManager.Instance.Settings.Steampath;
-        //     if (dialog.ShowDialog() == DialogResult.OK)
-        //     {
-        //         textGamePath.Text = dialog.SelectedPath;
-        //         SettingsManager.Instance.UpdateGameDir(dialog.SelectedPath);
-        //         if (File.Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename))) ShowGameVersion();
-        //         else textGameVersion.Text = "Unknown";
-        //     }
-        // }
-
-        private void buttonGetGameFolder_Click(object sender, EventArgs e)
+          private void buttonGetGameFolder_Click(object sender, EventArgs e)
         {
             var steamPath = GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam", "InstallPath");
             if (!string.IsNullOrEmpty(steamPath))
@@ -454,12 +510,6 @@ namespace LEHuDModLauncher
 
         }
 
-        // private void buttonGetSteamFolder_Click(object sender, EventArgs e)
-        // {
-        //     if (SettingsManager.Instance.Settings.Steampath == "") SettingsManager.Instance.UpdateSteamPath(Utils.GetPathFromRegistry("HKEY_CURRENT_USER\\Software\\Valve\\Steam", "SteamPath"));
-        //
-        //     SettingsManager.Instance.UpdateSteamPath(Path.GetFullPath(SettingsManager.Instance.Settings.Steampath));
-        // }
 
         private void checkBoxKeepOpen_CheckedChanged(object sender, EventArgs e)
         {
@@ -564,12 +614,6 @@ namespace LEHuDModLauncher
 
         }
 
-        // private void button1_Click(object sender, EventArgs e)
-        // {
-        //     var logForm = new LogViewerForm(@"C:\Program Files (x86)\Steam\steamapps\common\Last Epoch\MelonLoader\Latest.log");
-        //     logForm.Show();
-        // }
-
         private LogViewerForm? _attachedLogForm;
 
         private void buttonAttachLog_Click(object sender, EventArgs e)
@@ -661,39 +705,6 @@ namespace LEHuDModLauncher
 
         }
 
-        //private async void button1_Click_1(object sender, EventArgs e)
-        //{
-        //    string updateUrl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/update_test.json";
-        //    string currentVersion = "1.1";
-
-        //    try
-        //    {
-        //        var updateInfo = await UpdateChecker.GetUpdateInfoAsync(updateUrl);
-        //        if (updateInfo == null)
-        //        {
-        //            MessageBox.Show("Could not check for updates.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-        //        if (UpdateChecker.IsUpdateAvailable(currentVersion, updateInfo))
-        //        {
-        //            var updateForm = new UpdateForm();
-        //            updateForm.Show();
-        //            await updateForm.RunUpdateAsync(updateInfo, AppDomain.CurrentDomain.BaseDirectory);
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show("You already have the latest version.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //        }
-
-        //    }
-        //    catch (Exception exception)
-        //    {
-
-        //        MessageBox.Show("Error Updating", "Update", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //}
 
         private async void button1_Click(object sender, EventArgs e)
         {
@@ -751,19 +762,17 @@ namespace LEHuDModLauncher
         public async Task CheckForUpdateAsync(bool reportstatus = false)
         {
             FileDownloader fileDownloader = new FileDownloader();
-                        
+
             try
             {
-                string updateJsonUrl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/update.json"; 
-                //string json = await _httpClient.GetStringAsync(updateJsonUrl);
+                string updateJsonUrl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/update.json";
                 await fileDownloader.DownloadFileAsync(updateJsonUrl, AppDomain.CurrentDomain.BaseDirectory, "update.json", 5);
                 string json = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update.json"));
 
                 var updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(json);
 
-                //File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update.json"));
 
-                
+
                 if (updateInfo == null)
                     return;
 
@@ -786,7 +795,7 @@ namespace LEHuDModLauncher
                     if (reportstatus) MessageBox.Show("You already have the latest version of the launcher/installer", "No Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -799,7 +808,6 @@ namespace LEHuDModLauncher
 
             try
             {
-
                 string tempFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(installerUrl));
 
                 FileDownloader fileDownloader = new FileDownloader();
