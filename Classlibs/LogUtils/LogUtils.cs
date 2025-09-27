@@ -1,180 +1,177 @@
 ﻿
-namespace LEHuDModLauncher.Classlibs.LogUtils
+namespace LEHuDModLauncher.Classlibs.LogUtils;
 
+public class Log
 {
-    public class Log
+    public sealed class Logger
     {
-        public sealed class Logger
+        public enum LogLevel
         {
-            public enum LogLevel
-            {
-                Debug = 1,
-                Info = 2,
-                Warning = 3,
-                Error = 4
-            }
+            Debug = 1,
+            Info = 2,
+            Warning = 3,
+            Error = 4
+        }
 
-            private static readonly Lock FileLock = new Lock();
-            private static readonly string DefaultFolder = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LEHuDModLauncher");
-            private static string _logFolder = DefaultFolder;
-            private static string _logFileName = "debug.log";
-            private static long _maxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
+        private static readonly Lock FileLock = new Lock();
+        private static readonly string DefaultFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LEHuDModLauncher");
+        private static string _logFolder = DefaultFolder;
+        private static string _logFileName = "debug.log";
+        private static long _maxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
 
 #if DEBUG
 		public static LogLevel CurrentLevel { get; set; } = LogLevel.Debug;
 #else
-            private static LogLevel CurrentLevel { get; set; } = LogLevel.Info;
+        private static LogLevel CurrentLevel { get; set; } = LogLevel.Info;
 #endif
 
 
-            private static readonly Lazy<Logger> _global = new Lazy<Logger>(() => new Logger());
-            public static Logger Global => _global.Value;
+        private static readonly Lazy<Logger> _global = new Lazy<Logger>(() => new Logger());
+        public static Logger Global => _global.Value;
 
-            // Keep constructor public for compatibility with existing code that does 'new Logger()'
-            public Logger()
+        // Keep constructor public for compatibility with existing code that does 'new Logger()'
+        public Logger()
+        {
+            try
             {
+                EnsureLogFolder();
+            }
+            catch
+            {
+                // Best-effort only — do not throw from ctor
+            }
+        }
+
+        /// <summary>
+        /// Configure log folder, filename and rotating size (bytes). Call early in application start if you want custom location/size.
+        /// </summary>
+        public static void Configure(string? folder = null, string? fileName = null, long? maxFileSizeBytes = null, LogLevel? level = null)
+        {
+            if (!string.IsNullOrWhiteSpace(folder)) _logFolder = folder!;
+            if (!string.IsNullOrWhiteSpace(fileName)) _logFileName = fileName!;
+            if (maxFileSizeBytes is > 0) _maxFileSizeBytes = maxFileSizeBytes.Value;
+            if (level.HasValue) CurrentLevel = level.Value;
+
+            try
+            {
+                Directory.CreateDirectory(_logFolder);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        private static string LogFilePath => Path.Combine(_logFolder, _logFileName);
+
+        private static void EnsureLogFolder()
+        {
+            if (!Directory.Exists(_logFolder))
+                Directory.CreateDirectory(_logFolder);
+        }
+
+        private static void RotateIfNeeded()
+        {
+            try
+            {
+                var path = LogFilePath;
+                if (!File.Exists(path)) return;
+
+                var fi = new FileInfo(path);
+                if (fi.Length <= _maxFileSizeBytes) return;
+
+                var archiveName = Path.Combine(_logFolder,
+                    Path.GetFileNameWithoutExtension(_logFileName)
+                    + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss")
+                    + Path.GetExtension(_logFileName));
+
+                // Move the current file to archive name
+                File.Move(path, archiveName);
+            }
+            catch
+            {
+                // Swallow rotation errors; logging must remain best-effort
+            }
+        }
+
+        private static void Log(LogLevel level, string message)
+        {
+            try
+            {
+                if (level < CurrentLevel) return; // filter by configured level
+
+                var logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] {message}";
+
+                // Console (colored) -- keep this non-failing
                 try
                 {
-                    EnsureLogFolder();
+                    WriteColored(level, logEntry);
                 }
-                catch
+                catch { /* ignore console errors */ }
+
+                // File (thread-safe, with simple rotation)
+                lock (FileLock)
                 {
-                    // Best-effort only — do not throw from ctor
-                }
-            }
-
-            /// <summary>
-            /// Configure log folder, filename and rotating size (bytes). Call early in application start if you want custom location/size.
-            /// </summary>
-            public static void Configure(string? folder = null, string? fileName = null, long? maxFileSizeBytes = null, LogLevel? level = null)
-            {
-                if (!string.IsNullOrWhiteSpace(folder)) _logFolder = folder!;
-                if (!string.IsNullOrWhiteSpace(fileName)) _logFileName = fileName!;
-                if (maxFileSizeBytes is > 0) _maxFileSizeBytes = maxFileSizeBytes.Value;
-                if (level.HasValue) CurrentLevel = level.Value;
-
-                try
-                {
-                    Directory.CreateDirectory(_logFolder);
-                }
-                catch
-                {
-                    // ignore
-                }
-            }
-
-            private static string LogFilePath => Path.Combine(_logFolder, _logFileName);
-
-            private static void EnsureLogFolder()
-            {
-                if (!Directory.Exists(_logFolder))
-                    Directory.CreateDirectory(_logFolder);
-            }
-
-            private static void RotateIfNeeded()
-            {
-                try
-                {
-                    var path = LogFilePath;
-                    if (!File.Exists(path)) return;
-
-                    var fi = new FileInfo(path);
-                    if (fi.Length <= _maxFileSizeBytes) return;
-
-                    var archiveName = Path.Combine(_logFolder,
-                        Path.GetFileNameWithoutExtension(_logFileName)
-                        + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss")
-                        + Path.GetExtension(_logFileName));
-
-                    // Move the current file to archive name
-                    File.Move(path, archiveName);
-                }
-                catch
-                {
-                    // Swallow rotation errors; logging must remain best-effort
-                }
-            }
-
-            private static void Log(LogLevel level, string message)
-            {
-                try
-                {
-                    if (level < CurrentLevel) return; // filter by configured level
-
-                    var logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [{level}] {message}";
-
-                    // Console (colored) -- keep this non-failing
                     try
                     {
-                        WriteColored(level, logEntry);
+                        EnsureLogFolder();
+                        RotateIfNeeded();
+                        // Append with sharing so other readers (LogViewer) can open file
+                        using var stream = new FileStream(LogFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
+                        using var writer = new StreamWriter(stream);
+                        writer.WriteLine(logEntry);
+                        writer.Flush();
                     }
-                    catch { /* ignore console errors */ }
-
-                    // File (thread-safe, with simple rotation)
-                    lock (FileLock)
+                    catch
                     {
-                        try
-                        {
-                            EnsureLogFolder();
-                            RotateIfNeeded();
-                            // Append with sharing so other readers (LogViewer) can open file
-                            using var stream = new FileStream(LogFilePath, FileMode.Append, FileAccess.Write, FileShare.Read);
-                            using var writer = new StreamWriter(stream);
-                            writer.WriteLine(logEntry);
-                            writer.Flush();
-                        }
-                        catch
-                        {
-                            // ignore file IO errors to avoid crashing callers
-                        }
+                        // ignore file IO errors to avoid crashing callers
                     }
-                }
-                catch
-                {
-                    // swallow everything - logging should not throw
                 }
             }
-
-            // Instance helpers (existing code uses instance methods; keep them)
-            public void Debug(string message) => Log(LogLevel.Debug, message);
-            public void Info(string message) => Log(LogLevel.Info, message);
-            public void Warning(string message) => Log(LogLevel.Warning, message);
-            public void Error(string message) => Log(LogLevel.Error, message);
-
-            // Static convenience helpers — call from anywhere: Logger.DebugStatic(...), or use Logger.Global.Debug(...)
-            public static void DebugStatic(string message) => Global.Debug(message);
-            public static void InfoStatic(string message) => Global.Info(message);
-            public static void WarningStatic(string message) => Global.Warning(message);
-            public static void ErrorStatic(string message) => Global.Error(message);
-
-            private static void WriteColored(LogLevel level, string message)
+            catch
             {
-                // Only try to write colored output if a console is available
-                try
+                // swallow everything - logging should not throw
+            }
+        }
+
+        // Instance helpers (existing code uses instance methods; keep them)
+        public void Debug(string message) => Log(LogLevel.Debug, message);
+        public void Info(string message) => Log(LogLevel.Info, message);
+        public void Warning(string message) => Log(LogLevel.Warning, message);
+        public void Error(string message) => Log(LogLevel.Error, message);
+
+        // Static convenience helpers — call from anywhere: Logger.DebugStatic(...), or use Logger.Global.Debug(...)
+        public static void DebugStatic(string message) => Global.Debug(message);
+        public static void InfoStatic(string message) => Global.Info(message);
+        public static void WarningStatic(string message) => Global.Warning(message);
+        public static void ErrorStatic(string message) => Global.Error(message);
+
+        private static void WriteColored(LogLevel level, string message)
+        {
+            // Only try to write colored output if a console is available
+            try
+            {
+                if (!Environment.UserInteractive) return;
+
+                var original = Console.ForegroundColor;
+
+                Console.ForegroundColor = level switch
                 {
-                    if (!Environment.UserInteractive) return;
+                    LogLevel.Debug => ConsoleColor.Gray,
+                    LogLevel.Info => ConsoleColor.Green,
+                    LogLevel.Warning => ConsoleColor.Yellow,
+                    LogLevel.Error => ConsoleColor.Red,
+                    _ => Console.ForegroundColor
+                };
 
-                    var original = Console.ForegroundColor;
-
-                    Console.ForegroundColor = level switch
-                    {
-                        LogLevel.Debug => ConsoleColor.Gray,
-                        LogLevel.Info => ConsoleColor.Green,
-                        LogLevel.Warning => ConsoleColor.Yellow,
-                        LogLevel.Error => ConsoleColor.Red,
-                        _ => Console.ForegroundColor
-                    };
-
-                    Console.WriteLine(message);
-                    Console.ForegroundColor = original;
-                }
-                catch
-                {
-                    // ignore console errors
-                }
+                Console.WriteLine(message);
+                Console.ForegroundColor = original;
+            }
+            catch
+            {
+                // ignore console errors
             }
         }
     }
-
 }

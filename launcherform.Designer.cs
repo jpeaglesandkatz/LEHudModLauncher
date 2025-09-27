@@ -540,7 +540,7 @@
             DrawerShowIconsWhenHidden = true;
             Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             FormStyle = FormStyles.ActionBar_48;
-            Icon = (Icon)resources.GetObject("$this.Icon");
+            //Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             MaximizeBox = false;
             MaximumSize = new Size(919, 599);

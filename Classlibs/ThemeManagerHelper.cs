@@ -9,12 +9,10 @@ public static class ThemeManagerHelper
 
     public static void SaveTheme(Primary primary, Accent accent, MaterialSkinManager.Themes theme)
     {
-        var settings = new ThemeSettings
-        {
-            Primary = primary.ToString(),
-            Accent = accent.ToString(),
-            Theme = theme.ToString()
-        };
+        var settings = new ThemeSettings();
+        settings.Primary = primary.ToString();
+        settings.Accent = accent.ToString();
+        settings.Theme = theme.ToString();
 
         File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(settings, Formatting.Indented));
     }
