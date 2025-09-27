@@ -8,10 +8,10 @@ namespace LEHuDModLauncher.Classlibs
 
         public class GitHubContentItem
         {
-            public string Name { get; set; }
-            public string Path { get; set; }
-            public string Type { get; set; }  // "file" or "dir"
-            public string Download_Url { get; set; }
+            public string? Name { get; set; }
+            public string? Path { get; set; }
+            public string? Type { get; set; }  // "file" or "dir"
+            public string? Download_Url { get; set; }
         }
 
         public class GitHubFolderDownloader

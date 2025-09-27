@@ -39,20 +39,21 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{FFAE4935-060A-4973-BB88-B226ADAA55BA}" Directory_="APPDIR" Attributes="0"/>
-    <ROW Component="AssetsTools.NET.dll" ComponentId="{EB9292A6-B46D-4CC4-9664-8E38E39B9FE3}" Directory_="APPDIR" Attributes="0" KeyPath="AssetsTools.NET.dll"/>
-    <ROW Component="DownloadUtils.dll" ComponentId="{D20FABDD-A0D7-4D20-8388-431EA6B29A01}" Directory_="APPDIR" Attributes="256" KeyPath="DownloadUtils.dll"/>
-    <ROW Component="LEHuDModLauncher.deps.json" ComponentId="{7E0144A1-143D-4922-AF7E-C619359E684E}" Directory_="APPDIR" Attributes="0" KeyPath="LEHuDModLauncher.deps.json" Type="0"/>
-    <ROW Component="LEHuDModLauncher.dll" ComponentId="{E3DF6EF4-22E5-49AF-9FF4-B7966C790D90}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.dll"/>
-    <ROW Component="LEHuDModLauncher.exe" ComponentId="{CA470F6C-CDF0-42B4-B7EE-8BB895246A32}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.exe"/>
-    <ROW Component="LauncherUtils.dll" ComponentId="{A9434910-FF5A-4F80-A4D9-CCE435CE60ED}" Directory_="APPDIR" Attributes="256" KeyPath="LauncherUtils.dll"/>
-    <ROW Component="LogUtils.dll" ComponentId="{EED48FF0-F498-4B9E-ABC1-2D466553E474}" Directory_="APPDIR" Attributes="256" KeyPath="LogUtils.dll"/>
-    <ROW Component="MaterialSkin.dll" ComponentId="{BB82C520-F4FB-4FC7-BA54-FC6CEEE9B1D9}" Directory_="APPDIR" Attributes="0" KeyPath="MaterialSkin.dll"/>
-    <ROW Component="MelonLoader.dll" ComponentId="{9A3EBED2-DD0A-4A8F-B3DD-86F2FB575277}" Directory_="APPDIR" Attributes="256" KeyPath="MelonLoader.dll"/>
-    <ROW Component="Newtonsoft.Json.dll" ComponentId="{DB9AC047-FAEC-44CE-8297-4C75BD9322E5}" Directory_="APPDIR" Attributes="0" KeyPath="Newtonsoft.Json.dll"/>
+    <ROW Component="AssetsTools.NET.dll" ComponentId="{7FDD9242-AC00-410B-97B9-8599C1589E7F}" Directory_="APPDIR" Attributes="0" KeyPath="AssetsTools.NET.dll"/>
+    <ROW Component="DownloadUtils.dll" ComponentId="{AEFD6878-5ADF-4C7C-89B9-E5483A5C0994}" Directory_="APPDIR" Attributes="0" KeyPath="DownloadUtils.dll"/>
+    <ROW Component="LEHuDModLauncher.deps.json" ComponentId="{4780D1B5-5C6E-4E5A-A630-D5D828952B1B}" Directory_="APPDIR" Attributes="0" KeyPath="LEHuDModLauncher.deps.json" Type="0"/>
+    <ROW Component="LEHuDModLauncher.dll" ComponentId="{8856E68B-5A19-4FF4-AFFE-FC4321901B38}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.dll"/>
+    <ROW Component="LEHuDModLauncher.exe" ComponentId="{2638E3D6-EAB7-42B2-881B-13B0FC50F698}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.exe"/>
+    <ROW Component="LauncherUtils.dll" ComponentId="{6085A7C7-F051-4AE2-B683-74BBA8530762}" Directory_="APPDIR" Attributes="256" KeyPath="LauncherUtils.dll"/>
+    <ROW Component="LogUtils.dll" ComponentId="{FB7ACBEA-B7E8-4645-9A54-6833004553C1}" Directory_="APPDIR" Attributes="256" KeyPath="LogUtils.dll"/>
+    <ROW Component="MaterialSkin.dll" ComponentId="{BC742D8B-DC60-4601-B063-2AD29C9D55A9}" Directory_="APPDIR" Attributes="0" KeyPath="MaterialSkin.dll"/>
+    <ROW Component="MelonLoader.dll" ComponentId="{8D57265A-D1B5-4671-9AA1-402E6B95EFA0}" Directory_="APPDIR" Attributes="256" KeyPath="MelonLoader.dll"/>
+    <ROW Component="Newtonsoft.Json.dll" ComponentId="{69179314-AF3C-4DC3-94D7-FAC3FE1A598B}" Directory_="APPDIR" Attributes="0" KeyPath="Newtonsoft.Json.dll"/>
     <ROW Component="ProductInformation" ComponentId="{6A11C73B-B1AD-4AED-B527-5065793E77FD}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
-    <ROW Component="SHORTCUTDIR" ComponentId="{848BC8C8-1916-4A18-A30F-85C2D2EDCC5B}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="SharpCompress.dll" ComponentId="{5D782513-F48C-4157-A83A-C8E0F5BBBBB7}" Directory_="APPDIR" Attributes="0" KeyPath="SharpCompress.dll"/>
-    <ROW Component="ZstdSharp.dll" ComponentId="{5389A6D7-FCA9-4009-8B5C-1B3C93A06EB2}" Directory_="APPDIR" Attributes="0" KeyPath="ZstdSharp.dll"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{BD466C93-20D0-4E24-ADE1-4949B5EEB82B}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="SettingsManager.dll" ComponentId="{53301BD4-DAC5-42E7-A773-04988036E2DE}" Directory_="APPDIR" Attributes="0" KeyPath="SettingsManager.dll"/>
+    <ROW Component="SharpCompress.dll" ComponentId="{AB5ED5CF-21D5-47BB-9BB6-9062F3BD8D27}" Directory_="APPDIR" Attributes="0" KeyPath="SharpCompress.dll"/>
+    <ROW Component="ZstdSharp.dll" ComponentId="{3A88FE23-BE52-4893-89BC-2958E9176E38}" Directory_="APPDIR" Attributes="0" KeyPath="ZstdSharp.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
@@ -74,6 +75,8 @@
     <ROW File="MaterialSkin.dll" Component_="MaterialSkin.dll" FileName="MATERI~1.DLL|MaterialSkin.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\MaterialSkin.dll" SelfReg="false"/>
     <ROW File="MelonLoader.dll" Component_="MelonLoader.dll" FileName="MELONL~1.DLL|MelonLoader.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\MelonLoader.dll" SelfReg="false"/>
     <ROW File="Newtonsoft.Json.dll" Component_="Newtonsoft.Json.dll" FileName="NEWTON~1.DLL|Newtonsoft.Json.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\Newtonsoft.Json.dll" SelfReg="false"/>
+    <ROW File="SettingsManager.dll" Component_="SettingsManager.dll" FileName="SETTIN~1.DLL|SettingsManager.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\SettingsManager.dll" SelfReg="false"/>
+    <ROW File="SettingsManager.pdb" Component_="SettingsManager.dll" FileName="SETTIN~1.PDB|SettingsManager.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\SettingsManager.pdb" SelfReg="false"/>
     <ROW File="SharpCompress.dll" Component_="SharpCompress.dll" FileName="SHARPC~1.DLL|SharpCompress.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\SharpCompress.dll" SelfReg="false"/>
     <ROW File="StartUpMessage.rtf" Component_="LEHuDModLauncher.deps.json" FileName="STARTU~1.RTF|StartUpMessage.rtf" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\StartUpMessage.rtf" SelfReg="false"/>
     <ROW File="StartupMessage.zip" Component_="LEHuDModLauncher.deps.json" FileName="STARTU~1.ZIP|StartupMessage.zip" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\StartupMessage.zip" SelfReg="false"/>
@@ -160,6 +163,7 @@
     <ROW Feature_="MainFeature" Component_="MaterialSkin.dll"/>
     <ROW Feature_="MainFeature" Component_="MelonLoader.dll"/>
     <ROW Feature_="MainFeature" Component_="Newtonsoft.Json.dll"/>
+    <ROW Feature_="MainFeature" Component_="SettingsManager.dll"/>
     <ROW Feature_="MainFeature" Component_="SharpCompress.dll"/>
     <ROW Feature_="MainFeature" Component_="ZstdSharp.dll"/>
     <ROW Feature_="MainFeature" Component_="SHORTCUTDIR"/>

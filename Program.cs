@@ -13,10 +13,7 @@ namespace LEHudModLauncher
         static void Main()
         {
             ApplicationConfiguration.Initialize();
-
-            if (File.Exists(@"C:\Users\jp\AppData\Roaming\LEHuDModLauncher\debug.log")) File.Delete(@"C:\Users\jp\AppData\Roaming\LEHuDModLauncher\debug.log");
             Logger.Configure(folder: SettingsManager.Instance.Settings.LogPath ?? null, level: Logger.LogLevel.Debug);
-            
             Application.Run(new Launcherform());
         }
     }
