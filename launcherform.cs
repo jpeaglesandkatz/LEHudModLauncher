@@ -41,8 +41,6 @@ public partial class Launcherform : MaterialForm
     private LogViewerForm? _attachedLogForm;
     public bool UserHasInternet = true;
 
-    //private readonly AppSettings _settings = SettingsManager.Instance.Settings;
-
     private readonly Bitmap _imagecheck = Properties.Resources.check_64dp_green;
     private readonly Bitmap _imagecross = Properties.Resources.close_64dp_red;
 
@@ -109,15 +107,13 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Fatal error {ex.Message}\n{ex.StackTrace}");
+            Logger.Global.Error($"Fatal error {ex.Message}\n{ex.StackTrace}");
         }
-
         this.Visible = true;
     }
 
 
     private void Initapp()
-
     {
         Logger.Global.Debug(" === Initializing Launcher background init thread ==== ");
 
@@ -292,7 +288,6 @@ public partial class Launcherform : MaterialForm
 
             if (!IsMelonValid())
                 Logger.Global.Debug("Something went wrong during melonloader install");
-
         }
 
         // Install mod
@@ -411,6 +406,7 @@ public partial class Launcherform : MaterialForm
         catch (Exception ex)
 
         {
+            Logger.Global.Error($"Error downloading latest mods\n{ex.Message}\n{ex.StackTrace}");
             MessageBox.Show($"Error downloading latest mods\n{ex.Message}");
         }
     }

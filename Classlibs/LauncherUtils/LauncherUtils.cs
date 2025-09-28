@@ -1,9 +1,9 @@
 ﻿using SharpCompress.Archives;
 using SharpCompress.Common;
 using System.Net.NetworkInformation;
-using static Microsoft.Win32.Registry;
-using static LEHuDModLauncher.Settings.Config;
 using static LEHuDModLauncher.Classlibs.LogUtils.Log;
+using static LEHuDModLauncher.Settings.Config;
+using static Microsoft.Win32.Registry;
 
 namespace LEHuDModLauncher.Classlibs.Utils;
 

@@ -10,10 +10,10 @@
     <ROW Property="ARPURLINFOABOUT" Value="https://discord.gg/Kxfq8B82xj"/>
     <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="Manufacturer" Value="JP"/>
-    <ROW Property="ProductCode" Value="1033:{FB284546-541A-44C0-9F96-37EF59F13BCF} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{7C1ACC3E-E872-45A2-A938-A84C43BFCCE2} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Last Epoch HudMod Launcher"/>
-    <ROW Property="ProductVersion" Value="2.41" Options="32"/>
+    <ROW Property="ProductVersion" Value="2.44" Options="32"/>
     <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{54D84C64-7FD3-4CAC-8DEF-C166AFAC3B03}"/>
