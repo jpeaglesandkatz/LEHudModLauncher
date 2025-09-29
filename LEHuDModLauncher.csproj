@@ -20,6 +20,8 @@
     <!--<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>-->
     <StartupObject>LEHudModLauncher.Program</StartupObject>
     <BaseOutputPath>bin\Releases</BaseOutputPath>
+    <Copyright>JP</Copyright>
+    <Description>Last Epoch HudMod Launcher</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>True</Optimize>

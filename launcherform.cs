@@ -1,4 +1,8 @@
-﻿using AssetsTools.NET.Extra;
+﻿// =========================================================================================================================
+// LE HudModLauncher itself and every part of it is released under the MIT license, this does not include the HudMod itself
+// =========================================================================================================================
+
+using AssetsTools.NET.Extra;
 using ClassUtils;
 using DownloadLib;
 using LEHuDModLauncher.Classlibs;
