@@ -7,11 +7,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LEHuDModLauncher", "LEHuDMo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownloadUtils", "Classlibs\FileDownloaderLib\DownloadUtils.csproj", "{51F440A9-9573-DB21-989E-BC96CDB85960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LauncherUtils", "Classlibs\LauncherUtils\LauncherUtils.csproj", "{C4FE063D-259E-FB57-5B20-2EE819B00D4E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassUtils", "Classlibs\LauncherUtils\ClassUtils.csproj", "{C4FE063D-259E-FB57-5B20-2EE819B00D4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogUtils", "Classlibs\LogUtils\LogUtils.csproj", "{C2B5945D-BEB5-791A-A1E1-6A21CB5D7435}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SettingsManager", "Classlibs\SettingsManager\SettingsManager.csproj", "{00BAC660-2C76-4105-69AE-D8BC4C3E45C5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

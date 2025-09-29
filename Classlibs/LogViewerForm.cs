@@ -1,7 +1,7 @@
 using LEHuDModLauncher.Classlibs;
+using SettingsManager;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using static LEHuDModLauncher.Settings.Config;
 using static System.Environment;
 
 namespace LEHuDModLauncher;
@@ -81,18 +81,18 @@ public partial class LogViewerForm : Form
     {
         InitializeComponent();
 
-        if (SettingsManager.Instance.Settings.LogWindowHeight < 0 ||
-            SettingsManager.Instance.Settings.LogWindowWidth < 0)
+        if (Config.Instance.Settings.LogWindowHeight < 0 ||
+            Config.Instance.Settings.LogWindowWidth < 0)
         {
-            SettingsManager.Instance.UpdateLogWindowHeight(500);
-            SettingsManager.Instance.UpdateLogWindowWidth(900);
+            Config.Instance.UpdateLogWindowHeight(500);
+            Config.Instance.UpdateLogWindowWidth(900);
 
         }
 
         StartPosition = FormStartPosition.Manual;
         Location = new Point(
-            SettingsManager.Instance.Settings.LogWindowWidth,
-            SettingsManager.Instance.Settings.LogWindowHeight);
+            Config.Instance.Settings.LogWindowWidth,
+            Config.Instance.Settings.LogWindowHeight);
         ShowInTaskbar = false;
 
         // Don't show lines with the following tags

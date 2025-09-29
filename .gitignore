@@ -145,7 +145,7 @@ _TeamCity*
 
 # AxoCover is a Code Coverage Tool
 .axoCover/*
-!.axoCover/SettingsManager.Instance.Settings.json
+!.axoCover/Config.Instance.Settings.json
 
 # Coverlet is a free, cross platform Code Coverage Tool
 coverage*.json
@@ -192,7 +192,7 @@ publish/
 *.pubxml
 *.publishproj
 
-# Microsoft Azure Web App publish SettingsManager.Instance.Settings. Comment the next line if you want to
+# Microsoft Azure Web App publish Config.Instance.Settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
 # in these scripts will be unencrypted
 PublishScripts/

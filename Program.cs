@@ -1,7 +1,7 @@
 
 using LEHuDModLauncher;
-using static LEHuDModLauncher.Classlibs.LogUtils.Log;
-using static LEHuDModLauncher.Settings.Config;
+using LogUtils;
+using SettingsManager;
 
 namespace LEHudModLauncher;
 
@@ -12,7 +12,7 @@ public static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
-        Logger.Configure(folder: SettingsManager.Instance.Settings.LogPath, level: Logger.LogLevel.Debug);
+        Logger.Configure(folder: Config.Instance.Settings.LogPath, level: Logger.LogLevel.Debug);
         Application.Run(new Launcherform());
     }
 }

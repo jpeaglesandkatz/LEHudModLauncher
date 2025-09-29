@@ -1,8 +1,6 @@
 ﻿
-namespace LEHuDModLauncher.Classlibs.LogUtils;
+namespace LogUtils;
 
-public class Log
-{
     public sealed class Logger
     {
         public enum LogLevel
@@ -174,4 +172,3 @@ public class Log
             }
         }
     }
-}

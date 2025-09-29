@@ -1,11 +1,9 @@
-﻿using System.ComponentModel;
+﻿using LogUtils;
+using System.ComponentModel;
 using System.Text.Json;
-using static LEHuDModLauncher.Classlibs.LogUtils.Log;
 
-namespace LEHuDModLauncher.Settings;
+namespace SettingsManager;
 
-public class Config
-{
     public class AppSettings : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -266,11 +264,11 @@ public class Config
         }
     }
 
-    public class SettingsManager
+    public class Config
     {
-        private static readonly Lazy<SettingsManager> _instance = new(() => new SettingsManager());
+        private static readonly Lazy<Config> _instance = new(() => new Config());
 
-        public static SettingsManager Instance => _instance.Value;
+        public static Config Instance => _instance.Value;
 
         //public AppSettings Settings { get; private set; }
 
@@ -283,7 +281,7 @@ public class Config
         private AppSettings _settings = new AppSettings();
         public AppSettings Settings => _settings;
 
-        private SettingsManager()
+        private Config()
         {
             Load();
             // Note: Load attaches PropertyChanged handler to the loaded _settings.
@@ -461,4 +459,3 @@ public class Config
 
 
     }
-}

@@ -71,7 +71,7 @@
 
   <ItemGroup>
     <ProjectReference Include="Classlibs\FileDownloaderLib\DownloadUtils.csproj" />
-    <ProjectReference Include="Classlibs\LauncherUtils\LauncherUtils.csproj" />
+    <ProjectReference Include="Classlibs\LauncherUtils\ClassUtils.csproj" />
     <ProjectReference Include="Classlibs\LogUtils\LogUtils.csproj" />
     <ProjectReference Include="Classlibs\SettingsManager\SettingsManager.csproj" />
   </ItemGroup>

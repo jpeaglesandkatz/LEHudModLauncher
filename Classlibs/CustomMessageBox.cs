@@ -1,5 +1,5 @@
 ﻿
-using static LEHuDModLauncher.Settings.Config;
+using SettingsManager;
 
 namespace LEHuDModLauncher.Classlibs;
 
@@ -19,7 +19,7 @@ public partial class CustomMessageBox : Form
         ShowInTaskbar = false;
 
         // Apply theme
-        if (SettingsManager.Instance.Settings.DarkMode)
+        if (Config.Instance.Settings.DarkMode)
             ThemeUtils.ApplyDarkTheme(this);
         else
             ThemeUtils.ApplyLightTheme(this);
@@ -179,7 +179,7 @@ public partial class CustomMessageBox : Form
             btn3.TabIndex = 2;
 
         // Apply theme after adding controls
-        if (SettingsManager.Instance.Settings.DarkMode)
+        if (Config.Instance.Settings.DarkMode)
             ThemeUtils.ApplyDarkTheme(this);
         else
             ThemeUtils.ApplyLightTheme(this);

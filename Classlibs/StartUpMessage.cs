@@ -1,4 +1,4 @@
-﻿using static LEHuDModLauncher.Settings.Config;
+﻿using SettingsManager;
 
 namespace LEHuDModLauncher.Classlibs;
 
@@ -13,12 +13,12 @@ internal sealed class StartupDialog : Form
     public StartupDialog(string messageFilePath, bool currentShowSetting)
     {
         NewShowSetting = currentShowSetting;
-        if (SettingsManager.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(this);
+        if (Config.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(this);
         else ThemeUtils.ApplyLightTheme(this);
 
         Text = "Welcome";
-        Width = SettingsManager.Instance.Settings.ModInfoWindowX;
-        Height = SettingsManager.Instance.Settings.ModInfoWindowY;
+        Width = Config.Instance.Settings.ModInfoWindowX;
+        Height = Config.Instance.Settings.ModInfoWindowY;
         StartPosition = FormStartPosition.CenterScreen;
         FormBorderStyle = FormBorderStyle.Sizable;
         MinimumSize = new Size(1000, 700);
@@ -33,8 +33,8 @@ internal sealed class StartupDialog : Form
         _chkDontShow = new CheckBox { Text = "Show this message on startup", Dock = DockStyle.Bottom, Height = 24 };
         _btnClose = new Button
             { Text = "Close", Width = 100, Height = 30, Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
-        _chkDontShow.Checked = SettingsManager.Instance.Settings.ShowStartupMessage;
-        if (SettingsManager.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(_rtb);
+        _chkDontShow.Checked = Config.Instance.Settings.ShowStartupMessage;
+        if (Config.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(_rtb);
         else ThemeUtils.ApplyLightTheme(_rtb);
 
 
@@ -49,20 +49,20 @@ internal sealed class StartupDialog : Form
         Resize += (s, e) =>
         {
             _rtb.Size = new Size(ClientSize.Width - 5, ClientSize.Height - 80);
-            SettingsManager.Instance.UpdateModInfoWindowPosition(ClientSize.Width - 5, ClientSize.Height - 80);
+            Config.Instance.UpdateModInfoWindowPosition(ClientSize.Width - 5, ClientSize.Height - 80);
             _rtb.Update();
         };
 
         LoadMessageFile(messageFilePath);
 
-        _chkDontShow.Checked = SettingsManager.Instance.Settings.ShowStartupMessage;
+        _chkDontShow.Checked = Config.Instance.Settings.ShowStartupMessage;
 
         _btnClose.Click += (s, e) => Close();
         _chkDontShow.CheckedChanged += (s, e) =>
         {
             NewShowSetting = _chkDontShow.Checked;
-            SettingsManager.Instance.UpdateShowStartupMessage(NewShowSetting);
-            _chkDontShow.Checked = SettingsManager.Instance.Settings.ShowStartupMessage;
+            Config.Instance.UpdateShowStartupMessage(NewShowSetting);
+            _chkDontShow.Checked = Config.Instance.Settings.ShowStartupMessage;
         };
 
         Shown += (s, e) =>
@@ -70,7 +70,7 @@ internal sealed class StartupDialog : Form
             // ensure button is above other controls
             _btnClose.BringToFront();
         };
-        if (SettingsManager.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(this);
+        if (Config.Instance.Settings.DarkMode) ThemeUtils.ApplyDarkTheme(this);
         else ThemeUtils.ApplyLightTheme(this);
     }
 

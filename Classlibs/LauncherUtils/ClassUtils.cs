@@ -1,13 +1,14 @@
-﻿using SharpCompress.Archives;
+﻿using LogUtils;
+using SettingsManager;
+using SharpCompress.Archives;
 using SharpCompress.Common;
 using System.Net.NetworkInformation;
-using static LEHuDModLauncher.Classlibs.LogUtils.Log;
-using static LEHuDModLauncher.Settings.Config;
 using static Microsoft.Win32.Registry;
 
-namespace LEHuDModLauncher.Classlibs.Utils;
+namespace ClassUtils;
 
 public class Utils()
+
 {
     public static void CopyFolder(string sourceDir, string destinationDir, bool overwrite = true)
     {
@@ -241,7 +242,7 @@ public class Utils()
         }
     }
 
-    public static void SetHideConsole(string configFilePath)
+    public void SetHideConsole(string configFilePath)
     {
         if (!File.Exists(configFilePath))
         {
@@ -251,7 +252,7 @@ public class Utils()
 
         var lines = File.ReadAllLines(configFilePath);
         var changed = false;
-        var enabledconsole = SettingsManager.Instance.Settings.HideConsole;
+        var enabledconsole = Config.Instance.Settings.HideConsole;
 
         for (var i = 0; i < lines.Length; i++)
         {

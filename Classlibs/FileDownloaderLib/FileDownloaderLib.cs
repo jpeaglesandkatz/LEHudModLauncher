@@ -1,10 +1,9 @@
-﻿using System.Net;
-using static LEHuDModLauncher.Classlibs.LogUtils.Log;
+﻿using LogUtils;
+using System.Net;
 
-namespace LEHuDModLauncher.Classlibs.FileDownloaderLib;
+namespace DownloadLib;
 
-public class DownloadLib
-{
+    //private readonly Launcherform _mainForm;
     public class FileDownloader
     {
         private readonly HttpClient _httpClient;
@@ -131,4 +130,3 @@ public class DownloadLib
 
         }
     }
-}

@@ -1,7 +1,12 @@
 ﻿using AssetsTools.NET.Extra;
+using ClassUtils;
+using DownloadLib;
+using LEHuDModLauncher.Classlibs;
+using LogUtils;
 using MaterialSkin;
 using MaterialSkin.Controls;
 using Newtonsoft.Json;
+using SettingsManager;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Common;
@@ -11,14 +16,10 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using LEHuDModLauncher.Classlibs;
 using static System.IO.File;
 using static System.Windows.Forms.MessageBoxButtons;
 using static System.Windows.Forms.MessageBoxIcon;
-using static LEHuDModLauncher.Settings.Config;
-using static LEHuDModLauncher.Classlibs.LogUtils.Log;
-using static LEHuDModLauncher.Classlibs.FileDownloaderLib.DownloadLib;
-using LEHuDModLauncher.Classlibs.Utils;
+
 
 namespace LEHuDModLauncher;
 
@@ -56,7 +57,7 @@ public partial class Launcherform : MaterialForm
         {
             // Check for launcher update
             Logger.Global.Info("Launcher Update Check....");
-            if (SettingsManager.Instance.Settings.AutoUpdate)
+            if (Config.Instance.Settings.AutoUpdate)
             {
                 try
                 {
@@ -81,9 +82,8 @@ public partial class Launcherform : MaterialForm
             _skinManager.EnforceBackcolorOnAllComponents = true;
             _skinManager.AddFormToManage(this);
             Icon = Properties.Resources.gooey_daemon_multi2;
-            _isDarkTheme = SettingsManager.Instance.Settings.DarkMode;
+            _isDarkTheme = Config.Instance.Settings.DarkMode;
             NewApplyTheme();
-            //ThemeManagerHelper.LoadTheme(_skinManager);
 
             Resize += Launcherform_Resize;
             Activated += Launcherform_activated;
@@ -117,38 +117,38 @@ public partial class Launcherform : MaterialForm
     {
         Logger.Global.Debug(" === Initializing Launcher background init thread ==== ");
 
-        materialTextBoxPath.SafeSetText(SettingsManager.Instance.Settings.GameDir);
-        checkBoxKeepOpen.SafeSetChecked(SettingsManager.Instance.Settings.KeepOpen);
-        checkBoxStartUpMessage.SafeSetChecked(SettingsManager.Instance.Settings.ShowStartupMessage);
-        checkBoxHideConsole.SafeSetChecked(SettingsManager.Instance.Settings.HideConsole);
-        toolstripAutoUpdate.SafeSetChecked(SettingsManager.Instance.Settings.AutoUpdate);
-        toolstripCheckModUpdate.SafeSetChecked(SettingsManager.Instance.Settings.AutoCheckModVersion);
-        SettingsManager.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
+        materialTextBoxPath.SafeSetText(Config.Instance.Settings.GameDir);
+        checkBoxKeepOpen.SafeSetChecked(Config.Instance.Settings.KeepOpen);
+        checkBoxStartUpMessage.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
+        checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
+        toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
+        toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
+        Config.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
         labelVersion.SafeSetText("");
-        if (SettingsManager.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect();
+        if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect();
         else radioGamepad.SafeSelect();
         textGameVersion.SafeSetText("Unknown");
-        if (SettingsManager.Instance.Settings.MainWindowX < 0 || SettingsManager.Instance.Settings.MainWindowY < 0)
+        if (Config.Instance.Settings.MainWindowX < 0 || Config.Instance.Settings.MainWindowY < 0)
         {
-            SettingsManager.Instance.UpdateMainWindowPosition(500, 500);
+            Config.Instance.UpdateMainWindowPosition(500, 500);
         }
 
         StartPosition = FormStartPosition.Manual;
         Location = new Point(
-            SettingsManager.Instance.Settings.MainWindowX,
-            SettingsManager.Instance.Settings.MainWindowY
+            Config.Instance.Settings.MainWindowX,
+            Config.Instance.Settings.MainWindowY
         );
 
-        toolStripTheme.SafeSetText(SettingsManager.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
+        toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
 
-        if (Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
         {
             ShowGameVersion();
         }
 
-        Utils.SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
-        if (SettingsManager.Instance.Settings.AutoUpdate) CheckLauncherUpdate(false);
-        if (SettingsManager.Instance.Settings.AutoCheckModVersion)
+        _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+        if (Config.Instance.Settings.AutoUpdate) CheckLauncherUpdate(false);
+        if (Config.Instance.Settings.AutoCheckModVersion)
         {
             _ = CheckModsForUpdate(true, true, false, false);
         }
@@ -182,16 +182,16 @@ public partial class Launcherform : MaterialForm
     private void Showifvalidgamefolder()
 
     {
-        pictureCheck.Image = Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)) ? _imagecheck : _imagecross;
+        pictureCheck.Image = Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)) ? _imagecheck : _imagecross;
     }
 
     private bool IsMelonValid()
 
     {
         bool shaCheck;
-        if (Exists(SettingsManager.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll"))
+        if (Exists(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll"))
         {
-            shaCheck = VerifySha256(SettingsManager.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",
+            shaCheck = VerifySha256(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",
                 "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
         }
         else
@@ -216,9 +216,9 @@ public partial class Launcherform : MaterialForm
         _ = IsMelonValid();
         Showifvalidgamefolder();
         Logger.Global.Debug($"Install Melon/mods: {autoupdate} - {showmessage} - {forcemelon} - {forcemod}");
-        if (!Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename))) return false;
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
         var skipmelondl = false;
-        var gamePath = SettingsManager.Instance.Settings.GameDir;
+        var gamePath = Config.Instance.Settings.GameDir;
         FileDownloader.DownloadList? dllist;
 
         if (!Directory.Exists(gamePath + @"\modsdl_do_not_delete"))
@@ -336,9 +336,9 @@ public partial class Launcherform : MaterialForm
 
     private void IsModInstalled()
     {
-        if (Exists(SettingsManager.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll"))
+        if (Exists(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll"))
         {
-            var modfileinfo = new FileInfo(SettingsManager.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll");
+            var modfileinfo = new FileInfo(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll");
             pictureModInstalled.Image = Properties.Resources.check_64dp_green;
             labelVersion.SafeSetText($"({modfileinfo.LastWriteTime.ToString(CultureInfo.CurrentCulture)})");
             return;
@@ -349,24 +349,24 @@ public partial class Launcherform : MaterialForm
 
     private void InstallMod(bool showmessage)
     {
-        if (!Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename))) return;
-        if (!Exists(SettingsManager.Instance.Settings.GameDir + @"\Mods"))
-            Directory.CreateDirectory(SettingsManager.Instance.Settings.GameDir + @"\Mods");
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return;
+        if (!Exists(Config.Instance.Settings.GameDir + @"\Mods"))
+            Directory.CreateDirectory(Config.Instance.Settings.GameDir + @"\Mods");
         Console.WriteLine("Installing mod");
         switch (radioKb.Checked)
         {
-            case true when Exists(SettingsManager.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar"):
+            case true when Exists(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar"):
             {
-                Utils.CopyFolder(SettingsManager.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",
-                    SettingsManager.Instance.Settings.GameDir + @"\Mods");
+                Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",
+                    Config.Instance.Settings.GameDir + @"\Mods");
                 if (showmessage) MessageBox.Show("Keyboard version of the HUD Mod is now installed");
                 Console.WriteLine("Keyboard version of the HUD Mod is now installed");
                 break;
             }
-            case false when Exists(SettingsManager.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar"):
+            case false when Exists(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar"):
             {
-                Utils.CopyFolder(SettingsManager.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",
-                    SettingsManager.Instance.Settings.GameDir + @"\Mods");
+                Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",
+                    Config.Instance.Settings.GameDir + @"\Mods");
                 if (showmessage) MessageBox.Show("Gamepad version of the HUD Mod is now installed");
                 Console.WriteLine("Gamepad version of the HUD Mod is now installed");
                 break;
@@ -488,7 +488,7 @@ public partial class Launcherform : MaterialForm
 
     private void ShowGameVersion()
     {
-        var gameversion = NewUnityHelper.ReadGameInfo(_assetsManager, SettingsManager.Instance.Settings.GameDir + @"\Last Epoch_Data");
+        var gameversion = NewUnityHelper.ReadGameInfo(_assetsManager, Config.Instance.Settings.GameDir + @"\Last Epoch_Data");
         if (gameversion != null) textGameVersion.SafeSetText(gameversion);
         Showifvalidgamefolder();
     }
@@ -499,8 +499,8 @@ public partial class Launcherform : MaterialForm
         {
             Logger.Global.Info("CleanupDirs started...");
 
-            var melonLoaderPath = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Melonloader");
-            var modsPath = Path.Combine(SettingsManager.Instance.Settings.GameDir, "Mods");
+            var melonLoaderPath = Path.Combine(Config.Instance.Settings.GameDir, "Melonloader");
+            var modsPath = Path.Combine(Config.Instance.Settings.GameDir, "Mods");
 
             if (Directory.Exists(melonLoaderPath) && melclean) Directory.Delete(melonLoaderPath, true);
             else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
@@ -515,13 +515,13 @@ public partial class Launcherform : MaterialForm
 
     private void StartGame(bool online)
     {
-        if (!Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
         {
             MessageBox.Show("Set a valid game folder first!!!", "Error", OK, Error);
             return;
         }
 
-        var gamedir = SettingsManager.Instance.Settings.GameDir;
+        var gamedir = Config.Instance.Settings.GameDir;
         var gameversion = Path.Combine(gamedir, VersionFilename);
         var gameversionbak = Path.Combine(gamedir, VersionBakFilename);
         try
@@ -603,7 +603,7 @@ public partial class Launcherform : MaterialForm
                 }
             }
 
-            if (!SettingsManager.Instance.Settings.KeepOpen) Application.Exit();
+            if (!Config.Instance.Settings.KeepOpen) Application.Exit();
         }
         catch (Exception ex)
         {
@@ -636,7 +636,7 @@ public partial class Launcherform : MaterialForm
 
     private void launcherform_FormClosing(object sender, FormClosingEventArgs e)
     {
-        SettingsManager.Instance.Save();
+        Config.Instance.Save();
     }
 
     private async Task<FileDownloader.DownloadList?> AddDownloadsFromJson()
@@ -647,7 +647,7 @@ public partial class Launcherform : MaterialForm
 
         try
         {
-            await _fileDownloader.DownloadFileAsync(dlurl, SettingsManager.Instance.Settings.TmpDownloadFolder, "dllistnew.json");
+            await _fileDownloader.DownloadFileAsync(dlurl, Config.Instance.Settings.TmpDownloadFolder, "dllistnew.json");
         }
         catch (Exception ex)
         {
@@ -658,7 +658,7 @@ public partial class Launcherform : MaterialForm
 
         //var jsonContents = await ReadAllTextAsync(Path.Combine(Instance.Settings.TmpDownloadFolder, "dllistnew.json"));
 
-        var reader = new StreamReader(Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "dllistnew.json"));
+        var reader = new StreamReader(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "dllistnew.json"));
         try
         {
             var downloadList = JsonConvert.DeserializeObject<FileDownloader.DownloadList>(await reader.ReadToEndAsync());
@@ -725,16 +725,16 @@ public partial class Launcherform : MaterialForm
         }
 
         if ((!showMessage || !Exists(Path.Combine(rtfPath, "StartupMessage.rtf"))) &&
-            (!SettingsManager.Instance.Settings.ShowStartupMessage ||
+            (!Config.Instance.Settings.ShowStartupMessage ||
              !Exists(new StringBuilder().Append(rtfPath).Append(@"StartupMessage.rtf").ToString()))) return;
         var messageFileToLoad = Path.Combine(rtfPath, "StartupMessage.rtf");
         var dlg = new StartupDialog(messageFileToLoad,
-            SettingsManager.Instance.Settings.ShowStartupMessage);
+            Config.Instance.Settings.ShowStartupMessage);
         try
         {
             _ = dlg.ShowDialog();
 
-            SettingsManager.Instance.UpdateShowStartupMessage(dlg.NewShowSetting);
+            Config.Instance.UpdateShowStartupMessage(dlg.NewShowSetting);
             checkBoxStartUpMessage.SafeSetChecked(dlg.NewShowSetting);
         }
         finally
@@ -749,25 +749,25 @@ public partial class Launcherform : MaterialForm
         {
             _isDarkTheme = false;
             NewApplyTheme();
-            SettingsManager.Instance.UpdateDarkMode(false);
+            Config.Instance.UpdateDarkMode(false);
         }
         else
         {
             _isDarkTheme = true;
             NewApplyTheme();
-            SettingsManager.Instance.UpdateDarkMode(true);
+            Config.Instance.UpdateDarkMode(true);
         }
 
-        _isDarkTheme = SettingsManager.Instance.Settings.DarkMode;
-        toolStripTheme.SafeSetText(SettingsManager.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
+        _isDarkTheme = Config.Instance.Settings.DarkMode;
+        toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
     }
 
 
     private void AttachedLogForm_Resize(object? sender, EventArgs e)
     {
         if (_attachedLogForm == null) return;
-        SettingsManager.Instance.UpdateLogWindowWidth(_attachedLogForm.Width);
-        SettingsManager.Instance.UpdateLogWindowHeight(_attachedLogForm.Height);
+        Config.Instance.UpdateLogWindowWidth(_attachedLogForm.Width);
+        Config.Instance.UpdateLogWindowHeight(_attachedLogForm.Height);
     }
 
     private void PositionLogWindow()
@@ -800,7 +800,7 @@ public partial class Launcherform : MaterialForm
     protected override void OnLocationChanged(EventArgs e)
     {
         base.OnLocationChanged(e);
-        SettingsManager.Instance.UpdateMainWindowPosition(Location.X, Location.Y);
+        Config.Instance.UpdateMainWindowPosition(Location.X, Location.Y);
     }
 
     private async void checkForLauncherUpdateNowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -818,7 +818,7 @@ public partial class Launcherform : MaterialForm
 
     private void toolstripAutoUpdate_CheckStateChanged(object sender, EventArgs e)
     {
-        SettingsManager.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
+        Config.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
     }
 
     private void materialButton1_Click(object sender, EventArgs e)
@@ -834,9 +834,9 @@ public partial class Launcherform : MaterialForm
 
     private void materialTextBoxPath_TextChanged(object sender, EventArgs e)
     {
-        SettingsManager.Instance.UpdateGameDir(materialTextBoxPath.Text);
-        if (!Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename))) return;
-        Utils.SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+        Config.Instance.UpdateGameDir(materialTextBoxPath.Text);
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return;
+        _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
         ShowGameVersion();
         IsModInstalled();
         _ = IsMelonValid();
@@ -849,19 +849,19 @@ public partial class Launcherform : MaterialForm
         {
             using var dialog = new FolderBrowserDialog();
             dialog.Description = "Select Last Epoch game folder";
-            dialog.SelectedPath = SettingsManager.Instance.Settings.GameDir;
+            dialog.SelectedPath = Config.Instance.Settings.GameDir;
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 materialTextBoxPath.SafeSetText(dialog.SelectedPath);
-                SettingsManager.Instance.UpdateGameDir(dialog.SelectedPath);
+                Config.Instance.UpdateGameDir(dialog.SelectedPath);
                 ShowGameVersion();
-                if (Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)) && SettingsManager.Instance.Settings.AutoUpdate)
+                if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)) && Config.Instance.Settings.AutoUpdate)
                     _ = CheckModsForUpdate(true, true, false, false);
             }
 
-            if (Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+            if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
             {
-                Utils.SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+                _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
             }
             else textGameVersion.SafeSetText("Unknown");
         }
@@ -881,15 +881,15 @@ public partial class Launcherform : MaterialForm
     {
         var steamPath = Utils.GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam", "InstallPath");
         if (!string.IsNullOrEmpty(steamPath))
-            SettingsManager.Instance.UpdateSteamPath(steamPath);
+            Config.Instance.UpdateSteamPath(steamPath);
 
         if (steamPath != null)
         {
             var tempgamedir = GetGamePath(steamPath, "Last Epoch");
             if (tempgamedir != null)
             {
-                SettingsManager.Instance.UpdateGameDir(tempgamedir);
-                if (Exists(Path.Combine(tempgamedir, GameFilename)) && SettingsManager.Instance.Settings.AutoUpdate)
+                Config.Instance.UpdateGameDir(tempgamedir);
+                if (Exists(Path.Combine(tempgamedir, GameFilename)) && Config.Instance.Settings.AutoUpdate)
                     _ = CheckModsForUpdate(true, true, false, false);
                 //textGamePath.Text = tempgamedir;
                 materialTextBoxPath.SafeSetText(tempgamedir);
@@ -904,7 +904,7 @@ public partial class Launcherform : MaterialForm
 
     private void radioKb_CheckedChanged_1(object sender, EventArgs e)
     {
-        if (radioKb.Checked) SettingsManager.Instance.UpdateKbGamePadSelect(0);
+        if (radioKb.Checked) Config.Instance.UpdateKbGamePadSelect(0);
     }
 
     private void materialButton1_Click_1(object sender, EventArgs e)
@@ -1028,9 +1028,9 @@ public partial class Launcherform : MaterialForm
                 const string updateJsonUrl =
                     "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/update.json";
 
-                await fileDownloader.DownloadFileAsync(updateJsonUrl, SettingsManager.Instance.Settings.TmpDownloadFolder,
+                await fileDownloader.DownloadFileAsync(updateJsonUrl, Config.Instance.Settings.TmpDownloadFolder,
                     "update.json");
-                var json = await ReadAllTextAsync(Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "update.json"));
+                var json = await ReadAllTextAsync(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
 
                 var updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(json);
 
@@ -1039,7 +1039,7 @@ public partial class Launcherform : MaterialForm
                 //Version currentVersion = new Version(Application.ProductVersion);
                 var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
                 var latestVersion = new Version(updateInfo.Version);
-                Delete(Path.Combine(SettingsManager.Instance.Settings.TmpDownloadFolder, "update.json"));
+                Delete(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
                 if (latestVersion > currentVersion)
                 {
                     Logger.Global.Info($"New Launcher version available: {currentVersion.Major}.{currentVersion.Minor} ->\n{latestVersion.Major}.{latestVersion.Minor}");
@@ -1099,12 +1099,12 @@ public partial class Launcherform : MaterialForm
 
     private void toolstripCheckModUpdate_CheckedChanged(object sender, EventArgs e)
     {
-        SettingsManager.Instance.UpdateCheckModVersion(toolstripCheckModUpdate.Checked);
+        Config.Instance.UpdateCheckModVersion(toolstripCheckModUpdate.Checked);
     }
 
     private void toolstripForceModeUpdate_Click(object sender, EventArgs e)
     {
-        if (Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
 
         {
             _ = CheckModsForUpdate(false, true, true, false);
@@ -1132,31 +1132,31 @@ public partial class Launcherform : MaterialForm
 
     private void checkBoxKeepOpen_CheckStateChanged(object sender, EventArgs e)
     {
-        SettingsManager.Instance.UpdateKeepOpen(checkBoxKeepOpen.Checked);
+        Config.Instance.UpdateKeepOpen(checkBoxKeepOpen.Checked);
     }
 
     private void checkBoxStartUpMessage_CheckedChanged_2(object sender, EventArgs e)
     {
-        SettingsManager.Instance.UpdateShowStartupMessage(checkBoxStartUpMessage.Checked);
+        Config.Instance.UpdateShowStartupMessage(checkBoxStartUpMessage.Checked);
     }
 
     private void checkBoxHideConsole_CheckStateChanged(object sender, EventArgs e)
     {
-        SettingsManager.Instance.UpdateHideConsole(checkBoxHideConsole.Checked);
-        Utils.SetHideConsole(SettingsManager.Instance.Settings.GameDir + @"\UserData\Loader.cfg");
-        Logger.Global.Debug(SettingsManager.Instance.Settings.GameDir + @"\UserData\Loader.cfg");
+        Config.Instance.UpdateHideConsole(checkBoxHideConsole.Checked);
+        _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg");
+        Logger.Global.Debug(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg");
     }
 
     private void buttonAttachLog_Click_2(object sender, EventArgs e)
     {
-        var logPath = SettingsManager.Instance.Settings.GameDir + @"\MelonLoader\Latest.log";
+        var logPath = Config.Instance.Settings.GameDir + @"\MelonLoader\Latest.log";
         if (_attachedLogForm == null || _attachedLogForm.IsDisposed)
         {
             _attachedLogForm = new LogViewerForm(logPath);
             _attachedLogForm.StartPosition = FormStartPosition.Manual;
             _attachedLogForm.Size = new Size(
-                SettingsManager.Instance.Settings.LogWindowWidth,
-                SettingsManager.Instance.Settings.LogWindowHeight
+                Config.Instance.Settings.LogWindowWidth,
+                Config.Instance.Settings.LogWindowHeight
             );
             _attachedLogForm.Resize += AttachedLogForm_Resize;
             PositionLogWindow();
@@ -1177,7 +1177,7 @@ public partial class Launcherform : MaterialForm
 
     private void forceInstallModToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (Exists(Path.Combine(SettingsManager.Instance.Settings.GameDir, GameFilename)))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
 
         {
             _ = CheckModsForUpdate(false, true, false, true);
@@ -1186,7 +1186,7 @@ public partial class Launcherform : MaterialForm
 
     private void radioGamepad_CheckedChanged_1(object sender, EventArgs e)
     {
-        if (radioGamepad.Checked) SettingsManager.Instance.UpdateKbGamePadSelect(1);
+        if (radioGamepad.Checked) Config.Instance.UpdateKbGamePadSelect(1);
     }
 
     [GeneratedRegex("\"\\d+\"\\s+\"(.+?)\"")]
