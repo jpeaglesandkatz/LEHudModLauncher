@@ -175,7 +175,7 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error checking for updates: {ex.Message}", "Update", OK, Warning);
+            Logger.Global.Error($"Error checking for updates: {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -230,7 +230,7 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Failed to download dllist {ex.Message}\n{ex.Message}", "Update", OK, Warning);
+            Logger.Global.Error($"Failed to download dllist {ex.Message}\n{ex.StackTrace}");
             return false;
         }
         Logger.Global.Debug($"Install Melonloader, autoupdate: {autoupdate} - Forcemelon {forcemelon}");
@@ -280,7 +280,6 @@ public partial class Launcherform : MaterialForm
                 CleanupDirs(true);
                 Logger.Global.Debug($"Extracting melonloader... to {gamePath}");
                 await _utils.ExtractFile("Melon.zip", Path.GetFullPath(gamePath + @"\modsdl_do_not_delete"), gamePath);
-                //if (showmessage) MessageBox.Show("Melonloader installed!", );
                 toolStripStatus.SafeSetText(
                     @"Melonloader Installation finished. Running the game after install may take a while....");
             }
@@ -359,7 +358,7 @@ public partial class Launcherform : MaterialForm
             {
                 Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",
                     Config.Instance.Settings.GameDir + @"\Mods");
-                if (showmessage) MessageBox.Show("Keyboard version of the HUD Mod is now installed");
+                if (showmessage) toolStripStatus.SafeSetText("Keyboard version of the HUD Mod is now installed");
                 Console.WriteLine("Keyboard version of the HUD Mod is now installed");
                 break;
             }
@@ -367,7 +366,7 @@ public partial class Launcherform : MaterialForm
             {
                 Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",
                     Config.Instance.Settings.GameDir + @"\Mods");
-                if (showmessage) MessageBox.Show("Gamepad version of the HUD Mod is now installed");
+                if (showmessage) toolStripStatus.SafeSetText("Gamepad version of the HUD Mod is now installed");
                 Console.WriteLine("Gamepad version of the HUD Mod is now installed");
                 break;
             }
@@ -407,7 +406,6 @@ public partial class Launcherform : MaterialForm
 
         {
             Logger.Global.Error($"Error downloading latest mods\n{ex.Message}\n{ex.StackTrace}");
-            MessageBox.Show($"Error downloading latest mods\n{ex.Message}");
         }
     }
 
@@ -607,8 +605,7 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            Logger.Global.Error($"StartGame error: {ex}");
-            MessageBox.Show($"Unexpected error launching game:\n{ex.Message}", "Error", OK, Error);
+            Logger.Global.Error($"StartGame error: {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -651,8 +648,7 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Failed to download dllist {ex.Message}\n{ex.StackTrace}", "Error addownloadfromjson", OK,
-                Warning);
+            Logger.Global.Error($"Failed to download dllist {ex.Message}\n{ex.StackTrace}");
             return null;
         }
 
@@ -682,13 +678,12 @@ public partial class Launcherform : MaterialForm
 
         try
         {
-            if (Exists(new StringBuilder().Append(rtfPath).Append(@"StartupMessage.zip").ToString()) &&
-                !_utils.IsLocalFileUpToDate(
-                    new StringBuilder().Append(rtfPath).Append(@"StartupMessage.zip").ToString(), dlurl))
+            if (Exists(Path.Combine(rtfPath, "StartupMessage.zip")) &&
+                !_utils.IsLocalFileUpToDate(Path.Combine(rtfPath, "StartupMessage.zip"), dlurl))
             {
                 if (!_utils.IsLocalFileUpToDate(Path.Combine(rtfPath, "StartupMessage.zip"), dlurl))
                 {
-                    Delete(new StringBuilder().Append(rtfPath).Append(@"StartupMessage.zip").ToString());
+                    Delete(Path.Combine(rtfPath, "StartupMessage.zip"));
                     if (Exists(Path.Combine(rtfPath, "StartupMessage.rtf")))
                         Delete(Path.Combine(rtfPath, "StartupMessage.rtf"));
                     await _fileDownloader.DownloadFileAsync(dlurl, AppDomain.CurrentDomain.BaseDirectory,
@@ -726,7 +721,7 @@ public partial class Launcherform : MaterialForm
 
         if ((!showMessage || !Exists(Path.Combine(rtfPath, "StartupMessage.rtf"))) &&
             (!Config.Instance.Settings.ShowStartupMessage ||
-             !Exists(new StringBuilder().Append(rtfPath).Append(@"StartupMessage.rtf").ToString()))) return;
+             !Exists(Path.Combine(rtfPath, "StartupMessage.rtf")))) return;
         var messageFileToLoad = Path.Combine(rtfPath, "StartupMessage.rtf");
         var dlg = new StartupDialog(messageFileToLoad,
             Config.Instance.Settings.ShowStartupMessage);
@@ -812,7 +807,7 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            _ = MessageBox.Show($"Error checking for updates: {ex.Message}", "Update", OK, Warning);
+            Logger.Global.Error($"Error checking for updates: {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -867,9 +862,8 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            Logger.Global.Error($"buttonBrowse_Click error: {ex}");
+            Logger.Global.Error($"buttonBrowse_Click error: {ex.Message}\n{ex.StackTrace}");
             _ = IsMelonValid();
-            MessageBox.Show($"Failed to select game folder:\n{ex.Message}", "Error", OK, Error);
         }
 
         IsModInstalled();
@@ -1086,7 +1080,7 @@ public partial class Launcherform : MaterialForm
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error! {ex.Message}\n{ex.StackTrace}", "Error", OK, Error);
+                Logger.Global.Error($"Error! {ex.Message}\n{ex.StackTrace}");
             }
         }
     }
