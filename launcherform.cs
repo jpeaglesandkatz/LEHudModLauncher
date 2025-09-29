@@ -54,7 +54,6 @@ public partial class Launcherform : MaterialForm
         checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
         toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
         toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
-        toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
         
@@ -672,21 +671,10 @@ public partial class Launcherform : MaterialForm
 
     private void toolStripMenuItem1_Click(object sender, EventArgs e)
     {
-        if (_isDarkTheme)
-        {
-            _isDarkTheme = false;
-            NewApplyTheme();
-            Config.Instance.UpdateDarkMode(false);
-        }
-        else
-        {
-            _isDarkTheme = true;
-            NewApplyTheme();
-            Config.Instance.UpdateDarkMode(true);
-        }
-
-        _isDarkTheme = Config.Instance.Settings.DarkMode;
+        _isDarkTheme = !_isDarkTheme;
+        Config.Instance.UpdateDarkMode(_isDarkTheme);
         toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
+        NewApplyTheme();
     }
 
 
@@ -705,7 +693,6 @@ public partial class Launcherform : MaterialForm
                 Location.X + Width - 4,
                 Location.Y
             );
-            // Do NOT set _attachedLogForm.Height here; let it keep its own dimensions.
         }
     }
 
@@ -713,7 +700,7 @@ public partial class Launcherform : MaterialForm
     {
         PositionLogWindow();
     }
-
+    
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         if (_attachedLogForm is { IsDisposed: false })
@@ -1148,6 +1135,7 @@ public partial class Launcherform : MaterialForm
 
         Resize += Launcherform_Resize;
         Activated += Launcherform_activated;
+        toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
         Icon = Properties.Resources.gooey_daemon_multi2;
     }
 }

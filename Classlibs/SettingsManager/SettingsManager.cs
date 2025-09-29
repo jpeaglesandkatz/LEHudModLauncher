@@ -104,7 +104,7 @@ namespace SettingsManager;
             }
         }
 
-        private bool _darkMode = false;
+        private bool _darkMode = true;
         public bool DarkMode
         {
             get => _darkMode;
