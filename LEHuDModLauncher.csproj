@@ -70,8 +70,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="Classlibs\FileDownloaderLib\DownloadUtils.csproj" />
-    <ProjectReference Include="Classlibs\LauncherUtils\ClassUtils.csproj" />
+    <ProjectReference Include="Classlibs\ClassUtils\ClassUtils.csproj" />
+    <ProjectReference Include="Classlibs\DownloadLib\DownloadLib.csproj" />
     <ProjectReference Include="Classlibs\LogUtils\LogUtils.csproj" />
     <ProjectReference Include="Classlibs\SettingsManager\SettingsManager.csproj" />
   </ItemGroup>

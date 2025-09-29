@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FileDownloaderLib\DownloadUtils.csproj" />
+    <ProjectReference Include="..\DownloadLib\DownloadLib.csproj" />
     <ProjectReference Include="..\LogUtils\LogUtils.csproj" />
     <ProjectReference Include="..\SettingsManager\SettingsManager.csproj" />
   </ItemGroup>
