@@ -82,7 +82,7 @@
     </Reference>
   </ItemGroup>
 <Target Name="ZipOutput" AfterTargets="Build">
-    <Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(BaseOutputPath)x64\Release\net9.0-windows\*&quot; -DestinationPath &quot;C:\modding\LE\LEHudModLauncher\Release\LastEpochHudModLauncher.zip&quot; -Force" />
+    <Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(BaseOutputPath)x64\Release\net9.0-windows\*&quot; -DestinationPath &quot;C:\modding\LE\LEHudModLauncher\repo\Release\LastEpochHudModLauncher.zip&quot; -Force" />
  </Target>
 	<!--<Target Name="CopyUpdaterReplacer" AfterTargets="Build">
 		<Copy SourceFiles="C:\modding\LE\LEHudModLauncher\LEHudModLauncher\UpdateReplacer\UpdaterReplacer\bin\Release\net9.0\UpdaterReplacer.exe" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />

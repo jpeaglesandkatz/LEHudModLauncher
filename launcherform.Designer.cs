@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Launcherform));
             panel1 = new Panel();
             statusStrip = new StatusStrip();
             statusStripLabel = new ToolStripStatusLabel();
@@ -87,7 +86,7 @@
             statusStrip.Name = "statusStrip";
             statusStrip.Size = new Size(915, 35);
             statusStrip.TabIndex = 4;
-            statusStrip.Text = "statusStrip1";
+            statusStrip.Text = "";
             // 
             // statusStripLabel
             // 
@@ -100,8 +99,7 @@
             toolStripStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             toolStripStatus.Name = "toolStripStatus";
             toolStripStatus.Size = new Size(92, 28);
-            toolStripStatus.Text = "test text";
-            toolStripStatus.ToolTipText = "Test text";
+            toolStripStatus.Text = "";
             // 
             // menuStrip1
             // 
@@ -111,7 +109,7 @@
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(915, 33);
             menuStrip1.TabIndex = 1;
-            menuStrip1.Text = "menuStrip1";
+            menuStrip1.Text = "";
             // 
             // toolStripTheme
             // 
@@ -120,7 +118,7 @@
             toolStripTheme.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             toolStripTheme.Name = "toolStripTheme";
             toolStripTheme.Size = new Size(86, 29);
-            toolStripTheme.Text = "Theme";
+            toolStripTheme.Text = "";
             toolStripTheme.ToolTipText = "Switch between Dark and Light mode";
             toolStripTheme.Click += toolStripMenuItem1_Click;
             // 
@@ -540,7 +538,6 @@
             DrawerShowIconsWhenHidden = true;
             Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
             FormStyle = FormStyles.ActionBar_48;
-            //Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             MaximizeBox = false;
             MaximumSize = new Size(919, 599);

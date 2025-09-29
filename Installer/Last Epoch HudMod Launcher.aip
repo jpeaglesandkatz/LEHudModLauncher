@@ -10,15 +10,16 @@
     <ROW Property="ARPURLINFOABOUT" Value="https://discord.gg/Kxfq8B82xj"/>
     <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="Manufacturer" Value="JP"/>
-    <ROW Property="ProductCode" Value="1033:{7C1ACC3E-E872-45A2-A938-A84C43BFCCE2} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{D850A92A-E25B-449B-B30B-4E55C4F89B2B} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Last Epoch HudMod Launcher"/>
-    <ROW Property="ProductVersion" Value="2.44" Options="32"/>
+    <ROW Property="ProductVersion" Value="2.45" Options="32"/>
     <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{54D84C64-7FD3-4CAC-8DEF-C166AFAC3B03}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
     <ROW Property="WindowsType9XDisplay" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT" MultiBuildValue="DefaultBuild:Windows 9x/ME/NT/2000/XP/Vista/Windows 7/Windows 8 x86/Windows 8.1 x86/Windows 10 x86" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT40Display" MultiBuildValue="DefaultBuild:Windows NT 4.0" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT50" MultiBuildValue="DefaultBuild:Windows 2000" ValueLocId="-"/>
@@ -27,6 +28,9 @@
     <ROW Property="WindowsTypeNT5XDisplay" MultiBuildValue="DefaultBuild:Windows XP/2003" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT60" MultiBuildValue="DefaultBuild:Windows Vista/Server 2008" ValueLocId="-"/>
     <ROW Property="WindowsTypeNT60Display" MultiBuildValue="DefaultBuild:Windows Vista/Server 2008" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64" MultiBuildValue="DefaultBuild:Windows 7 x64, Windows Server 2008 R2 x64, Windows Server 2012 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNT64Display" MultiBuildValue="DefaultBuild:Windows 7 x64, Windows Server 2008 R2 x64, Windows Server 2012 x64" ValueLocId="-"/>
+    <ROW Property="WindowsTypeNTDisplay" MultiBuildValue="DefaultBuild:32-bit Windows versions" ValueLocId="-"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiDirsComponent">
     <ROW Directory="APPDIR" Directory_Parent="TARGETDIR" DefaultDir="APPDIR:." IsPseudoRoot="1" DirectoryOptions="3"/>
@@ -39,21 +43,21 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{FFAE4935-060A-4973-BB88-B226ADAA55BA}" Directory_="APPDIR" Attributes="0"/>
-    <ROW Component="AssetsTools.NET.dll" ComponentId="{7FDD9242-AC00-410B-97B9-8599C1589E7F}" Directory_="APPDIR" Attributes="0" KeyPath="AssetsTools.NET.dll"/>
-    <ROW Component="DownloadUtils.dll" ComponentId="{AEFD6878-5ADF-4C7C-89B9-E5483A5C0994}" Directory_="APPDIR" Attributes="0" KeyPath="DownloadUtils.dll"/>
-    <ROW Component="LEHuDModLauncher.deps.json" ComponentId="{4780D1B5-5C6E-4E5A-A630-D5D828952B1B}" Directory_="APPDIR" Attributes="0" KeyPath="LEHuDModLauncher.deps.json" Type="0"/>
-    <ROW Component="LEHuDModLauncher.dll" ComponentId="{8856E68B-5A19-4FF4-AFFE-FC4321901B38}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.dll"/>
-    <ROW Component="LEHuDModLauncher.exe" ComponentId="{2638E3D6-EAB7-42B2-881B-13B0FC50F698}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.exe"/>
-    <ROW Component="LauncherUtils.dll" ComponentId="{6085A7C7-F051-4AE2-B683-74BBA8530762}" Directory_="APPDIR" Attributes="256" KeyPath="LauncherUtils.dll"/>
-    <ROW Component="LogUtils.dll" ComponentId="{FB7ACBEA-B7E8-4645-9A54-6833004553C1}" Directory_="APPDIR" Attributes="256" KeyPath="LogUtils.dll"/>
-    <ROW Component="MaterialSkin.dll" ComponentId="{BC742D8B-DC60-4601-B063-2AD29C9D55A9}" Directory_="APPDIR" Attributes="0" KeyPath="MaterialSkin.dll"/>
-    <ROW Component="MelonLoader.dll" ComponentId="{8D57265A-D1B5-4671-9AA1-402E6B95EFA0}" Directory_="APPDIR" Attributes="256" KeyPath="MelonLoader.dll"/>
-    <ROW Component="Newtonsoft.Json.dll" ComponentId="{69179314-AF3C-4DC3-94D7-FAC3FE1A598B}" Directory_="APPDIR" Attributes="0" KeyPath="Newtonsoft.Json.dll"/>
+    <ROW Component="AssetsTools.NET.dll" ComponentId="{BFE51FFC-3049-47D7-B65E-183425B4EB9C}" Directory_="APPDIR" Attributes="0" KeyPath="AssetsTools.NET.dll"/>
+    <ROW Component="ClassUtils.dll" ComponentId="{5AE02B0C-7C33-49E9-B987-16FA5C526A14}" Directory_="APPDIR" Attributes="256" KeyPath="ClassUtils.dll"/>
+    <ROW Component="DownloadLib.dll" ComponentId="{1BE3DD2C-D25C-4824-A7C5-1F381E108948}" Directory_="APPDIR" Attributes="256" KeyPath="DownloadLib.dll"/>
+    <ROW Component="LEHuDModLauncher.deps.json" ComponentId="{BDC9D45E-CD99-4455-8478-1EA8DBAEF7F2}" Directory_="APPDIR" Attributes="0" KeyPath="LEHuDModLauncher.deps.json" Type="0"/>
+    <ROW Component="LEHuDModLauncher.dll" ComponentId="{8F508C46-2AE8-4140-AA5B-B3F109B44EE0}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.dll"/>
+    <ROW Component="LEHuDModLauncher.exe" ComponentId="{83BFA5AB-56BB-4776-905B-540B91546BFB}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.exe"/>
+    <ROW Component="LogUtils.dll" ComponentId="{5683BEEF-A523-4055-915B-CE0827E3665A}" Directory_="APPDIR" Attributes="256" KeyPath="LogUtils.dll"/>
+    <ROW Component="MaterialSkin.dll" ComponentId="{A466DE46-C9B5-4DB9-86E3-815D00A5714C}" Directory_="APPDIR" Attributes="0" KeyPath="MaterialSkin.dll"/>
+    <ROW Component="MelonLoader.dll" ComponentId="{F2F293D0-F48B-46C8-9377-7B15DC5D8D25}" Directory_="APPDIR" Attributes="256" KeyPath="MelonLoader.dll"/>
+    <ROW Component="Newtonsoft.Json.dll" ComponentId="{28D6C5F8-06B0-47F7-B609-211CC0F5F4A3}" Directory_="APPDIR" Attributes="0" KeyPath="Newtonsoft.Json.dll"/>
     <ROW Component="ProductInformation" ComponentId="{6A11C73B-B1AD-4AED-B527-5065793E77FD}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
-    <ROW Component="SHORTCUTDIR" ComponentId="{BD466C93-20D0-4E24-ADE1-4949B5EEB82B}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="SettingsManager.dll" ComponentId="{53301BD4-DAC5-42E7-A773-04988036E2DE}" Directory_="APPDIR" Attributes="0" KeyPath="SettingsManager.dll"/>
-    <ROW Component="SharpCompress.dll" ComponentId="{AB5ED5CF-21D5-47BB-9BB6-9062F3BD8D27}" Directory_="APPDIR" Attributes="0" KeyPath="SharpCompress.dll"/>
-    <ROW Component="ZstdSharp.dll" ComponentId="{3A88FE23-BE52-4893-89BC-2958E9176E38}" Directory_="APPDIR" Attributes="0" KeyPath="ZstdSharp.dll"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{CCC08B02-C99E-4647-ADFF-DB963AC006E7}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="SettingsManager.dll" ComponentId="{151F2181-68C6-4961-AB3A-11A10FE6912D}" Directory_="APPDIR" Attributes="256" KeyPath="SettingsManager.dll"/>
+    <ROW Component="SharpCompress.dll" ComponentId="{DEF624C7-B792-40ED-8EE9-9D8290EA0C97}" Directory_="APPDIR" Attributes="0" KeyPath="SharpCompress.dll"/>
+    <ROW Component="ZstdSharp.dll" ComponentId="{84A5CE74-D334-4166-9B5D-4DCEDCB18EE6}" Directory_="APPDIR" Attributes="0" KeyPath="ZstdSharp.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
@@ -61,10 +65,10 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="AssetsTools.NET.dll" Component_="AssetsTools.NET.dll" FileName="ASSETS~1.DLL|AssetsTools.NET.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\AssetsTools.NET.dll" SelfReg="false"/>
-    <ROW File="DownloadUtils.dll" Component_="DownloadUtils.dll" FileName="DOWNLO~1.DLL|DownloadUtils.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\DownloadUtils.dll" SelfReg="false"/>
-    <ROW File="DownloadUtils.pdb" Component_="DownloadUtils.dll" FileName="DOWNLO~1.PDB|DownloadUtils.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\DownloadUtils.pdb" SelfReg="false"/>
-    <ROW File="LauncherUtils.dll" Component_="LauncherUtils.dll" FileName="LAUNCH~1.DLL|LauncherUtils.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\LauncherUtils.dll" SelfReg="false"/>
-    <ROW File="LauncherUtils.pdb" Component_="LauncherUtils.dll" FileName="LAUNCH~1.PDB|LauncherUtils.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\LauncherUtils.pdb" SelfReg="false"/>
+    <ROW File="ClassUtils.dll" Component_="ClassUtils.dll" FileName="CLASSU~1.DLL|ClassUtils.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\ClassUtils.dll" SelfReg="false"/>
+    <ROW File="ClassUtils.pdb" Component_="ClassUtils.dll" FileName="CLASSU~1.PDB|ClassUtils.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\ClassUtils.pdb" SelfReg="false"/>
+    <ROW File="DownloadLib.dll" Component_="DownloadLib.dll" FileName="DOWNLO~1.DLL|DownloadLib.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\DownloadLib.dll" SelfReg="false"/>
+    <ROW File="DownloadLib.pdb" Component_="DownloadLib.dll" FileName="DOWNLO~1.PDB|DownloadLib.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\DownloadLib.pdb" SelfReg="false"/>
     <ROW File="LEHuDModLauncher.dll" Component_="LEHuDModLauncher.dll" FileName="LEHUDM~1.DLL|LEHuDModLauncher.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\LEHuDModLauncher.dll" SelfReg="false"/>
     <ROW File="LEHuDModLauncher.exe" Component_="LEHuDModLauncher.exe" FileName="LEHUDM~1.EXE|LEHuDModLauncher.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\LEHuDModLauncher.exe" SelfReg="false" DigSign="true"/>
     <ROW File="LEHuDModLauncher.pdb" Component_="LEHuDModLauncher.exe" FileName="LEHUDM~1.PDB|LEHuDModLauncher.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net9.0-windows\LEHuDModLauncher.pdb" SelfReg="false"/>
@@ -154,8 +158,8 @@
     <ROW Feature_="MainFeature" Component_="APPDIR"/>
     <ROW Feature_="MainFeature" Component_="ProductInformation"/>
     <ROW Feature_="MainFeature" Component_="AssetsTools.NET.dll"/>
-    <ROW Feature_="MainFeature" Component_="DownloadUtils.dll"/>
-    <ROW Feature_="MainFeature" Component_="LauncherUtils.dll"/>
+    <ROW Feature_="MainFeature" Component_="ClassUtils.dll"/>
+    <ROW Feature_="MainFeature" Component_="DownloadLib.dll"/>
     <ROW Feature_="MainFeature" Component_="LEHuDModLauncher.dll"/>
     <ROW Feature_="MainFeature" Component_="LEHuDModLauncher.exe"/>
     <ROW Feature_="MainFeature" Component_="LEHuDModLauncher.deps.json"/>
@@ -187,6 +191,8 @@
     <ROW Action="AI_EnableDebugLog" Sequence="51"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiLaunchConditionsComponent">
+    <ROW Condition="( Version9X OR ( NOT VersionNT64 ) OR ( VersionNT64 AND ((VersionNT64 &lt;&gt; 601) OR (MsiNTProductType &lt;&gt; 1)) AND ((VersionNT64 &lt;&gt; 601) OR (MsiNTProductType = 1)) AND ((VersionNT64 &lt;&gt; 602) OR (MsiNTProductType = 1)) ) )" Description="[ProductName] cannot be installed on the following Windows versions: [WindowsTypeNT64Display]." DescriptionLocId="AI.LaunchCondition.NoSpecificNT64" IsPredefined="true" Builds="DefaultBuild"/>
+    <ROW Condition="( Version9X OR VersionNT64 )" Description="[ProductName] cannot be installed on [WindowsTypeNTDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="((VersionNT &lt;&gt; 501) AND (VersionNT &lt;&gt; 502))" Description="[ProductName] cannot be installed on [WindowsTypeNT5XDisplay]." DescriptionLocId="AI.LaunchCondition.NoNT5X" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="(VersionNT &lt;&gt; 400)" Description="[ProductName] cannot be installed on [WindowsTypeNT40Display]." DescriptionLocId="AI.LaunchCondition.NoNT40" IsPredefined="true" Builds="DefaultBuild"/>
     <ROW Condition="(VersionNT &lt;&gt; 500)" Description="[ProductName] cannot be installed on [WindowsTypeNT50Display]." DescriptionLocId="AI.LaunchCondition.NoNT50" IsPredefined="true" Builds="DefaultBuild"/>

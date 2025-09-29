@@ -20,7 +20,6 @@ using static System.IO.File;
 using static System.Windows.Forms.MessageBoxButtons;
 using static System.Windows.Forms.MessageBoxIcon;
 
-
 namespace LEHuDModLauncher;
 
 public partial class Launcherform : MaterialForm
@@ -36,7 +35,7 @@ public partial class Launcherform : MaterialForm
     private readonly UpdateChecker _updater = new();
     private readonly AssetsManager _assetsManager = new();
 
-    private readonly MaterialSkinManager? _skinManager;
+    public MaterialSkinManager? _skinManager = MaterialSkinManager.Instance;
     private bool _isDarkTheme;
 
     private LogViewerForm? _attachedLogForm;
@@ -45,62 +44,27 @@ public partial class Launcherform : MaterialForm
     private readonly Bitmap _imagecheck = Properties.Resources.check_64dp_green;
     private readonly Bitmap _imagecross = Properties.Resources.close_64dp_red;
 
-    //static string Truncate(string s, int len) => s == null ? "" : (s.Length <= len ? s : s.Substring(0, len) + "…");
-
     public Launcherform()
     {
-        Visible = false;
         InitializeComponent();
         Visible = false;
-
-        try
-        {
-            // Check for launcher update
-            Logger.Global.Info("Launcher Update Check....");
-            if (Config.Instance.Settings.AutoUpdate)
-            {
-                try
-                {
-                    _ = _updater.CheckForUpdateAsync(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Global.Error("Launcher update check failed!");
-                }
-            }
-
-            var asm = Assembly.GetExecutingAssembly();
-            var version = asm.GetName().Version;
-            if (version != null)
-            {
-                this.SafeSetText($"{asm.GetName().Name} - {version.Major}.{version.Minor} for Last Epoch Hud Mod by Ash, launcher by JP");
-                Logger.Global.Info(Text);
-                Logger.Global.Info(
-                    $"==========  LE Hud Mod Launcher {version.Major}.{version.Minor} started ============ ");
-            }
-            _skinManager = MaterialSkinManager.Instance;
-            _skinManager.EnforceBackcolorOnAllComponents = true;
-            _skinManager.AddFormToManage(this);
-            Icon = Properties.Resources.gooey_daemon_multi2;
-            _isDarkTheme = Config.Instance.Settings.DarkMode;
-            NewApplyTheme();
-
-            Resize += Launcherform_Resize;
-            Activated += Launcherform_activated;
-            ShowStartupMessage();
-            toolStripStatus.SafeSetText("");
-            Visible = true;
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show("Please Report this error on the LE Hud Mod discord server...\n\n" + ex.Message + "\n" +
-                            ex.Source + "\n" + ex.StackTrace);
-        }
+        materialTextBoxPath.SafeSetText(Config.Instance.Settings.GameDir);
+        checkBoxKeepOpen.SafeSetChecked(Config.Instance.Settings.KeepOpen);
+        checkBoxStartUpMessage.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
+        checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
+        toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
+        toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
+        toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
+        if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
+        _isDarkTheme = Config.Instance.Settings.DarkMode;
+        
+        ShowStartupMessage();
+        Visible = true;
     }
 
-    protected override async void OnShown(EventArgs e)
+    protected override async void OnLoad(EventArgs e)
     {
-        base.OnShown(e);
+        base.OnLoad(e);
         try
         {
             await Task.Run(Initapp);
@@ -112,34 +76,12 @@ public partial class Launcherform : MaterialForm
         this.Visible = true;
     }
 
-
     private void Initapp()
     {
+        Visible = false;
         Logger.Global.Debug(" === Initializing Launcher background init thread ==== ");
 
-        materialTextBoxPath.SafeSetText(Config.Instance.Settings.GameDir);
-        checkBoxKeepOpen.SafeSetChecked(Config.Instance.Settings.KeepOpen);
-        checkBoxStartUpMessage.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
-        checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
-        toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
-        toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
         Config.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
-        labelVersion.SafeSetText("");
-        if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect();
-        else radioGamepad.SafeSelect();
-        textGameVersion.SafeSetText("Unknown");
-        if (Config.Instance.Settings.MainWindowX < 0 || Config.Instance.Settings.MainWindowY < 0)
-        {
-            Config.Instance.UpdateMainWindowPosition(500, 500);
-        }
-
-        StartPosition = FormStartPosition.Manual;
-        Location = new Point(
-            Config.Instance.Settings.MainWindowX,
-            Config.Instance.Settings.MainWindowY
-        );
-
-        toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
 
         if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
         {
@@ -147,15 +89,18 @@ public partial class Launcherform : MaterialForm
         }
 
         _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
-        if (Config.Instance.Settings.AutoUpdate) CheckLauncherUpdate(false);
         if (Config.Instance.Settings.AutoCheckModVersion)
         {
             _ = CheckModsForUpdate(true, true, false, false);
         }
-
+        
         IsMelonValid();
         IsModInstalled();
         Showifvalidgamefolder();
+        toolStripStatus.SafeSetText("");
+        
+        Logger.Global.Info("Launcher Update Check....");
+        if (Config.Instance.Settings.AutoUpdate) _ = _updater.CheckForUpdateAsync(false);
     }
 
 
@@ -163,20 +108,6 @@ public partial class Launcherform : MaterialForm
     {
         get => base.Text;
         set => base.Text = value;
-    }
-
-    private static void CheckLauncherUpdate(bool rep)
-
-    {
-        var updater = new UpdateChecker();
-        try
-        {
-            _ = updater.CheckForUpdateAsync(rep);
-        }
-        catch (Exception ex)
-        {
-            Logger.Global.Error($"Error checking for updates: {ex.Message}\n{ex.StackTrace}");
-        }
     }
 
     private void Showifvalidgamefolder()
@@ -411,6 +342,7 @@ public partial class Launcherform : MaterialForm
 
     private void NewApplyTheme()
     {
+        _isDarkTheme = Config.Instance.Settings.DarkMode;
         if (_isDarkTheme)
         {
             toolStripOptions.Image = Properties.Resources.settings_white;
@@ -1188,5 +1120,34 @@ public partial class Launcherform : MaterialForm
 
     private void Launcherform_Load(object sender, EventArgs e)
     {
+        var asm = Assembly.GetExecutingAssembly();
+        var version = asm.GetName().Version;
+        if (version != null)
+        {
+            this.SafeSetText($"{asm.GetName().Name} - {version.Major}.{version.Minor} for Last Epoch Hud Mod by Ash, launcher by JP");
+            Logger.Global.Info(Text);
+            Logger.Global.Info(
+                $"==========  LE Hud Mod Launcher {version.Major}.{version.Minor} started ============ ");
+        }
+
+        if (_skinManager != null)
+        {
+            _skinManager.EnforceBackcolorOnAllComponents = true;
+            _skinManager.AddFormToManage(this);
+            NewApplyTheme();
+        }
+        if (Config.Instance.Settings.MainWindowX < 0 || Config.Instance.Settings.MainWindowY < 0)
+        {
+            Config.Instance.UpdateMainWindowPosition(500, 500);
+        }
+        StartPosition = FormStartPosition.Manual;
+        Location = new Point(
+            Config.Instance.Settings.MainWindowX,
+            Config.Instance.Settings.MainWindowY
+        );
+
+        Resize += Launcherform_Resize;
+        Activated += Launcherform_activated;
+        Icon = Properties.Resources.gooey_daemon_multi2;
     }
 }
