@@ -97,9 +97,7 @@ public partial class Launcherform : MaterialForm
             _ = CheckModsForUpdate(true, true, false, false);
         }
         
-        IsMelonValid();
-        IsModInstalled();
-        Showifvalidgamefolder();
+
         toolStripStatus.SafeSetText("");
         
         Logger.Global.Info("Launcher Update Check....");
@@ -146,11 +144,12 @@ public partial class Launcherform : MaterialForm
 
     private async Task<bool> CheckModsForUpdate(bool autoupdate, bool showmessage, bool forcemelon, bool forcemod)
     {
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
         IsModInstalled();
         _ = IsMelonValid();
         Showifvalidgamefolder();
         Logger.Global.Debug($"Install Melon/mods: {autoupdate} - {showmessage} - {forcemelon} - {forcemod}");
-        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
+        
         var skipmelondl = false;
         var gamePath = Config.Instance.Settings.GameDir;
         FileDownloader.DownloadList? dllist;
@@ -269,6 +268,7 @@ public partial class Launcherform : MaterialForm
 
     private void IsModInstalled()
     {
+        pictureModInstalled.Image = Properties.Resources.close_64dp_red;
         if (Exists(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll"))
         {
             var modfileinfo = new FileInfo(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll");
@@ -277,7 +277,7 @@ public partial class Launcherform : MaterialForm
             return;
         }
         labelVersion.SafeSetText("");
-        pictureModInstalled.Image = Properties.Resources.close_64dp_red;
+        
     }
 
     private void InstallMod(bool showmessage)
@@ -755,9 +755,9 @@ public partial class Launcherform : MaterialForm
         Config.Instance.UpdateGameDir(materialTextBoxPath.Text);
         if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return;
         _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
-        ShowGameVersion();
+        IsMelonValid();
         IsModInstalled();
-        _ = IsMelonValid();
+        Showifvalidgamefolder();
     }
 
     private void materialButtonBrowse_Click(object sender, EventArgs e)
@@ -786,12 +786,7 @@ public partial class Launcherform : MaterialForm
         catch (Exception ex)
         {
             Logger.Global.Error($"buttonBrowse_Click error: {ex.Message}\n{ex.StackTrace}");
-            _ = IsMelonValid();
         }
-
-        IsModInstalled();
-        Showifvalidgamefolder();
-        _ = IsMelonValid();
     }
 
     private void buttonGetGameFolder_Click_1(object sender, EventArgs e)
@@ -1141,5 +1136,8 @@ public partial class Launcherform : MaterialForm
         Activated += Launcherform_activated;
         toolStripTheme.SafeSetText(Config.Instance.Settings.DarkMode ? "Light Theme" : "Dark Theme");
         Icon = Properties.Resources.gooey_daemon_multi2;
+        IsMelonValid();
+        IsModInstalled();
+        Showifvalidgamefolder();
     }
 }

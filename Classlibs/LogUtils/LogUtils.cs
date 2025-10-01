@@ -1,4 +1,6 @@
-﻿
+﻿using System.Threading;
+
+
 namespace LogUtils;
 
     public sealed class Logger
