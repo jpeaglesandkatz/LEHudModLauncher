@@ -82,24 +82,22 @@
             // 
             statusStrip.ImageScalingSize = new Size(24, 24);
             statusStrip.Items.AddRange(new ToolStripItem[] { statusStripLabel, toolStripStatus });
-            statusStrip.Location = new Point(0, 559);
+            statusStrip.Location = new Point(0, 572);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(915, 35);
+            statusStrip.Size = new Size(915, 22);
             statusStrip.TabIndex = 4;
-            statusStrip.Text = "";
             // 
             // statusStripLabel
             // 
             statusStripLabel.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             statusStripLabel.Name = "statusStripLabel";
-            statusStripLabel.Size = new Size(0, 28);
+            statusStripLabel.Size = new Size(0, 15);
             // 
             // toolStripStatus
             // 
             toolStripStatus.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             toolStripStatus.Name = "toolStripStatus";
-            toolStripStatus.Size = new Size(92, 28);
-            toolStripStatus.Text = "";
+            toolStripStatus.Size = new Size(0, 15);
             // 
             // menuStrip1
             // 
@@ -109,7 +107,6 @@
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(915, 33);
             menuStrip1.TabIndex = 1;
-            menuStrip1.Text = "";
             // 
             // toolStripTheme
             // 
@@ -117,8 +114,7 @@
             toolStripTheme.BackColor = Color.Transparent;
             toolStripTheme.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             toolStripTheme.Name = "toolStripTheme";
-            toolStripTheme.Size = new Size(86, 29);
-            toolStripTheme.Text = "";
+            toolStripTheme.Size = new Size(16, 29);
             toolStripTheme.ToolTipText = "Switch between Dark and Light mode";
             toolStripTheme.Click += toolStripMenuItem1_Click;
             // 
@@ -261,7 +257,9 @@
             materialTextBoxPath.CharacterCasing = CharacterCasing.Normal;
             materialTextBoxPath.Depth = 0;
             materialTextBoxPath.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
+            materialTextBoxPath.HelperText = "On linux valid path e.g.:  /home/<user>/.steam/steam/steamapps/common/Last Epoch/";
             materialTextBoxPath.HideSelection = true;
+            materialTextBoxPath.Hint = "On linux valid path e.g.:  /home/<user>/.steam/steam/steamapps/common/Last Epoch/";
             materialTextBoxPath.LeadingIcon = null;
             materialTextBoxPath.Location = new Point(112, 398);
             materialTextBoxPath.Margin = new Padding(4, 5, 4, 5);
@@ -276,7 +274,8 @@
             materialTextBoxPath.SelectionLength = 0;
             materialTextBoxPath.SelectionStart = 0;
             materialTextBoxPath.ShortcutsEnabled = true;
-            materialTextBoxPath.Size = new Size(610, 36);
+            materialTextBoxPath.ShowAssistiveText = true;
+            materialTextBoxPath.Size = new Size(723, 52);
             materialTextBoxPath.TabIndex = 24;
             materialTextBoxPath.TabStop = false;
             materialTextBoxPath.Text = "materialTextBox21";
@@ -317,7 +316,7 @@
             materialButtonBrowse.Depth = 0;
             materialButtonBrowse.HighEmphasis = true;
             materialButtonBrowse.Icon = null;
-            materialButtonBrowse.Location = new Point(732, 399);
+            materialButtonBrowse.Location = new Point(845, 398);
             materialButtonBrowse.Margin = new Padding(6, 10, 6, 10);
             materialButtonBrowse.MouseState = MaterialSkin.MouseState.HOVER;
             materialButtonBrowse.Name = "materialButtonBrowse";

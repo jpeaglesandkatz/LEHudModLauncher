@@ -60,7 +60,7 @@ public partial class Launcherform : MaterialForm
         toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
-        
+
         ShowStartupMessage();
         Visible = true;
     }
@@ -96,10 +96,10 @@ public partial class Launcherform : MaterialForm
         {
             _ = CheckModsForUpdate(true, true, false, false);
         }
-        
+
 
         toolStripStatus.SafeSetText("");
-        
+
         Logger.Global.Info("Launcher Update Check....");
         if (Config.Instance.Settings.AutoUpdate) _ = _updater.CheckForUpdateAsync(false);
     }
@@ -149,7 +149,7 @@ public partial class Launcherform : MaterialForm
         _ = IsMelonValid();
         Showifvalidgamefolder();
         Logger.Global.Debug($"Install Melon/mods: {autoupdate} - {showmessage} - {forcemelon} - {forcemod}");
-        
+
         var skipmelondl = false;
         var gamePath = Config.Instance.Settings.GameDir;
         FileDownloader.DownloadList? dllist;
@@ -277,7 +277,7 @@ public partial class Launcherform : MaterialForm
             return;
         }
         labelVersion.SafeSetText("");
-        
+
     }
 
     private void InstallMod(bool showmessage)
@@ -289,21 +289,21 @@ public partial class Launcherform : MaterialForm
         switch (radioKb.Checked)
         {
             case true when Exists(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar"):
-            {
-                Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",
-                    Config.Instance.Settings.GameDir + @"\Mods");
-                if (showmessage) toolStripStatus.SafeSetText("Keyboard version of the HUD Mod is now installed");
-                Console.WriteLine("Keyboard version of the HUD Mod is now installed");
-                break;
-            }
+                {
+                    Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",
+                        Config.Instance.Settings.GameDir + @"\Mods");
+                    if (showmessage) toolStripStatus.SafeSetText("Keyboard version of the HUD Mod is now installed");
+                    Console.WriteLine("Keyboard version of the HUD Mod is now installed");
+                    break;
+                }
             case false when Exists(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar"):
-            {
-                Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",
-                    Config.Instance.Settings.GameDir + @"\Mods");
-                if (showmessage) toolStripStatus.SafeSetText("Gamepad version of the HUD Mod is now installed");
-                Console.WriteLine("Gamepad version of the HUD Mod is now installed");
-                break;
-            }
+                {
+                    Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",
+                        Config.Instance.Settings.GameDir + @"\Mods");
+                    if (showmessage) toolStripStatus.SafeSetText("Gamepad version of the HUD Mod is now installed");
+                    Console.WriteLine("Gamepad version of the HUD Mod is now installed");
+                    break;
+                }
         }
 
         IsModInstalled();
@@ -704,7 +704,7 @@ public partial class Launcherform : MaterialForm
     {
         PositionLogWindow();
     }
-    
+
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         if (_attachedLogForm is { IsDisposed: false })
@@ -752,8 +752,9 @@ public partial class Launcherform : MaterialForm
 
     private void materialTextBoxPath_TextChanged(object sender, EventArgs e)
     {
-        Config.Instance.UpdateGameDir(materialTextBoxPath.Text);
-        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return;
+        
+        if (Exists(Path.Combine(materialTextBoxPath.Text, GameFilename))) Config.Instance.UpdateGameDir(Path.Combine(materialTextBoxPath.Text, ""));
+        else return;
         _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
         IsMelonValid();
         IsModInstalled();
@@ -966,11 +967,11 @@ public partial class Launcherform : MaterialForm
                     await DownloadAndRunInstaller(updateInfo.InstallerUrl);
                 }
                 else
-                if (reportstatus)
-                {
-                    Logger.Global.Info($"Already on latest launcher: {currentVersion.Major}.{currentVersion.Minor}");
-                    MessageBox.Show("You have the latest version of the launcher/installer", "No Update", OK, Information);
-                }
+                    if (reportstatus)
+                    {
+                        Logger.Global.Info($"Already on latest launcher: {currentVersion.Major}.{currentVersion.Minor}");
+                        MessageBox.Show("You have the latest version of the launcher/installer", "No Update", OK, Information);
+                    }
             }
             catch (Exception ex)
             {
@@ -1140,4 +1141,6 @@ public partial class Launcherform : MaterialForm
         IsModInstalled();
         Showifvalidgamefolder();
     }
+
+
 }

@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -83,9 +83,9 @@
       <HintPath>MelonLoader.dll</HintPath>
     </Reference>
   </ItemGroup>
-<Target Name="ZipOutput" AfterTargets="Build">
+<!--<Target Name="ZipOutput" AfterTargets="Build">
     <Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(BaseOutputPath)x64\Release\net9.0-windows\*&quot; -DestinationPath &quot;C:\modding\LE\LEHudModLauncher\repo\Release\LastEpochHudModLauncher.zip&quot; -Force" />
- </Target>
+ </Target>-->
 	<!--<Target Name="CopyUpdaterReplacer" AfterTargets="Build">
 		<Copy SourceFiles="C:\modding\LE\LEHudModLauncher\LEHudModLauncher\UpdateReplacer\UpdaterReplacer\bin\Release\net9.0\UpdaterReplacer.exe" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
 	</Target>
