@@ -91,7 +91,7 @@ public partial class Launcherform : MaterialForm
             ShowGameVersion();
         }
 
-        _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg",""));
         if (Config.Instance.Settings.AutoCheckModVersion)
         {
             _ = CheckModsForUpdate(true, true, false, false);
@@ -121,9 +121,9 @@ public partial class Launcherform : MaterialForm
 
     {
         bool shaCheck;
-        if (Exists(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll"))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll","")))
         {
-            shaCheck = VerifySha256(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",
+            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",""),
                 "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
         }
         else
@@ -229,11 +229,11 @@ public partial class Launcherform : MaterialForm
             // var (remoteFileDate, remoteFileSize) = _utils.GetRemoteFileInfo(dllist.Files[1].Url);
             // var (remoteFileDate2, remoteFileSize2) = _utils.GetRemoteFileInfo(dllist.Files[2].Url);
             bool skipmoddl;
-            if (dllist != null && Exists(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar") &
-                _utils.IsLocalFileUpToDate(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar",
+            if (dllist != null && Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar", "")) &
+                _utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar",""),
                     dllist.Files[1].Url) &
-                Exists(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar") &
-                _utils.IsLocalFileUpToDate(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar",
+                Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar","")) &
+                _utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar",""),
                     dllist.Files[2].Url))
                 skipmoddl = true;
             else
@@ -246,7 +246,7 @@ public partial class Launcherform : MaterialForm
                 {
                     var folderDownloader = new GitHubReleaseDownloader.GitHubFolderDownloader();
                     var files = await folderDownloader.FetchFolderFilesAsync("RCInet", "LastEpoch_Mods", "master", "Latest");
-                    await folderDownloader.DownloadFilesAsync(files, gamePath + @"\modsdl_do_not_delete");
+                    await folderDownloader.DownloadFilesAsync(files, Path.Combine(gamePath + @"\modsdl_do_not_delete",""));
                 }
                 catch (Exception ex)
                 {
@@ -256,7 +256,7 @@ public partial class Launcherform : MaterialForm
             }
 
             // Extract the downloaded files from the \Lastest folder
-            ExtractAllRars(gamePath + @"\modsdl_do_not_delete", gamePath + @"\modsdl_do_not_delete\");
+            ExtractAllRars(Path.Combine(gamePath + @"\modsdl_do_not_delete",""), Path.Combine(gamePath + @"\modsdl_do_not_delete\",""));
             InstallMod(!autoupdate);
         }
 
@@ -269,9 +269,9 @@ public partial class Launcherform : MaterialForm
     private void IsModInstalled()
     {
         pictureModInstalled.Image = Properties.Resources.close_64dp_red;
-        if (Exists(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll"))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll","")))
         {
-            var modfileinfo = new FileInfo(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll");
+            var modfileinfo = new FileInfo(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll",""));
             pictureModInstalled.Image = Properties.Resources.check_64dp_green;
             labelVersion.SafeSetText($"({modfileinfo.LastWriteTime.ToString(CultureInfo.CurrentCulture)})");
             return;
@@ -283,23 +283,23 @@ public partial class Launcherform : MaterialForm
     private void InstallMod(bool showmessage)
     {
         if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return;
-        if (!Exists(Config.Instance.Settings.GameDir + @"\Mods"))
-            Directory.CreateDirectory(Config.Instance.Settings.GameDir + @"\Mods");
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods","")))
+            Directory.CreateDirectory(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods",""));
         Console.WriteLine("Installing mod");
         switch (radioKb.Checked)
         {
-            case true when Exists(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar"):
+            case true when Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar","")):
                 {
-                    Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",
-                        Config.Instance.Settings.GameDir + @"\Mods");
+                    Utils.CopyFolder(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard)",""),
+                        Path.Combine(Config.Instance.Settings.GameDir + @"\Mods",""));
                     if (showmessage) toolStripStatus.SafeSetText("Keyboard version of the HUD Mod is now installed");
                     Console.WriteLine("Keyboard version of the HUD Mod is now installed");
                     break;
                 }
-            case false when Exists(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar"):
+            case false when Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar","")):
                 {
-                    Utils.CopyFolder(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",
-                        Config.Instance.Settings.GameDir + @"\Mods");
+                    Utils.CopyFolder(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad)",""),
+                        Path.Combine(Config.Instance.Settings.GameDir + @"\Mods",""));
                     if (showmessage) toolStripStatus.SafeSetText("Gamepad version of the HUD Mod is now installed");
                     Console.WriteLine("Gamepad version of the HUD Mod is now installed");
                     break;
@@ -323,9 +323,9 @@ public partial class Launcherform : MaterialForm
                 using var archive = RarArchive.Open(rarFile);
                 foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                 {
-                    Directory.CreateDirectory(destinationFolder + $"\\{Path.GetFileNameWithoutExtension(rarFile)}");
+                    Directory.CreateDirectory(Path.Combine(destinationFolder + $"\\{Path.GetFileNameWithoutExtension(rarFile)}",""));
                     entry.WriteToDirectory(
-                        destinationFolder + $"\\{Path.GetFileNameWithoutExtension(rarFile)}",
+                        Path.Combine(destinationFolder + $"\\{Path.GetFileNameWithoutExtension(rarFile)}",""),
                         new ExtractionOptions
                         {
                             ExtractFullPath = true,
@@ -421,7 +421,7 @@ public partial class Launcherform : MaterialForm
 
     private void ShowGameVersion()
     {
-        var gameversion = NewUnityHelper.ReadGameInfo(_assetsManager, Config.Instance.Settings.GameDir + @"\Last Epoch_Data");
+        var gameversion = NewUnityHelper.ReadGameInfo(_assetsManager, Path.Combine(Config.Instance.Settings.GameDir + @"\Last Epoch_Data",""));
         if (gameversion != null) textGameVersion.SafeSetText(gameversion);
         Showifvalidgamefolder();
     }
@@ -755,7 +755,7 @@ public partial class Launcherform : MaterialForm
         
         if (Exists(Path.Combine(materialTextBoxPath.Text, GameFilename))) Config.Instance.UpdateGameDir(Path.Combine(materialTextBoxPath.Text, ""));
         else return;
-        _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg",""));
         IsMelonValid();
         IsModInstalled();
         Showifvalidgamefolder();
@@ -780,7 +780,7 @@ public partial class Launcherform : MaterialForm
 
             if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
             {
-                _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg");
+                _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg",""));
             }
             else textGameVersion.SafeSetText("Unknown");
         }
@@ -1056,13 +1056,13 @@ public partial class Launcherform : MaterialForm
     private void checkBoxHideConsole_CheckStateChanged(object sender, EventArgs e)
     {
         Config.Instance.UpdateHideConsole(checkBoxHideConsole.Checked);
-        _utils.SetHideConsole(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg");
-        Logger.Global.Debug(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg");
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg",""));
+        Logger.Global.Debug(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg",""));
     }
 
     private void buttonAttachLog_Click_2(object sender, EventArgs e)
     {
-        var logPath = Config.Instance.Settings.GameDir + @"\MelonLoader\Latest.log";
+        var logPath = Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\Latest.log","");
         if (_attachedLogForm == null || _attachedLogForm.IsDisposed)
         {
             _attachedLogForm = new LogViewerForm(logPath);
