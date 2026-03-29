@@ -47,7 +47,7 @@ public partial class Launcherform : MaterialForm
 
     private readonly Bitmap _imagecheck = Properties.Resources.check_64dp_green;
     private readonly Bitmap _imagecross = Properties.Resources.close_64dp_red;
-
+    
     public Launcherform()
     {
         InitializeComponent();
@@ -60,6 +60,7 @@ public partial class Launcherform : MaterialForm
         toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
+        //CreateSha256(Path.Combine("C:\\Users\\jp\\Downloads\\Melon\\MelonLoader\\net35\\MelonLoader.dll",""));
 
         ShowStartupMessage();
         Visible = true;
@@ -123,8 +124,12 @@ public partial class Launcherform : MaterialForm
         bool shaCheck;
         if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll","")))
         {
-            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",""),
-                "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
+            //shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",""),
+            //    "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
+            // New sha256 for official 0.72 version of Melon loader (29/3/2026)
+            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
+                "9DA4175149E7EBA5F67511461A658D15CD062C287E34FC9A03B1EFC8FDC8D21C");
+            
         }
         else
         {
@@ -139,6 +144,7 @@ public partial class Launcherform : MaterialForm
         }
 
         pictureCheckLoader.Image = Properties.Resources.close_64dp_red;
+        
         return false;
     }
 
@@ -434,7 +440,8 @@ public partial class Launcherform : MaterialForm
 
             var melonLoaderPath = Path.Combine(Config.Instance.Settings.GameDir, "Melonloader");
             var modsPath = Path.Combine(Config.Instance.Settings.GameDir, "Mods");
-
+            if (File.Exists(Path.Combine(Config.Instance.Settings.GameDir, "version.dll"))) File.Delete(Path.Combine(Config.Instance.Settings.GameDir, "version.dll"));
+            if (File.Exists(Path.Combine(Config.Instance.Settings.GameDir, "version.bak"))) File.Delete(Path.Combine(Config.Instance.Settings.GameDir, "version.bak"));
             if (Directory.Exists(melonLoaderPath) && melclean) Directory.Delete(melonLoaderPath, true);
             else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
 
@@ -952,19 +959,52 @@ public partial class Launcherform : MaterialForm
                 //Version currentVersion = new Version(Application.ProductVersion);
                 var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
                 var latestVersion = new Version(updateInfo.Version);
+                
                 Delete(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
                 if (latestVersion > currentVersion)
                 {
                     Logger.Global.Info($"New Launcher version available: {currentVersion.Major}.{currentVersion.Minor} ->\n{latestVersion.Major}.{latestVersion.Minor}");
-                    var result = MessageBox.Show(
-                        $"A new version ({latestVersion}) of the launcher/installer is available. You are on {currentVersion.Major}.{currentVersion.Minor}.\n\nDo you want to update now?",
-                        "Update Available",
-                        YesNo,
-                        Information);
+                    // Show the update prompt on the UI thread and do not block this background task.
+                    // If the user accepts, start the download — otherwise do nothing.
+                    if (Application.OpenForms.Count > 0)
+                    {
+                        var owner = Application.OpenForms[0];
+                        owner.BeginInvoke(new Action(async () =>
+                        {
+                            var res = MessageBox.Show(owner,
+                                $"A new version ({latestVersion}) of the launcher/installer is available. You are on {currentVersion.Major}.{currentVersion.Minor}.\n\nClose the launcher first and do you want to update now?",
+                                "Update Available",
+                                YesNo,
+                                Information);
 
-                    if (result == DialogResult.Yes)
-                        Logger.Global.Info("Downloading new launcher setup...");
-                    await DownloadAndRunInstaller(updateInfo.InstallerUrl);
+                            if (res == DialogResult.Yes)
+                            {
+                                Logger.Global.Info("Downloading new launcher setup...");
+                                await DownloadAndRunInstaller(updateInfo.InstallerUrl);
+                            }
+                        }));
+                    }
+                    else
+                    {
+                        // Fallback: show message box on a new STA thread so we don't block this async task.
+                        var t = new System.Threading.Thread(() =>
+                        {
+                            var res = MessageBox.Show(
+                                $"A new version ({latestVersion}) of the launcher/installer is available. You are on {currentVersion.Major}.{currentVersion.Minor}.\n\nClose the launcher and do you want to update now?",
+                                "Update Available",
+                                YesNo,
+                                Information);
+                            if (res == DialogResult.Yes)
+                            {
+                                Logger.Global.Info("Downloading new launcher setup...");
+                                // Run the async downloader and block this STA thread until it completes.
+                                DownloadAndRunInstaller(updateInfo.InstallerUrl).GetAwaiter().GetResult();
+                            }
+                        });
+                        t.SetApartmentState(System.Threading.ApartmentState.STA);
+                        t.IsBackground = true;
+                        t.Start();
+                    }
                 }
                 else
                     if (reportstatus)
@@ -1042,6 +1082,41 @@ public partial class Launcherform : MaterialForm
         var actual = Convert.ToHexString(hash).ToUpperInvariant();
         return string.Equals(actual, expectedHash, StringComparison.OrdinalIgnoreCase);
     }
+
+    public static void CreateSha256(string filePath)
+    {
+        using var sha = SHA256.Create();
+        using var stream = OpenRead(filePath);
+        var hash = sha.ComputeHash(stream);
+        var actual = Convert.ToHexString(hash).ToUpperInvariant();
+        try
+        {
+            // Try to set clipboard on current thread (usually UI thread)
+            System.Windows.Forms.Clipboard.SetText(actual);
+            MessageBox.Show($"SHA256: {actual}\n\nCopied to clipboard.", "File Hash", OK, Information);
+        }
+        catch (Exception)
+        {
+            // Fallback: use an STA thread to set the clipboard if current thread is not STA
+            var t = new System.Threading.Thread(() =>
+            {
+                try
+                {
+                    System.Windows.Forms.Clipboard.SetText(actual);
+                }
+                catch
+                {
+                    // ignore
+                }
+            });
+            t.SetApartmentState(System.Threading.ApartmentState.STA);
+            t.IsBackground = true;
+            t.Start();
+            t.Join();
+            MessageBox.Show($"SHA256: {actual}\n\nCopied to clipboard.", "File Hash", OK, Information);
+        }
+    }
+
 
     private void checkBoxKeepOpen_CheckStateChanged(object sender, EventArgs e)
     {
