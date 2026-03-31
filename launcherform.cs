@@ -124,11 +124,11 @@ public partial class Launcherform : MaterialForm
         bool shaCheck;
         if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll","")))
         {
-            //shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",""),
-            //    "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
+            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",""),
+                "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
             // New sha256 for official 0.72 version of Melon loader (29/3/2026)
-            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
-                "9DA4175149E7EBA5F67511461A658D15CD062C287E34FC9A03B1EFC8FDC8D21C");
+            //shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
+            //    "9DA4175149E7EBA5F67511461A658D15CD062C287E34FC9A03B1EFC8FDC8D21C");
             
         }
         else
