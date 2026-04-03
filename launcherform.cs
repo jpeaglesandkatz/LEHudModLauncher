@@ -92,7 +92,7 @@ public partial class Launcherform : MaterialForm
             ShowGameVersion();
         }
 
-        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg",""));
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg",""));
         if (Config.Instance.Settings.AutoCheckModVersion)
         {
             _ = CheckModsForUpdate(true, true, false, false);
@@ -129,7 +129,7 @@ public partial class Launcherform : MaterialForm
             // New sha256 for official 0.72 version of Melon loader (29/3/2026)
             //shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
             //    "9DA4175149E7EBA5F67511461A658D15CD062C287E34FC9A03B1EFC8FDC8D21C");
-            
+
         }
         else
         {
@@ -150,6 +150,7 @@ public partial class Launcherform : MaterialForm
 
     private async Task<bool> CheckModsForUpdate(bool autoupdate, bool showmessage, bool forcemelon, bool forcemod)
     {
+        forcemod = true;  // for now always force update.
         if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
         IsModInstalled();
         _ = IsMelonValid();
@@ -160,8 +161,8 @@ public partial class Launcherform : MaterialForm
         var gamePath = Config.Instance.Settings.GameDir;
         FileDownloader.DownloadList? dllist;
 
-        if (!Directory.Exists(gamePath + @"\modsdl_do_not_delete"))
-            Directory.CreateDirectory(gamePath + @"\modsdl_do_not_delete");
+        if (!Directory.Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete","")))
+            Directory.CreateDirectory(Path.Combine(gamePath + @"\modsdl_do_not_delete",""));
         try
         {
             // get download links
@@ -177,7 +178,7 @@ public partial class Launcherform : MaterialForm
         {
             // Check if Existing Melon.zip is uptodate
             toolStripStatus.SafeSetText("Checking Melonloader...");
-            if (Exists(gamePath + @"\modsdl_do_not_delete\Melon.zip"))
+            if (Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete\Melon.zip","")))
             {
                 toolStripStatus.SafeSetEnabled(true);
                 toolStripStatus.SafeSetEnabled(true);
@@ -185,7 +186,7 @@ public partial class Launcherform : MaterialForm
                 // Check if the correct Melonloader was already downloaded so skip if yes
                 // var (remoteFileDate, remoteFileSize) = _utils.GetRemoteFileInfo(dllist.Files[0].Url);
 
-                if (dllist != null && _utils.IsLocalFileUpToDate(gamePath + @"\modsdl_do_not_delete\Melon.zip", dllist.Files[0].Url))
+                if (dllist != null && _utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete\Melon.zip",""), dllist.Files[0].Url))
                 {
                     skipmelondl = true; // up-to-date so skip dl
                 }
@@ -206,7 +207,7 @@ public partial class Launcherform : MaterialForm
                         Logger.Global.Debug("Download melonloader...");
                         if (dllist != null)
                             await _fileDownloader.DownloadFileAsync(dllist.Files[0].Url,
-                                gamePath + @"\modsdl_do_not_delete", "Melon.zip");
+                                Path.Combine(gamePath + @"\modsdl_do_not_delete",""), "Melon.zip");
                     }
                 }
                 catch (Exception ex)
@@ -262,7 +263,7 @@ public partial class Launcherform : MaterialForm
             }
 
             // Extract the downloaded files from the \Lastest folder
-            ExtractAllRars(Path.Combine(gamePath + @"\modsdl_do_not_delete",""), Path.Combine(gamePath + @"\modsdl_do_not_delete\",""));
+            ExtractAllRars(Path.Combine(gamePath + @"\modsdl_do_not_delete\",""), Path.Combine(gamePath + @"\modsdl_do_not_delete\",""));
             InstallMod(!autoupdate);
         }
 
@@ -329,9 +330,9 @@ public partial class Launcherform : MaterialForm
                 using var archive = RarArchive.Open(rarFile);
                 foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                 {
-                    Directory.CreateDirectory(Path.Combine(destinationFolder + $"\\{Path.GetFileNameWithoutExtension(rarFile)}",""));
+                    Directory.CreateDirectory(Path.Combine(destinationFolder, Path.GetFileNameWithoutExtension(rarFile)));
                     entry.WriteToDirectory(
-                        Path.Combine(destinationFolder + $"\\{Path.GetFileNameWithoutExtension(rarFile)}",""),
+                        Path.Combine(destinationFolder,Path.GetFileNameWithoutExtension(rarFile)),
                         new ExtractionOptions
                         {
                             ExtractFullPath = true,
