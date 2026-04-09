@@ -63,6 +63,11 @@ public partial class Launcherform : MaterialForm
         //CreateSha256(Path.Combine("C:\\Users\\jp\\Downloads\\Melon\\MelonLoader\\net35\\MelonLoader.dll",""));
 
         ShowStartupMessage();
+        if (Config.Instance.Settings.AutoCheckModVersion)
+        {
+            _ = CheckModsForUpdate(true, true, false, false);
+
+        }
         Visible = true;
     }
 
@@ -85,7 +90,7 @@ public partial class Launcherform : MaterialForm
         Visible = false;
         Logger.Global.Debug(" === Initializing Launcher background init thread ==== ");
 
-        Config.Instance.UpdateAutoUpdate(toolstripAutoUpdate.Checked);
+        
 
         if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
         {
@@ -93,16 +98,13 @@ public partial class Launcherform : MaterialForm
         }
 
         _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg",""));
-        if (Config.Instance.Settings.AutoCheckModVersion)
-        {
-            _ = CheckModsForUpdate(true, true, false, false);
-        }
 
 
         toolStripStatus.SafeSetText("");
 
         Logger.Global.Info("Launcher Update Check....");
         if (Config.Instance.Settings.AutoUpdate) _ = _updater.CheckForUpdateAsync(false);
+
     }
 
 
@@ -150,7 +152,7 @@ public partial class Launcherform : MaterialForm
 
     private async Task<bool> CheckModsForUpdate(bool autoupdate, bool showmessage, bool forcemelon, bool forcemod)
     {
-        forcemod = true;  // for now always force update.
+        //forcemod = true;  // for now always force update.
         if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
         IsModInstalled();
         _ = IsMelonValid();
@@ -233,15 +235,17 @@ public partial class Launcherform : MaterialForm
         Logger.Global.Debug($"Install MOD, autoupdate: {autoupdate} - Forcemod {forcemod}");
         if (autoupdate || forcemod) // always update with autoupdate or forcemod (install)
         {
-            // var (remoteFileDate, remoteFileSize) = _utils.GetRemoteFileInfo(dllist.Files[1].Url);
-            // var (remoteFileDate2, remoteFileSize2) = _utils.GetRemoteFileInfo(dllist.Files[2].Url);
+            
             bool skipmoddl;
             if (dllist != null && Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar", "")) &
                 _utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar",""),
                     dllist.Files[1].Url) &
                 Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar","")) &
                 _utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar",""),
-                    dllist.Files[2].Url))
+                    dllist.Files[2].Url) &
+                Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete\UserLibs.rar", "")) &
+                _utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete\UserLibs.rar", ""),
+                    dllist.Files[3].Url))
                 skipmoddl = true;
             else
                 skipmoddl = false;
@@ -312,7 +316,13 @@ public partial class Launcherform : MaterialForm
                     break;
                 }
         }
-
+        // Copy the Desktop.Robot.dll to userlibs
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\UserLibs\Desktop.Robot.dll", "")))
+            {
+            File.Copy(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\UserLibs\Desktop.Robot.dll", ""),
+                Path.Combine(Config.Instance.Settings.GameDir + @"\UserLibs\Desktop.Robot.dll", ""), true);
+            }
+        
         IsModInstalled();
     }
 
