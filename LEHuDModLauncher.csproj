@@ -55,6 +55,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -82,6 +87,13 @@
     <Reference Include="MelonLoader">
       <HintPath>MelonLoader.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 <!--<Target Name="ZipOutput" AfterTargets="Build">
     <Exec Command="powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -Command ^&#xD;&#xA;    Compress-Archive -Path &quot;$(BaseOutputPath)x64\Release\net9.0-windows\*&quot; -DestinationPath &quot;C:\modding\LE\LEHudModLauncher\repo\Release\LastEpochHudModLauncher.zip&quot; -Force" />

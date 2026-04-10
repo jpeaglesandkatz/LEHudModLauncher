@@ -41,7 +41,7 @@ namespace DownloadLib;
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("FileDownloader/1.0");
         }
 
-        public async Task DownloadFileAsync(string url, string destinationPath, string filename, int maxRedirects = 5)
+        public async Task<bool> DownloadFileAsync(string url, string destinationPath, string filename, int maxRedirects = 5)
         {
             try
             {
@@ -111,6 +111,7 @@ namespace DownloadLib;
                     Logger.Global.Debug($"Download completed successfully!  --> {url}");
                     break; // exit loop
                 }
+            return true;
             }
             catch (Exception ex)
             {

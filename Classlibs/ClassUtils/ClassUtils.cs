@@ -73,7 +73,7 @@ public class Utils()
     }
 
 
-    public static Task ExtractFileLib(string filename, string sourcepath, string destinationpath, bool deloriginal = false)
+    public void ExtractFileLib(string filename, string sourcepath, string destinationpath, bool deloriginal = false)
     {
         var archive = ArchiveFactory.Open(Path.Combine(sourcepath, filename));
         try
@@ -83,7 +83,7 @@ public class Utils()
                 if (!entry.IsDirectory)
                 {
                     //Logger.Global.Info(entry.Key);
-                    entry.WriteToDirectory(destinationpath, new ExtractionOptions()
+                    entry.WriteToDirectory(Path.Combine(destinationpath,"" ), new ExtractionOptions()
                     {
                         ExtractFullPath = true,
                         Overwrite = true,
@@ -106,10 +106,10 @@ public class Utils()
             File.Delete(Path.Combine(sourcepath, filename));
         }
 
-        return Task.CompletedTask;
+        
     }
 
-    public async Task ExtractFile(string filename, string? sourcepath, string? destinationpath, bool deloriginal = false)
+    public void ExtractFile(string filename, string? sourcepath, string? destinationpath, bool deloriginal = false)
     {
         try
         {
@@ -119,7 +119,7 @@ public class Utils()
                     $"Extracting {Path.Combine(sourcepath, filename)} to\n{Path.Combine(destinationpath ?? throw new ArgumentNullException(nameof(destinationpath)))} \n");
                 //if (File.Exists(Path.Combine(destinationpath, filename))) File.Delete(Path.Combine(destinationpath, filename));
 
-                await ExtractFileLib(filename, sourcepath, destinationpath, deloriginal);
+                ExtractFile(filename, sourcepath, destinationpath, deloriginal);
             }
         }
         catch (Exception ex)
