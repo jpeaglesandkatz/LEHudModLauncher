@@ -224,19 +224,10 @@ namespace SettingsManager;
             }
         }
 
-        private bool _autoCheckModVersion = true;
-        public bool AutoCheckModVersion
-        {
-            get => _autoCheckModVersion;
-            set
-            {
-                if (_autoCheckModVersion == value) return;
-                _autoCheckModVersion = value;
-                OnPropertyChanged(nameof(AutoCheckModVersion));
-            }
-        }
 
-        protected void OnPropertyChanged(string propertyName)
+    public bool AutoCheckModandLoaderVersion { get; internal set; }
+
+    protected void OnPropertyChanged(string propertyName)
         {
             try
             {
@@ -451,11 +442,6 @@ namespace SettingsManager;
             Save();
         }
 
-        public void UpdateCheckModVersion(bool autocheckmodversion)
-        {
-            _settings.AutoCheckModVersion = autocheckmodversion;
-            Save();
-        }
 
 
     }

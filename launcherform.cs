@@ -50,17 +50,17 @@ public partial class Launcherform : MaterialForm
 
     private readonly Bitmap _imagecheck = Properties.Resources.check_64dp_green;
     private readonly Bitmap _imagecross = Properties.Resources.close_64dp_red;
-    
+
     public Launcherform()
     {
         InitializeComponent();
         Visible = false;
         materialTextBoxPath.SafeSetText(Config.Instance.Settings.GameDir);
         checkBoxKeepOpen.SafeSetChecked(Config.Instance.Settings.KeepOpen);
-        checkBoxStartUpMessage.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
         checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
         toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
-        toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
+
+        //toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
         //CreateSha256(Path.Combine("C:\\Users\\jp\\Downloads\\Melon\\MelonLoader\\net35\\MelonLoader.dll",""));
@@ -69,53 +69,15 @@ public partial class Launcherform : MaterialForm
         toolStripStatus.SafeSetText("Init app... Downloading...");
         _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
         DownloadStuff();
-        InstallMelonLoader();
-        InstallMod();
-        if (Config.Instance.Settings.AutoCheckModVersion)
+        if (Config.Instance.Settings.AutoUpdate)
         {
-
+            InstallMelonLoader(false);
+            InstallMod(Config.Instance.Settings.AutoUpdate);
         }
+
         Visible = true;
-
-
-
+        ShowGameVersion();
     }
-
-    //protected override async void OnLoad(EventArgs e)
-    //{
-    //    base.OnLoad(e);
-    //    try
-    //    {
-    //        toolStripStatus.SafeSetEnabled(true);
-    //        toolStripStatus.SafeSetText("Init app...");
-            
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Logger.Global.Error($"Fatal error {ex.Message}\n{ex.StackTrace}");
-    //    }
-    //    this.Visible = true;
-    //}
-
-//    private async Task InitappAsync()
-//    {
-//        Visible = false;
-//        Logger.Global.Debug(" === Initializing Launcher background init thread ==== ");
-
-        
-
-//        if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
-//        {
-//            ShowGameVersion();
-//        }
-
-////        toolStripStatus.SafeSetText("");
-
-//        Logger.Global.Info("Launcher Update Check....");
-//        //if (Config.Instance.Settings.AutoUpdate) _ = _updater.CheckForUpdateAsync(false);
-
-//    }
-
 
     public sealed override string Text
     {
@@ -133,9 +95,9 @@ public partial class Launcherform : MaterialForm
 
     {
         bool shaCheck;
-        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll","")))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll", "")))
         {
-            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll",""),
+            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
                 "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
             // New sha256 for official 0.72 version of Melon loader (29/3/2026)
             //shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
@@ -155,7 +117,7 @@ public partial class Launcherform : MaterialForm
         }
 
         pictureCheckLoader.Image = Properties.Resources.close_64dp_red;
-        
+
         return false;
     }
 
@@ -196,7 +158,7 @@ public partial class Launcherform : MaterialForm
             try
             {
                 if (dllist != null && !_utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete", dllist.Files[i].Filename), dllist.Files[i].Url))
-                    await _fileDownloader.DownloadFileAsync(dllist.Files[i].Url, Path.Combine(gamePath + @"\modsdl_do_not_delete", ""), dllist.Files[i].Filename);
+                    _fileDownloader.DownloadFile(dllist.Files[i].Url, Path.Combine(gamePath + @"\modsdl_do_not_delete", ""), dllist.Files[i].Filename);
             }
             catch (Exception ex)
             {
@@ -224,88 +186,124 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
-            
+
         }
     }
 
 
-    private bool InstallMelonLoader()
+    private bool InstallMelonLoader(bool forceinst)
 
     {
         var gamePath = Path.Combine(Config.Instance.Settings.GameDir);
+        if (!forceinst) return false;
+        if (!forceinst && IsMelonValid()) return true;
         try
         {
             if (File.Exists(Path.Combine(gamePath, "modsdl_do_not_delete", "Melon.zip")))
             {
-                toolStripStatus.SafeSetEnabled(true);
-                //toolStripStatus.SafeSetText(@"Installing Melonloader....");
-                CleanupDirs(true); // force erase existing melon loader
-                Logger.Global.Debug($"Extracting melonloader... to {gamePath}");
-                _utils.ExtractFileLib("Melon.zip", Path.GetFullPath(Path.Combine(gamePath, "modsdl_do_not_delete")), Path.Combine(gamePath), false);
-                
+                if (forceinst)
+                {
+                    toolStripStatus.SafeSetEnabled(true);
+                    toolStripStatus.SafeSetText(@"Installing Melonloader....");
+                    CleanupDirs(true); // force erase existing melon loader
+                    Logger.Global.Debug($"Extracting melonloader... to {gamePath}");
+                    _utils.ExtractFileLib("Melon.zip", Path.GetFullPath(Path.Combine(gamePath, "modsdl_do_not_delete")), Path.Combine(gamePath), false);
+                }
+
             }
-            //toolStripStatus.SafeSetText(@"Melonloader Installation finished. Running the game after install may take a while....");
+            toolStripStatus.SafeSetText(@"Melonloader Installation finished. Running the game after install may take a while....");
         }
         catch (Exception ex)
         {
             Logger.Global.Error($"Error installing Melonloader {ex}");
             toolStripStatus.SafeSetEnabled(false);
+            IsMelonValid();
             return false;
         }
-            return true;
+        IsMelonValid();
+        return true;
     }
 
 
 
-    private void IsModInstalled()
+    private bool IsModInstalled()
     {
         pictureModInstalled.Image = Properties.Resources.close_64dp_red;
-        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll","")))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll", "")))
         {
-            var modfileinfo = new FileInfo(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll",""));
+            var modfileinfo = new FileInfo(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll", ""));
             pictureModInstalled.Image = Properties.Resources.check_64dp_green;
             labelVersion.SafeSetText($"({modfileinfo.LastWriteTime.ToString(CultureInfo.CurrentCulture)})");
-            return;
+            labelVersion.SafeSetText("");
+            return true;
         }
-        labelVersion.SafeSetText("");
+        return false;
 
     }
 
-    private void InstallMod()
+    private bool InstallMod(bool forceinst)
     {
-        Utils utils = new();
-        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return;
-        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods","")))
-            Directory.CreateDirectory(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods",""));
-        Console.WriteLine("Installing mod");
-        switch (radioKb.Checked)
+        if (!forceinst && !Config.Instance.Settings.AutoUpdate) return false;
+        if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
+        if (Config.Instance.Settings.AutoUpdate || forceinst)
         {
-            case true when Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(Keyboard).rar","")):
-                {
-                    utils.ExtractFileLib("LastEpoch_Hud(Keyboard).rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")), 
-                           Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "Mods")));
-                    toolStripStatus.SafeSetText("Keyboard version of the HUD Mod is now installed");
-                    Console.WriteLine("Keyboard version of the HUD Mod is now installed");
-                    break;
-                }
-            case false when Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\LastEpoch_Hud(WinGamepad).rar","")):
-                {
-
-                    utils.ExtractFileLib("LastEpoch_Hud(WinGamepad).rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")),
-                           Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "Mods")));
-                    toolStripStatus.SafeSetText("Gamepad version of the HUD Mod is now installed");
-                    Console.WriteLine("Gamepad version of the HUD Mod is now installed");
-                    break;
-                }
-        }
-        // Copy the Desktop.Robot.dll to userlibs
-        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\modsdl_do_not_delete\UserLibs\Desktop.Robot.dll", "")))
+            try
             {
-                utils.ExtractFileLib("UserLibs.rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")),
-                           Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "UserLibs")));
-            
+
+
+                if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, "Mods")))
+                    Directory.CreateDirectory(Path.Combine(Config.Instance.Settings.GameDir, "Mods"));
+                Console.WriteLine("Installing mod");
+                switch (radioKb.Checked)
+                {
+                    case true when Exists(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete", "LastEpoch_Hud(Keyboard).rar")):
+                        {
+                            _utils.ExtractFileLib("LastEpoch_Hud(Keyboard).rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")),
+                                   Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "Mods")));
+                            toolStripStatus.SafeSetText("Keyboard version of the HUD Mod is now installed");
+                            Console.WriteLine("Keyboard version of the HUD Mod is now installed");
+                            break;
+                        }
+                    case false when Exists(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete", "LastEpoch_Hud(WinGamepad).rar")):
+                        {
+
+                            _utils.ExtractFileLib("LastEpoch_Hud(WinGamepad).rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")),
+                                   Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "Mods")));
+                            toolStripStatus.SafeSetText("Gamepad version of the HUD Mod is now installed");
+                            Console.WriteLine("Gamepad version of the HUD Mod is now installed");
+                            break;
+                        }
+                }
+
+
+            }            
+            catch (Exception ex)
+            {
+                Logger.Global.Error($"Error installing mod {ex}");
+                toolStripStatus.SafeSetEnabled(false);
+                toolStripStatus.SafeSetText("Error installing mod");
+                return false;
             }
-        
+            // Copy the Desktop.Robot.dll to userlibs
+            try
+            {
+                if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, "UserLibs", "Desktop.Robot.dll")))
+                {
+                    Directory.CreateDirectory(Path.Combine(Config.Instance.Settings.GameDir, "UserLibs"));
+                    _utils.ExtractFileLib("UserLibs.rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")),
+                               Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "UserLibs")));
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Global.Error($"Error installing Desktop.Robot.dll {ex}");
+                return false;
+            }
+            
+
+        }
+        return IsModInstalled();
     }
 
     private static void ExtractAllRars(string sourceFolder, string destinationFolder)
@@ -323,7 +321,7 @@ public partial class Launcherform : MaterialForm
                 {
                     Directory.CreateDirectory(Path.Combine(destinationFolder, Path.GetFileNameWithoutExtension(rarFile)));
                     entry.WriteToDirectory(
-                        Path.Combine(destinationFolder,Path.GetFileNameWithoutExtension(rarFile)),
+                        Path.Combine(destinationFolder, Path.GetFileNameWithoutExtension(rarFile)),
                         new ExtractionOptions
                         {
                             ExtractFullPath = true,
@@ -395,6 +393,146 @@ public partial class Launcherform : MaterialForm
             .FirstOrDefault(Directory.Exists);
     }
 
+    /// <summary>
+    /// Search steam installation and libraries for localconfig.vdf files and ensure the
+    /// DefaultLaunchOption entry for app id "899770" contains the specified key with value "1".
+    /// </summary>
+    /// <param name="steamPath">Path to Steam install (root).</param>
+    /// <param name="appId">App id to modify (defaults to "899770").</param>
+    /// <param name="optionKey">The option key to set (defaults to "96be4408").</param>
+    /// <param name="optionValue">The value to enforce (defaults to "1").</param>
+    /// <returns>True if at least one file was modified or already contained the expected value; false if none found.</returns>
+    public static bool EnsureDefaultLaunchOptionInSteam(string steamPath, string appId = "899770", string optionKey = "96be4408", string optionValue = "1")
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(steamPath) || !Directory.Exists(steamPath)) return false;
+
+            List<string> localConfigPaths;
+            try
+            {
+                // Recursively search for any localconfig.vdf under the steam base path
+                localConfigPaths = Directory.EnumerateFiles(steamPath, "localconfig.vdf", SearchOption.AllDirectories)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.Global.Error($"Error enumerating files under {steamPath}: {ex.Message}");
+                return false;
+            }
+
+            if (!localConfigPaths.Any())
+            {
+                Logger.Global.Debug($"No localconfig.vdf files found under {steamPath}");
+                return false;
+            }
+
+            var anyChanged = false;
+            foreach (var localConfigPath in localConfigPaths)
+            {
+                try
+                {
+                    var changed = ModifyLocalConfigFile(localConfigPath, appId, optionKey, optionValue);
+                    if (changed) anyChanged = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Global.Error($"Failed to modify {localConfigPath}: {ex.Message}");
+                }
+            }
+
+            return anyChanged;
+        }
+        catch (Exception ex)
+        {
+            Logger.Global.Error($"EnsureDefaultLaunchOptionInSteam error: {ex.Message}");
+            return false;
+        }
+    }
+
+    private static bool ModifyLocalConfigFile(string filePath, string appId, string optionKey, string optionValue)
+    {
+        var lines = File.ReadAllLines(filePath).ToList();
+        var n = lines.Count;
+        for (int i = 0; i < n; i++)
+        {
+            var trimmed = lines[i].Trim();
+            if (!trimmed.StartsWith("\"apps\"")) continue;
+
+            // find opening brace for apps
+            int j = i + 1;
+            while (j < n && !lines[j].Contains("{")) j++;
+            if (j >= n) continue;
+
+            int appsLevel = 1;
+            int k = j + 1;
+            while (k < n && appsLevel > 0)
+            {
+                var line = lines[k];
+                if (line.Contains("{")) appsLevel++;
+                if (line.Contains("}")) appsLevel--;
+
+                // look for app id line when we are directly under apps block
+                if (appsLevel == 1 && line.Trim().StartsWith("\"" + appId + "\""))
+                {
+                    // find app block start
+                    int appStart = k;
+                    int m = appStart + 1;
+                    while (m < n && !lines[m].Contains("{")) m++;
+                    if (m >= n) break;
+
+                    int appLevel = 1;
+                    int p = m + 1;
+                    while (p < n && appLevel > 0)
+                    {
+                        var al = lines[p];
+                        if (al.Contains("{")) appLevel++;
+                        if (al.Contains("}")) appLevel--;
+
+                        // look for DefaultLaunchOption key inside this app block
+                        if (appLevel == 1 && al.Trim().StartsWith("\"DefaultLaunchOption\""))
+                        {
+                            // find its block
+                            int dloStart = p;
+                            int q = dloStart + 1;
+                            while (q < n && !lines[q].Contains("{")) q++;
+                            if (q >= n) break;
+
+                            int dloLevel = 1;
+                            int r = q + 1;
+                            while (r < n && dloLevel > 0)
+                            {
+                                var dl = lines[r];
+                                if (dl.Contains("{")) dloLevel++;
+                                if (dl.Contains("}")) dloLevel--;
+
+                                // find the option key line
+                                var dltrim = dl.Trim();
+                                if (dltrim.StartsWith("\"" + optionKey + "\""))
+                                {
+                                    // replace the line keeping original leading whitespace
+                                    var leading = lines[r].Substring(0, lines[r].IndexOf(dltrim, StringComparison.Ordinal));
+                                    lines[r] = leading + "\"" + optionKey + "\"\t\t\"" + optionValue + "\"";
+                                    File.WriteAllLines(filePath, lines);
+                                    Logger.Global.Info($"Updated {optionKey} in {filePath} to {optionValue}");
+                                    return true;
+                                }
+
+                                r++;
+                            }
+                        }
+
+                        p++;
+                    }
+                }
+
+                k++;
+            }
+        }
+
+        return false;
+    }
+
 
     private void Launcherform_activated(object? sender, EventArgs e)
     {
@@ -419,7 +557,7 @@ public partial class Launcherform : MaterialForm
 
     private void ShowGameVersion()
     {
-        var gameversion = NewUnityHelper.ReadGameInfo(_assetsManager, Path.Combine(Config.Instance.Settings.GameDir + @"\Last Epoch_Data",""));
+        var gameversion = NewUnityHelper.ReadGameInfo(_assetsManager, Path.Combine(Config.Instance.Settings.GameDir, "Last Epoch_Data"));
         if (gameversion != null) textGameVersion.SafeSetText(gameversion);
         Showifvalidgamefolder();
     }
@@ -489,6 +627,7 @@ public partial class Launcherform : MaterialForm
                 var processStartInfo = new ProcessStartInfo
                 {
                     FileName = $"\"{gamedir}\\{GameFilename}\"",
+                    //FileName = $"steam://rungameid/{899770}",
                     Arguments = "--offline",
                     UseShellExecute = true,
                     CreateNoWindow = false,
@@ -559,7 +698,7 @@ public partial class Launcherform : MaterialForm
 
         try
         {
-            _ = _fileDownloader.DownloadFileAsync(dlurl, Config.Instance.Settings.TmpDownloadFolder, "dllistnew.json");
+            _fileDownloader.DownloadFile(dlurl, Config.Instance.Settings.TmpDownloadFolder, "dllistnew.json");
         }
         catch (Exception ex)
         {
@@ -601,7 +740,7 @@ public partial class Launcherform : MaterialForm
                     Delete(Path.Combine(rtfPath, "StartupMessage.zip"));
                     if (Exists(Path.Combine(rtfPath, "StartupMessage.rtf")))
                         Delete(Path.Combine(rtfPath, "StartupMessage.rtf"));
-                    _fileDownloader.DownloadFileAsync(dlurl, AppDomain.CurrentDomain.BaseDirectory,
+                    _fileDownloader.DownloadFile(dlurl, AppDomain.CurrentDomain.BaseDirectory,
                         "StartupMessage.zip");
                     _utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory,
                         AppDomain.CurrentDomain.BaseDirectory);
@@ -617,7 +756,7 @@ public partial class Launcherform : MaterialForm
             }
             else if (!Exists(Path.Combine(rtfPath, "StartupMessage.zip")))
             {
-                _fileDownloader.DownloadFileAsync(dlurl, AppDomain.CurrentDomain.BaseDirectory,
+                _fileDownloader.DownloadFile(dlurl, AppDomain.CurrentDomain.BaseDirectory,
                     "StartupMessage.zip");
                 _utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory,
                     AppDomain.CurrentDomain.BaseDirectory);
@@ -645,7 +784,7 @@ public partial class Launcherform : MaterialForm
             _ = dlg.ShowDialog();
 
             Config.Instance.UpdateShowStartupMessage(dlg.NewShowSetting);
-            checkBoxStartUpMessage.SafeSetChecked(dlg.NewShowSetting);
+            //checkBoxStartUpMessage.SafeSetChecked(dlg.NewShowSetting);
         }
         finally
         {
@@ -732,10 +871,10 @@ public partial class Launcherform : MaterialForm
 
     private void materialTextBoxPath_TextChanged(object sender, EventArgs e)
     {
-        
+
         if (Exists(Path.Combine(materialTextBoxPath.Text, GameFilename))) Config.Instance.UpdateGameDir(Path.Combine(materialTextBoxPath.Text, ""));
         else return;
-        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg",""));
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg", ""));
         IsMelonValid();
         IsModInstalled();
         Showifvalidgamefolder();
@@ -760,7 +899,7 @@ public partial class Launcherform : MaterialForm
 
             if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
             {
-                _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg",""));
+                _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg", ""));
             }
             else textGameVersion.SafeSetText("Unknown");
         }
@@ -783,9 +922,9 @@ public partial class Launcherform : MaterialForm
             {
                 Config.Instance.UpdateGameDir(tempgamedir);
                 if (Exists(Path.Combine(tempgamedir, GameFilename)) && Config.Instance.Settings.AutoUpdate)
-                   // _ = CheckModsForUpdate(true, true, false, false);
-                //textGamePath.Text = tempgamedir;
-                materialTextBoxPath.SafeSetText(tempgamedir);
+                    // _ = CheckModsForUpdate(true, true, false, false);
+                    //textGamePath.Text = tempgamedir;
+                    materialTextBoxPath.SafeSetText(tempgamedir);
                 ShowGameVersion();
             }
             else MessageBox.Show("Game folder not found. Please select it manually.", "Error", OK, Error);
@@ -921,7 +1060,7 @@ public partial class Launcherform : MaterialForm
                 const string updateJsonUrl =
                     "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/update.json";
 
-                await fileDownloader.DownloadFileAsync(updateJsonUrl, Config.Instance.Settings.TmpDownloadFolder,
+                fileDownloader.DownloadFile(updateJsonUrl, Config.Instance.Settings.TmpDownloadFolder,
                     "update.json");
                 var json = await ReadAllTextAsync(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
 
@@ -932,7 +1071,7 @@ public partial class Launcherform : MaterialForm
                 //Version currentVersion = new Version(Application.ProductVersion);
                 var currentVersion = Assembly.GetExecutingAssembly().GetName().Version!;
                 var latestVersion = new Version(updateInfo.Version);
-                
+
                 Delete(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
                 if (latestVersion > currentVersion)
                 {
@@ -999,7 +1138,7 @@ public partial class Launcherform : MaterialForm
             {
                 var tempFile = Path.Combine(Path.GetTempPath(), Path.GetFileName(installerUrl));
                 var fileDownloader = new FileDownloader();
-                await fileDownloader.DownloadFileAsync(installerUrl, Path.GetTempPath(),
+                fileDownloader.DownloadFile(installerUrl, Path.GetTempPath(),
                     Path.GetFileName(installerUrl));
 
                 Process.Start(new ProcessStartInfo
@@ -1023,28 +1162,24 @@ public partial class Launcherform : MaterialForm
         public string InstallerUrl { get; } = installerUrl;
     }
 
-    private void toolstripCheckModUpdate_CheckedChanged(object sender, EventArgs e)
-    {
-        Config.Instance.UpdateCheckModVersion(toolstripCheckModUpdate.Checked);
-    }
 
-    private void toolstripForceModeUpdate_Click(object sender, EventArgs e)
+    private void toolstripForceModUpdate_Click(object sender, EventArgs e)
     {
         if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
 
         {
-            // _ = CheckModsForUpdate(false, true, true, false);
+            InstallMelonLoader(true);
         }
     }
 
     private void radioKb_Click(object sender, EventArgs e)
     {
-        InstallMod();
+        InstallMod(true);
     }
 
     private void radioGamepad_Click(object sender, EventArgs e)
     {
-        InstallMod();
+        InstallMod(true);
     }
 
     private static bool VerifySha256(string filePath, string expectedHash)
@@ -1096,21 +1231,18 @@ public partial class Launcherform : MaterialForm
         Config.Instance.UpdateKeepOpen(checkBoxKeepOpen.Checked);
     }
 
-    private void checkBoxStartUpMessage_CheckedChanged_2(object sender, EventArgs e)
-    {
-        Config.Instance.UpdateShowStartupMessage(checkBoxStartUpMessage.Checked);
-    }
+
 
     private void checkBoxHideConsole_CheckStateChanged(object sender, EventArgs e)
     {
         Config.Instance.UpdateHideConsole(checkBoxHideConsole.Checked);
-        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg",""));
-        Logger.Global.Debug(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg",""));
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
+        Logger.Global.Debug(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
     }
 
     private void buttonAttachLog_Click_2(object sender, EventArgs e)
     {
-        var logPath = Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\Latest.log","");
+        var logPath = Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\Latest.log", "");
         if (_attachedLogForm == null || _attachedLogForm.IsDisposed)
         {
             _attachedLogForm = new LogViewerForm(logPath);
@@ -1141,7 +1273,7 @@ public partial class Launcherform : MaterialForm
         if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
 
         {
-            // _ = CheckModsForUpdate(false, true, false, true);
+            InstallMod(true);
         }
     }
 
@@ -1190,5 +1322,19 @@ public partial class Launcherform : MaterialForm
         Showifvalidgamefolder();
     }
 
+    private void changeSteamLaunchToFullOfflineToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+        var steamPath = Utils.GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam", "InstallPath");
+        if (!string.IsNullOrEmpty(steamPath))
+        {
+            var mbresult = MessageBox.Show("This will change the Last Epoch steam launch option to always launch in offline mode. You can revert this change by changing the launch option back to \"--offline\" or removing it entirely.\n\nMake sure Steam is closed (also from tray) before applying this change.", "Warning", YesNo, Warning);
+            if (mbresult == DialogResult.Yes)
+            {
+                Config.Instance.UpdateSteamPath(steamPath);
+                EnsureDefaultLaunchOptionInSteam(steamPath, "899770", "96be4408", "1");
+            }
+        }
+    }
 
 }

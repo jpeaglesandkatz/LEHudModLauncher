@@ -36,15 +36,13 @@
             toolStripTheme = new ToolStripMenuItem();
             toolStripOptions = new ToolStripMenuItem();
             toolstripAutoUpdate = new ToolStripMenuItem();
-            toolstripCheckModUpdate = new ToolStripMenuItem();
-            checkBoxStartUpMessage = new ToolStripMenuItem();
             checkBoxKeepOpen = new ToolStripMenuItem();
             checkBoxHideConsole = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            checkForLauncherUpdateNowToolStripMenuItem = new ToolStripMenuItem();
             toolstripForceModeUpdate = new ToolStripMenuItem();
             forceInstallModToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
+            changeSteamLaunchToFullOfflineToolStripMenuItem = new ToolStripMenuItem();
             buttonAttachLog = new ToolStripMenuItem();
             buttonStartupMessage = new ToolStripMenuItem();
             buttonOffline = new MaterialSkin.Controls.MaterialButton();
@@ -122,7 +120,7 @@
             // 
             toolStripOptions.Alignment = ToolStripItemAlignment.Right;
             toolStripOptions.BackColor = Color.Transparent;
-            toolStripOptions.DropDownItems.AddRange(new ToolStripItem[] { toolstripAutoUpdate, toolstripCheckModUpdate, checkBoxStartUpMessage, checkBoxKeepOpen, checkBoxHideConsole, toolStripSeparator1, checkForLauncherUpdateNowToolStripMenuItem, toolstripForceModeUpdate, forceInstallModToolStripMenuItem, toolStripSeparator2 });
+            toolStripOptions.DropDownItems.AddRange(new ToolStripItem[] { toolstripAutoUpdate, checkBoxKeepOpen, checkBoxHideConsole, toolStripSeparator1, toolstripForceModeUpdate, forceInstallModToolStripMenuItem, toolStripSeparator2, changeSteamLaunchToFullOfflineToolStripMenuItem });
             toolStripOptions.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             toolStripOptions.Image = Properties.Resources.settings_dark;
             toolStripOptions.Name = "toolStripOptions";
@@ -134,36 +132,16 @@
             toolstripAutoUpdate.CheckOnClick = true;
             toolstripAutoUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolstripAutoUpdate.Name = "toolstripAutoUpdate";
-            toolstripAutoUpdate.Size = new Size(539, 34);
-            toolstripAutoUpdate.Text = "Automatically check for launcher update";
+            toolstripAutoUpdate.Size = new Size(444, 34);
+            toolstripAutoUpdate.Text = "Automatically keep up to date";
             toolstripAutoUpdate.CheckStateChanged += toolstripAutoUpdate_CheckStateChanged;
-            // 
-            // toolstripCheckModUpdate
-            // 
-            toolstripCheckModUpdate.Checked = true;
-            toolstripCheckModUpdate.CheckOnClick = true;
-            toolstripCheckModUpdate.CheckState = CheckState.Checked;
-            toolstripCheckModUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            toolstripCheckModUpdate.Name = "toolstripCheckModUpdate";
-            toolstripCheckModUpdate.Size = new Size(539, 34);
-            toolstripCheckModUpdate.Text = "Automatically install and update modloader and mod";
-            toolstripCheckModUpdate.CheckedChanged += toolstripCheckModUpdate_CheckedChanged;
-            // 
-            // checkBoxStartUpMessage
-            // 
-            checkBoxStartUpMessage.CheckOnClick = true;
-            checkBoxStartUpMessage.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            checkBoxStartUpMessage.Name = "checkBoxStartUpMessage";
-            checkBoxStartUpMessage.Size = new Size(539, 34);
-            checkBoxStartUpMessage.Text = "Show mod info on start";
-            checkBoxStartUpMessage.CheckedChanged += checkBoxStartUpMessage_CheckedChanged_2;
             // 
             // checkBoxKeepOpen
             // 
             checkBoxKeepOpen.CheckOnClick = true;
             checkBoxKeepOpen.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             checkBoxKeepOpen.Name = "checkBoxKeepOpen";
-            checkBoxKeepOpen.Size = new Size(539, 34);
+            checkBoxKeepOpen.Size = new Size(444, 34);
             checkBoxKeepOpen.Text = "Keep open on Game Launch";
             checkBoxKeepOpen.CheckStateChanged += checkBoxKeepOpen_CheckStateChanged;
             // 
@@ -172,43 +150,42 @@
             checkBoxHideConsole.CheckOnClick = true;
             checkBoxHideConsole.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             checkBoxHideConsole.Name = "checkBoxHideConsole";
-            checkBoxHideConsole.Size = new Size(539, 34);
+            checkBoxHideConsole.Size = new Size(444, 34);
             checkBoxHideConsole.Text = "Hide melonloader console window";
             checkBoxHideConsole.CheckStateChanged += checkBoxHideConsole_CheckStateChanged;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(536, 6);
-            // 
-            // checkForLauncherUpdateNowToolStripMenuItem
-            // 
-            checkForLauncherUpdateNowToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            checkForLauncherUpdateNowToolStripMenuItem.Name = "checkForLauncherUpdateNowToolStripMenuItem";
-            checkForLauncherUpdateNowToolStripMenuItem.Size = new Size(539, 34);
-            checkForLauncherUpdateNowToolStripMenuItem.Text = "Check for launcher update now";
-            checkForLauncherUpdateNowToolStripMenuItem.Click += checkForLauncherUpdateNowToolStripMenuItem_Click;
+            toolStripSeparator1.Size = new Size(441, 6);
             // 
             // toolstripForceModeUpdate
             // 
             toolstripForceModeUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolstripForceModeUpdate.Name = "toolstripForceModeUpdate";
-            toolstripForceModeUpdate.Size = new Size(539, 34);
+            toolstripForceModeUpdate.Size = new Size(444, 34);
             toolstripForceModeUpdate.Text = "Force install modloader";
-            toolstripForceModeUpdate.Click += toolstripForceModeUpdate_Click;
+            toolstripForceModeUpdate.Click += toolstripForceModUpdate_Click;
             // 
             // forceInstallModToolStripMenuItem
             // 
             forceInstallModToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             forceInstallModToolStripMenuItem.Name = "forceInstallModToolStripMenuItem";
-            forceInstallModToolStripMenuItem.Size = new Size(539, 34);
+            forceInstallModToolStripMenuItem.Size = new Size(444, 34);
             forceInstallModToolStripMenuItem.Text = "Force install latest mod";
             forceInstallModToolStripMenuItem.Click += forceInstallModToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(536, 6);
+            toolStripSeparator2.Size = new Size(441, 6);
+            // 
+            // changeSteamLaunchToFullOfflineToolStripMenuItem
+            // 
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Name = "changeSteamLaunchToFullOfflineToolStripMenuItem";
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Size = new Size(444, 34);
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Text = "Change LE Steam launch to Full Offline";
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Click += changeSteamLaunchToFullOfflineToolStripMenuItem_Click;
             // 
             // buttonAttachLog
             // 
@@ -570,7 +547,6 @@
         private ToolStripStatusLabel toolStripStatus;
         private ToolStripMenuItem toolStripOptions;
         private ToolStripMenuItem toolstripAutoUpdate;
-        private ToolStripMenuItem checkForLauncherUpdateNowToolStripMenuItem;
         private Button buttonGetGameFolder2;
         private Button buttonBrowseGameFolder;
         private MaterialSkin.Controls.MaterialButton buttonOffline;
@@ -581,7 +557,6 @@
         private MaterialSkin.Controls.MaterialRadioButton radioGamepad;
         private MaterialSkin.Controls.MaterialLabel materialLabel1;
         private MaterialSkin.Controls.MaterialTextBox textGameVersion;
-        private ToolStripMenuItem toolstripCheckModUpdate;
         private ToolStripMenuItem toolstripForceModeUpdate;
         private ToolStripSeparator toolStripSeparator1;
         private PictureBox pictureCheck;
@@ -589,7 +564,6 @@
         private PictureBox pictureCheckLoader;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem checkBoxKeepOpen;
-        private ToolStripMenuItem checkBoxStartUpMessage;
         private ToolStripMenuItem checkBoxHideConsole;
         private ToolStripMenuItem buttonAttachLog;
         private ToolStripMenuItem buttonStartupMessage;
@@ -599,6 +573,7 @@
         private MaterialSkin.Controls.MaterialLabel StatusModInstalled;
         private PictureBox pictureModInstalled;
         private MaterialSkin.Controls.MaterialLabel labelVersion;
+        private ToolStripMenuItem changeSteamLaunchToFullOfflineToolStripMenuItem;
         //private MaterialSkin.Controls.MaterialDrawer materialDrawer1;
     }
 }
