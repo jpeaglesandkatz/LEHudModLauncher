@@ -42,6 +42,7 @@
             toolStripSeparator1 = new ToolStripSeparator();
             toolstripForceModeUpdate = new ToolStripMenuItem();
             forceInstallModToolStripMenuItem = new ToolStripMenuItem();
+            checkForLauncherUpdateToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             changeSteamLaunchToFullOfflineToolStripMenuItem = new ToolStripMenuItem();
             buttonAttachLog = new ToolStripMenuItem();
@@ -62,7 +63,6 @@
             StatusModInstalled = new MaterialSkin.Controls.MaterialLabel();
             pictureModInstalled = new PictureBox();
             labelVersion = new MaterialSkin.Controls.MaterialLabel();
-            checkForLauncherUpdateToolStripMenuItem = new ToolStripMenuItem();
             statusStrip.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureCheck).BeginInit();
@@ -186,6 +186,14 @@
             forceInstallModToolStripMenuItem.Text = "Force install latest mod";
             forceInstallModToolStripMenuItem.Click += forceInstallModToolStripMenuItem_Click;
             // 
+            // checkForLauncherUpdateToolStripMenuItem
+            // 
+            checkForLauncherUpdateToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            checkForLauncherUpdateToolStripMenuItem.Name = "checkForLauncherUpdateToolStripMenuItem";
+            checkForLauncherUpdateToolStripMenuItem.Size = new Size(418, 34);
+            checkForLauncherUpdateToolStripMenuItem.Text = "Check for launcher update";
+            checkForLauncherUpdateToolStripMenuItem.Click += checkForLauncherUpdateToolStripMenuItem_Click;
+            // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
@@ -197,6 +205,7 @@
             changeSteamLaunchToFullOfflineToolStripMenuItem.Name = "changeSteamLaunchToFullOfflineToolStripMenuItem";
             changeSteamLaunchToFullOfflineToolStripMenuItem.Size = new Size(418, 34);
             changeSteamLaunchToFullOfflineToolStripMenuItem.Text = "Change LE Steam launch to Full Offline";
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Visible = false;
             changeSteamLaunchToFullOfflineToolStripMenuItem.Click += changeSteamLaunchToFullOfflineToolStripMenuItem_Click;
             // 
             // buttonAttachLog
@@ -372,6 +381,7 @@
             textGameVersion.AnimateReadOnly = false;
             textGameVersion.BorderStyle = BorderStyle.None;
             textGameVersion.Depth = 0;
+            textGameVersion.DetectUrls = false;
             textGameVersion.Font = new Font("Roboto", 16F, FontStyle.Regular, GraphicsUnit.Pixel);
             textGameVersion.LeadingIcon = null;
             textGameVersion.Location = new Point(403, 149);
@@ -380,6 +390,7 @@
             textGameVersion.Multiline = false;
             textGameVersion.Name = "textGameVersion";
             textGameVersion.ReadOnly = true;
+            textGameVersion.ShortcutsEnabled = false;
             textGameVersion.Size = new Size(102, 36);
             textGameVersion.TabIndex = 36;
             textGameVersion.Text = "";
@@ -497,14 +508,6 @@
             labelVersion.Size = new Size(107, 19);
             labelVersion.TabIndex = 44;
             labelVersion.Text = "materialLabel3";
-            // 
-            // checkForLauncherUpdateToolStripMenuItem
-            // 
-            checkForLauncherUpdateToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            checkForLauncherUpdateToolStripMenuItem.Name = "checkForLauncherUpdateToolStripMenuItem";
-            checkForLauncherUpdateToolStripMenuItem.Size = new Size(418, 34);
-            checkForLauncherUpdateToolStripMenuItem.Text = "Check for launcher update";
-            checkForLauncherUpdateToolStripMenuItem.Click += checkForLauncherUpdateToolStripMenuItem_Click;
             // 
             // Launcherform
             // 

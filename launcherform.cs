@@ -60,32 +60,30 @@ public partial class Launcherform : MaterialForm
         checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
         toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
         showStartupMessageToolStripMenuItem.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
-        //toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
-        //CreateSha256(Path.Combine("C:\\Users\\jp\\Downloads\\Melon\\MelonLoader\\net35\\MelonLoader.dll",""));
-        //Task.Run(InitappAsync);
         toolStripStatus.SafeSetEnabled(true);
-        toolStripStatus.SafeSetText("Init app... Downloading...");
         _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
+
+        GetGamePath();
+
         DownloadStuff();
+
         if (Config.Instance.Settings.AutoUpdate)
         {
-            InstallMelonLoader(false);
+            InstallMelonLoader(!IsMelonValid());
             InstallMod(Config.Instance.Settings.AutoUpdate);
         }
 
-        Visible = true;
         ShowGameVersion();
-        ShowStartupMessage(Config.Instance.Settings.ShowStartupMessage);
-        if (Config.Instance.Settings.AutoUpdate) _updater.CheckForUpdate(false);
-    }
 
-    //public sealed override string Text
-    //{
-    //    get => base.Text;
-    //    set => base.Text = value;
-    //}
+        ShowStartupMessage(Config.Instance.Settings.ShowStartupMessage);
+
+        if (Config.Instance.Settings.AutoUpdate) _updater.CheckForUpdate(false);
+
+        _ = IsMelonValid();
+        _ = IsModInstalled();
+    }
 
     private void Showifvalidgamefolder()
 
@@ -165,6 +163,9 @@ public partial class Launcherform : MaterialForm
         if (Exists(Path.Combine(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"), "StartupMessage.rar")))
             _utils.ExtractFileLib("StartupMessage.rar", Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"),
                 Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"));
+        
+        _utils.ExtractFileLib("StartupMessage.zip", Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"),
+                Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete", "test3"));
         return true;
     }
 
@@ -224,7 +225,6 @@ public partial class Launcherform : MaterialForm
     }
 
 
-
     private bool IsModInstalled()
     {
         pictureModInstalled.Image = Properties.Resources.close_64dp_red;
@@ -273,8 +273,6 @@ public partial class Launcherform : MaterialForm
                             break;
                         }
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -291,7 +289,6 @@ public partial class Launcherform : MaterialForm
                     Directory.CreateDirectory(Path.Combine(Config.Instance.Settings.GameDir, "UserLibs"));
                     _utils.ExtractFileLib("UserLibs.rar", Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete")),
                                Path.GetFullPath(Path.Combine(Config.Instance.Settings.GameDir, "UserLibs")));
-
                 }
             }
             catch (Exception ex)
@@ -303,39 +300,6 @@ public partial class Launcherform : MaterialForm
 
         }
         return IsModInstalled();
-    }
-
-    private static void ExtractAllRars(string sourceFolder, string destinationFolder)
-    {
-        try
-        {
-            var rarFiles = Directory.GetFiles(sourceFolder, "*.rar");
-
-            foreach (var rarFile in rarFiles)
-            {
-                Console.WriteLine($"Extracting {Path.GetFileName(rarFile)}...");
-
-                using var archive = RarArchive.Open(rarFile);
-                foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
-                {
-                    Directory.CreateDirectory(Path.Combine(destinationFolder, Path.GetFileNameWithoutExtension(rarFile)));
-                    entry.WriteToDirectory(
-                        Path.Combine(destinationFolder, Path.GetFileNameWithoutExtension(rarFile)),
-                        new ExtractionOptions
-                        {
-                            ExtractFullPath = true,
-                            Overwrite = true,
-                            PreserveFileTime = true
-                        }
-                    );
-                }
-            }
-        }
-        catch (Exception ex)
-
-        {
-            Logger.Global.Error($"Error downloading latest mods\n{ex.Message}\n{ex.StackTrace}");
-        }
     }
 
     private void NewApplyTheme()
@@ -351,7 +315,7 @@ public partial class Launcherform : MaterialForm
             _skinManager.Theme = MaterialSkinManager.Themes.DARK;
             _skinManager.ColorScheme = new ColorScheme(
                 Primary.Grey800, Primary.Grey900,
-                Primary.Grey500, Accent.Cyan700,
+                Primary.Grey500, Accent.DeepOrange700,
                 TextShade.WHITE
             );
         }
@@ -365,7 +329,7 @@ public partial class Launcherform : MaterialForm
             _skinManager.Theme = MaterialSkinManager.Themes.LIGHT;
             _skinManager.ColorScheme = new ColorScheme(
                 Primary.Cyan900, Primary.Cyan700,
-                Primary.Cyan800, Accent.Orange700,
+                Primary.Cyan800, Accent.DeepOrange700,
                 TextShade.WHITE
             );
         }
@@ -627,7 +591,7 @@ public partial class Launcherform : MaterialForm
                 {
                     FileName = $"\"{gamedir}\\{GameFilename}\"",
                     //FileName = $"steam://rungameid/{899770}",
-                    Arguments = "--offline",
+                    Arguments = "--fulloffline",
                     UseShellExecute = true,
                     CreateNoWindow = false,
                     WorkingDirectory = $"\"{gamedir}\""
@@ -691,8 +655,6 @@ public partial class Launcherform : MaterialForm
 
     private FileDownloader.DownloadList AddDownloadsFromJson()
     {
-        //FileDownloader fileDownloader = new FileDownloader();
-
         const string dlurl = "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/dllistnew.json";
 
         try
@@ -704,8 +666,6 @@ public partial class Launcherform : MaterialForm
             Logger.Global.Error($"Failed to download dllist {ex.Message}\n{ex.StackTrace}");
             return null;
         }
-
-        //var jsonContents = await ReadAllTextAsync(Path.Combine(Instance.Settings.TmpDownloadFolder, "dllistnew.json"));
 
         var reader = new StreamReader(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "dllistnew.json"));
         try
@@ -842,8 +802,6 @@ public partial class Launcherform : MaterialForm
                 materialTextBoxPath.SafeSetText(dialog.SelectedPath);
                 Config.Instance.UpdateGameDir(dialog.SelectedPath);
                 ShowGameVersion();
-                //if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)) && Config.Instance.Settings.AutoUpdate)
-                //    _ = CheckModsForUpdate(true, true, false, false);
             }
 
             if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
@@ -858,7 +816,8 @@ public partial class Launcherform : MaterialForm
         }
     }
 
-    private void buttonGetGameFolder_Click_1(object sender, EventArgs e)
+    private void GetGamePath()
+
     {
         var steamPath = Utils.GetPathFromRegistry("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam", "InstallPath");
         if (!string.IsNullOrEmpty(steamPath))
@@ -881,6 +840,14 @@ public partial class Launcherform : MaterialForm
 
         Showifvalidgamefolder();
         _ = IsMelonValid();
+        _ = IsModInstalled();
+
+
+    }
+
+    private void buttonGetGameFolder_Click_1(object sender, EventArgs e)
+    {
+        GetGamePath();
     }
 
     private void radioKb_CheckedChanged_1(object sender, EventArgs e)

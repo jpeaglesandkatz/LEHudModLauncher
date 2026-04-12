@@ -11,6 +11,12 @@
     <Platforms>x64</Platforms>
     <ApplicationIcon>gooey-daemon_multi2.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Content Include="gooey-daemon_multi2.ico" />
   </ItemGroup>

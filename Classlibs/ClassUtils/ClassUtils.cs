@@ -3,6 +3,8 @@ using SettingsManager;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using System.Net.NetworkInformation;
+using System.Runtime;
+using System.Security.Cryptography;
 using static Microsoft.Win32.Registry;
 
 namespace ClassUtils;
@@ -75,9 +77,12 @@ public class Utils()
 
     public void ExtractFileLib(string filename, string sourcepath, string destinationpath, bool deloriginal = false)
     {
-        var archive = ArchiveFactory.Open(Path.Combine(sourcepath, filename));
+        
+        
         try
         {
+            var archive = ArchiveFactory.OpenArchive(Path.Combine(sourcepath, filename));
+            if (!Path.Exists(Path.Combine(destinationpath))) Directory.CreateDirectory(Path.Combine(destinationpath));
             foreach (var entry in archive.Entries)
             {
                 if (!entry.IsDirectory)
@@ -91,16 +96,14 @@ public class Utils()
                     });
                 }
             }
+            archive.Dispose();
         }
         catch (Exception ex)
         {
             Logger.Global.Error($"Extraction failed: {ex.Message}\n{ex.StackTrace}");
 
         }
-        finally
-        {
-            archive.Dispose();
-        }
+
         if (deloriginal)
         {
             File.Delete(Path.Combine(sourcepath, filename));
@@ -109,25 +112,25 @@ public class Utils()
         
     }
 
-    public void ExtractFile(string filename, string? sourcepath, string? destinationpath, bool deloriginal = false)
-    {
-        try
-        {
-            if (sourcepath != null)
-            {
-                Logger.Global.Info(
-                    $"Extracting {Path.Combine(sourcepath, filename)} to\n{Path.Combine(destinationpath ?? throw new ArgumentNullException(nameof(destinationpath)))} \n");
-                //if (File.Exists(Path.Combine(destinationpath, filename))) File.Delete(Path.Combine(destinationpath, filename));
+    //public void ExtractFile(string filename, string? sourcepath, string? destinationpath, bool deloriginal = false)
+    //{
+    //    try
+    //    {
+    //        if (sourcepath != null)
+    //        {
+    //            Logger.Global.Info(
+    //                $"Extracting {Path.Combine(sourcepath, filename)} to\n{Path.Combine(destinationpath ?? throw new ArgumentNullException(nameof(destinationpath)))} \n");
+    //            //if (File.Exists(Path.Combine(destinationpath, filename))) File.Delete(Path.Combine(destinationpath, filename));
 
-                ExtractFile(filename, sourcepath, destinationpath, deloriginal);
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.Global.Error($"Extraction failed: {ex.Message}");
-        }
-        Logger.Global.Info($"Extracted {filename}");
-    }
+    //            ExtractFile(filename, sourcepath, destinationpath, deloriginal);
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Logger.Global.Error($"Extraction failed: {ex.Message}");
+    //    }
+    //    Logger.Global.Info($"Extracted {filename}");
+    //}
 
     public bool IsLocalFileUpToDate(string localFilePath, string remoteFilePath)
     {

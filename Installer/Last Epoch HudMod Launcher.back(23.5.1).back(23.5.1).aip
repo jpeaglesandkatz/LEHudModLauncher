@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="23.0.1" version="23.6" Modules="simple" RootPath="." Language="en" Id="{EA853255-1AFD-4B34-B157-C2CB334A1CF4}">
+<DOCUMENT Type="Advanced Installer" CreateVersion="23.0.1" version="23.5.1" Modules="simple" RootPath="." Language="en" Id="{EA853255-1AFD-4B34-B157-C2CB334A1CF4}">
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="ALLUSERS" Value="1" MultiBuildValue="DefaultBuild:"/>
@@ -10,10 +10,10 @@
     <ROW Property="ARPURLINFOABOUT" Value="https://discord.gg/Kxfq8B82xj"/>
     <ROW Property="MSIFASTINSTALL" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="Manufacturer" Value="JP"/>
-    <ROW Property="ProductCode" Value="1033:{20779509-6774-418E-ABC2-418235FD96B5} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{278542B6-44C3-46B9-9A37-FB3E728C7820} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Last Epoch HudMod Launcher"/>
-    <ROW Property="ProductVersion" Value="3.00" Options="32"/>
+    <ROW Property="ProductVersion" Value="2.52" Options="32"/>
     <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{54D84C64-7FD3-4CAC-8DEF-C166AFAC3B03}"/>
@@ -43,20 +43,21 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
     <ROW Component="APPDIR" ComponentId="{FFAE4935-060A-4973-BB88-B226ADAA55BA}" Directory_="APPDIR" Attributes="0"/>
-    <ROW Component="AssetsTools.NET.dll" ComponentId="{B9722810-338F-4DE7-91EC-4A02A26D4099}" Directory_="APPDIR" Attributes="0" KeyPath="AssetsTools.NET.dll"/>
-    <ROW Component="ClassUtils.dll" ComponentId="{8695E1D5-1269-410C-B806-5B21BFBB2BA7}" Directory_="APPDIR" Attributes="256" KeyPath="ClassUtils.dll"/>
-    <ROW Component="DownloadLib.dll" ComponentId="{DD120ABF-963E-4441-8E86-631B2D26F302}" Directory_="APPDIR" Attributes="256" KeyPath="DownloadLib.dll"/>
-    <ROW Component="LEHuDModLauncher.deps.json" ComponentId="{EF1BFCC0-D23E-40DB-B802-0B7A2D89EB50}" Directory_="APPDIR" Attributes="0" KeyPath="LEHuDModLauncher.deps.json" Type="0"/>
-    <ROW Component="LEHuDModLauncher.dll" ComponentId="{2C23CFC1-E1E5-494F-9072-883945AE2CE7}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.dll"/>
-    <ROW Component="LEHuDModLauncher.exe" ComponentId="{A8F937D0-FA74-4C8E-9F42-D7A69C762912}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.exe"/>
-    <ROW Component="LogUtils.dll" ComponentId="{C3015F80-C24D-42CF-99EF-3D5F39156E10}" Directory_="APPDIR" Attributes="256" KeyPath="LogUtils.dll"/>
-    <ROW Component="MaterialSkin.dll" ComponentId="{6E0155AB-2CD1-42CE-A74F-2E83860C64E6}" Directory_="APPDIR" Attributes="0" KeyPath="MaterialSkin.dll"/>
-    <ROW Component="MelonLoader.dll" ComponentId="{6FDEF3A7-B746-4F7A-A74F-7D4DA140A47E}" Directory_="APPDIR" Attributes="256" KeyPath="MelonLoader.dll"/>
-    <ROW Component="Newtonsoft.Json.dll" ComponentId="{C1C395B1-A6BE-4984-BD7A-2FE26F47AA14}" Directory_="APPDIR" Attributes="0" KeyPath="Newtonsoft.Json.dll"/>
+    <ROW Component="AssetsTools.NET.dll" ComponentId="{644A04AA-7A43-43A3-B5A8-C403492F50C5}" Directory_="APPDIR" Attributes="0" KeyPath="AssetsTools.NET.dll"/>
+    <ROW Component="ClassUtils.dll" ComponentId="{82C07C68-909F-46A1-BFF4-E522BDDF421D}" Directory_="APPDIR" Attributes="256" KeyPath="ClassUtils.dll"/>
+    <ROW Component="DownloadLib.dll" ComponentId="{686B24B7-A67D-4649-9382-C84845B37F42}" Directory_="APPDIR" Attributes="256" KeyPath="DownloadLib.dll"/>
+    <ROW Component="LEHuDModLauncher.deps.json" ComponentId="{333B5810-7B96-47CD-8DFB-2D5A4AD072C7}" Directory_="APPDIR" Attributes="0" KeyPath="LEHuDModLauncher.deps.json" Type="0"/>
+    <ROW Component="LEHuDModLauncher.dll" ComponentId="{B45D5C32-D418-45A0-94DB-8CC94C56E837}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.dll"/>
+    <ROW Component="LEHuDModLauncher.exe" ComponentId="{F14E51CD-8F0A-40AC-9321-262ABF867C45}" Directory_="APPDIR" Attributes="256" KeyPath="LEHuDModLauncher.exe"/>
+    <ROW Component="LogUtils.dll" ComponentId="{676C3F28-39CA-479C-9C6D-B6A6AB62DE2A}" Directory_="APPDIR" Attributes="256" KeyPath="LogUtils.dll"/>
+    <ROW Component="MaterialSkin.dll" ComponentId="{9EAAF9E3-55DA-4C8E-A904-D1720D77C4D7}" Directory_="APPDIR" Attributes="0" KeyPath="MaterialSkin.dll"/>
+    <ROW Component="MelonLoader.dll" ComponentId="{6C2922E7-6F78-4FAF-A0BD-187C65B81A6B}" Directory_="APPDIR" Attributes="256" KeyPath="MelonLoader.dll"/>
+    <ROW Component="Newtonsoft.Json.dll" ComponentId="{C2964D24-CD3E-45AF-8861-6118AFDDAD99}" Directory_="APPDIR" Attributes="0" KeyPath="Newtonsoft.Json.dll"/>
     <ROW Component="ProductInformation" ComponentId="{6A11C73B-B1AD-4AED-B527-5065793E77FD}" Directory_="APPDIR" Attributes="260" KeyPath="Version"/>
-    <ROW Component="SHORTCUTDIR" ComponentId="{9BC1EEEC-B2B3-46D1-B51E-8B9F49462082}" Directory_="SHORTCUTDIR" Attributes="0"/>
-    <ROW Component="SettingsManager.dll" ComponentId="{330D7ADD-4210-46B2-AE2C-0B00FEEE464D}" Directory_="APPDIR" Attributes="256" KeyPath="SettingsManager.dll"/>
-    <ROW Component="SharpCompress.dll" ComponentId="{23A75F96-61F8-4D80-87C0-7028B562B531}" Directory_="APPDIR" Attributes="0" KeyPath="SharpCompress.dll"/>
+    <ROW Component="SHORTCUTDIR" ComponentId="{C7C9A917-7F9C-4DF1-AB52-BC48C640C15A}" Directory_="SHORTCUTDIR" Attributes="0"/>
+    <ROW Component="SettingsManager.dll" ComponentId="{A9220C43-3F74-4201-90D0-F028342EC897}" Directory_="APPDIR" Attributes="256" KeyPath="SettingsManager.dll"/>
+    <ROW Component="SharpCompress.dll" ComponentId="{85FBAF23-4791-4369-9BC1-6DE6B561CD0E}" Directory_="APPDIR" Attributes="0" KeyPath="SharpCompress.dll"/>
+    <ROW Component="ZstdSharp.dll" ComponentId="{7E7D2F73-CD72-4BF7-94AD-FD2C12C61C69}" Directory_="APPDIR" Attributes="0" KeyPath="ZstdSharp.dll"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
     <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0"/>
@@ -65,17 +66,25 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
     <ROW File="AssetsTools.NET.dll" Component_="AssetsTools.NET.dll" FileName="ASSETS~1.DLL|AssetsTools.NET.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\AssetsTools.NET.dll" SelfReg="false"/>
     <ROW File="ClassUtils.dll" Component_="ClassUtils.dll" FileName="CLASSU~1.DLL|ClassUtils.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\ClassUtils.dll" SelfReg="false"/>
+    <ROW File="ClassUtils.pdb" Component_="ClassUtils.dll" FileName="CLASSU~1.PDB|ClassUtils.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\ClassUtils.pdb" SelfReg="false"/>
     <ROW File="DownloadLib.dll" Component_="DownloadLib.dll" FileName="DOWNLO~1.DLL|DownloadLib.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\DownloadLib.dll" SelfReg="false"/>
+    <ROW File="DownloadLib.pdb" Component_="DownloadLib.dll" FileName="DOWNLO~1.PDB|DownloadLib.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\DownloadLib.pdb" SelfReg="false"/>
     <ROW File="LEHuDModLauncher.dll" Component_="LEHuDModLauncher.dll" FileName="LEHUDM~1.DLL|LEHuDModLauncher.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LEHuDModLauncher.dll" SelfReg="false"/>
     <ROW File="LEHuDModLauncher.exe" Component_="LEHuDModLauncher.exe" FileName="LEHUDM~1.EXE|LEHuDModLauncher.exe" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LEHuDModLauncher.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="LEHuDModLauncher.pdb" Component_="LEHuDModLauncher.exe" FileName="LEHUDM~1.PDB|LEHuDModLauncher.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LEHuDModLauncher.pdb" SelfReg="false"/>
     <ROW File="LEHuDModLauncher.deps.json" Component_="LEHuDModLauncher.deps.json" FileName="LEHUDM~1.JSO|LEHuDModLauncher.deps.json" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LEHuDModLauncher.deps.json" SelfReg="false"/>
     <ROW File="LEHuDModLauncher.runtimeconfig.json" Component_="LEHuDModLauncher.deps.json" FileName="LEHUDM~2.JSO|LEHuDModLauncher.runtimeconfig.json" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LEHuDModLauncher.runtimeconfig.json" SelfReg="false"/>
     <ROW File="LogUtils.dll" Component_="LogUtils.dll" FileName="LogUtils.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LogUtils.dll" SelfReg="false"/>
+    <ROW File="LogUtils.pdb" Component_="LogUtils.dll" FileName="LogUtils.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\LogUtils.pdb" SelfReg="false"/>
     <ROW File="MaterialSkin.dll" Component_="MaterialSkin.dll" FileName="MATERI~1.DLL|MaterialSkin.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\MaterialSkin.dll" SelfReg="false"/>
     <ROW File="MelonLoader.dll" Component_="MelonLoader.dll" FileName="MELONL~1.DLL|MelonLoader.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\MelonLoader.dll" SelfReg="false"/>
     <ROW File="Newtonsoft.Json.dll" Component_="Newtonsoft.Json.dll" FileName="NEWTON~1.DLL|Newtonsoft.Json.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\Newtonsoft.Json.dll" SelfReg="false"/>
     <ROW File="SettingsManager.dll" Component_="SettingsManager.dll" FileName="SETTIN~1.DLL|SettingsManager.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\SettingsManager.dll" SelfReg="false"/>
+    <ROW File="SettingsManager.pdb" Component_="SettingsManager.dll" FileName="SETTIN~1.PDB|SettingsManager.pdb" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\SettingsManager.pdb" SelfReg="false"/>
     <ROW File="SharpCompress.dll" Component_="SharpCompress.dll" FileName="SHARPC~1.DLL|SharpCompress.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\SharpCompress.dll" SelfReg="false"/>
+    <ROW File="StartUpMessage.rtf" Component_="LEHuDModLauncher.deps.json" FileName="STARTU~1.RTF|StartUpMessage.rtf" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\StartUpMessage.rtf" SelfReg="false"/>
+    <ROW File="StartupMessage.zip" Component_="LEHuDModLauncher.deps.json" FileName="STARTU~1.ZIP|StartupMessage.zip" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\StartupMessage.zip" SelfReg="false"/>
+    <ROW File="ZstdSharp.dll" Component_="ZstdSharp.dll" FileName="ZSTDSH~1.DLL|ZstdSharp.dll" Version="65535.65535.65535.65535" Attributes="0" SourcePath="..\bin\Releases\x64\Release\net10.0-windows7.0\ZstdSharp.dll" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
     <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." PackageFileName="LastEpoch HudMod Installer setup" Languages="en" InstallationType="4" SummInfoMetadata="Page Count:450" UseLargeSchema="true" MsiPackageType="x64"/>
@@ -160,6 +169,7 @@
     <ROW Feature_="MainFeature" Component_="Newtonsoft.Json.dll"/>
     <ROW Feature_="MainFeature" Component_="SettingsManager.dll"/>
     <ROW Feature_="MainFeature" Component_="SharpCompress.dll"/>
+    <ROW Feature_="MainFeature" Component_="ZstdSharp.dll"/>
     <ROW Feature_="MainFeature" Component_="SHORTCUTDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
@@ -197,7 +207,7 @@
     <ROW Registry="Version" Root="-1" Key="Software\[Manufacturer]\[ProductName]" Name="Version" Value="[ProductVersion]" Component_="ProductInformation"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
-    <ROW Shortcut="LEHuDModLauncher" Directory_="SHORTCUTDIR" Name="LASTEP~1|Last Epoch HUD mod launcher" Component_="LEHuDModLauncher.exe" Target="[#LEHuDModLauncher.exe]" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="LastEpochHUDmodlauncher" Directory_="SHORTCUTDIR" Name="LASTEP~1|Last Epoch HUD mod launcher" Component_="LEHuDModLauncher.exe" Target="[#LEHuDModLauncher.exe]" Description="Last Epoch HUD mod launcher" Hotkey="0" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
     <ATTRIBUTE name="UsedTheme" value="classic"/>

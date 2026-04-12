@@ -104,7 +104,7 @@ namespace SettingsManager;
             }
         }
 
-        private bool _darkMode = true;
+        private bool _darkMode = false;
         public bool DarkMode
         {
             get => _darkMode;
@@ -265,7 +265,7 @@ namespace SettingsManager;
 
         private static readonly string SettingsPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LEHuDModLauncher");
-        private static readonly string SettingsFilePath = Path.Combine(SettingsPath, "Settings.json");
+        private static readonly string SettingsFilePath = Path.Combine(SettingsPath, "NewSettings.json");
 
         private static readonly object SaveLock = new object();
 
