@@ -164,8 +164,7 @@ public partial class Launcherform : MaterialForm
             _utils.ExtractFileLib("StartupMessage.rar", Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"),
                 Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"));
         
-        _utils.ExtractFileLib("StartupMessage.zip", Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"),
-                Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete", "test3"));
+        
         return true;
     }
 
