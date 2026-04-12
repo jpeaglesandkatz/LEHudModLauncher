@@ -38,6 +38,7 @@
             toolstripAutoUpdate = new ToolStripMenuItem();
             checkBoxKeepOpen = new ToolStripMenuItem();
             checkBoxHideConsole = new ToolStripMenuItem();
+            showStartupMessageToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             toolstripForceModeUpdate = new ToolStripMenuItem();
             forceInstallModToolStripMenuItem = new ToolStripMenuItem();
@@ -61,6 +62,7 @@
             StatusModInstalled = new MaterialSkin.Controls.MaterialLabel();
             pictureModInstalled = new PictureBox();
             labelVersion = new MaterialSkin.Controls.MaterialLabel();
+            checkForLauncherUpdateToolStripMenuItem = new ToolStripMenuItem();
             statusStrip.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureCheck).BeginInit();
@@ -120,7 +122,7 @@
             // 
             toolStripOptions.Alignment = ToolStripItemAlignment.Right;
             toolStripOptions.BackColor = Color.Transparent;
-            toolStripOptions.DropDownItems.AddRange(new ToolStripItem[] { toolstripAutoUpdate, checkBoxKeepOpen, checkBoxHideConsole, toolStripSeparator1, toolstripForceModeUpdate, forceInstallModToolStripMenuItem, toolStripSeparator2, changeSteamLaunchToFullOfflineToolStripMenuItem });
+            toolStripOptions.DropDownItems.AddRange(new ToolStripItem[] { toolstripAutoUpdate, checkBoxKeepOpen, checkBoxHideConsole, showStartupMessageToolStripMenuItem, toolStripSeparator1, toolstripForceModeUpdate, forceInstallModToolStripMenuItem, checkForLauncherUpdateToolStripMenuItem, toolStripSeparator2, changeSteamLaunchToFullOfflineToolStripMenuItem });
             toolStripOptions.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             toolStripOptions.Image = Properties.Resources.settings_dark;
             toolStripOptions.Name = "toolStripOptions";
@@ -132,7 +134,7 @@
             toolstripAutoUpdate.CheckOnClick = true;
             toolstripAutoUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolstripAutoUpdate.Name = "toolstripAutoUpdate";
-            toolstripAutoUpdate.Size = new Size(444, 34);
+            toolstripAutoUpdate.Size = new Size(418, 34);
             toolstripAutoUpdate.Text = "Automatically keep up to date";
             toolstripAutoUpdate.CheckStateChanged += toolstripAutoUpdate_CheckStateChanged;
             // 
@@ -141,7 +143,7 @@
             checkBoxKeepOpen.CheckOnClick = true;
             checkBoxKeepOpen.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             checkBoxKeepOpen.Name = "checkBoxKeepOpen";
-            checkBoxKeepOpen.Size = new Size(444, 34);
+            checkBoxKeepOpen.Size = new Size(418, 34);
             checkBoxKeepOpen.Text = "Keep open on Game Launch";
             checkBoxKeepOpen.CheckStateChanged += checkBoxKeepOpen_CheckStateChanged;
             // 
@@ -150,20 +152,29 @@
             checkBoxHideConsole.CheckOnClick = true;
             checkBoxHideConsole.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             checkBoxHideConsole.Name = "checkBoxHideConsole";
-            checkBoxHideConsole.Size = new Size(444, 34);
+            checkBoxHideConsole.Size = new Size(418, 34);
             checkBoxHideConsole.Text = "Hide melonloader console window";
             checkBoxHideConsole.CheckStateChanged += checkBoxHideConsole_CheckStateChanged;
+            // 
+            // showStartupMessageToolStripMenuItem
+            // 
+            showStartupMessageToolStripMenuItem.CheckOnClick = true;
+            showStartupMessageToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            showStartupMessageToolStripMenuItem.Name = "showStartupMessageToolStripMenuItem";
+            showStartupMessageToolStripMenuItem.Size = new Size(418, 34);
+            showStartupMessageToolStripMenuItem.Text = "Show startup message";
+            showStartupMessageToolStripMenuItem.CheckStateChanged += showStartupMessageToolStripMenuItem_CheckStateChanged;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(441, 6);
+            toolStripSeparator1.Size = new Size(415, 6);
             // 
             // toolstripForceModeUpdate
             // 
             toolstripForceModeUpdate.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             toolstripForceModeUpdate.Name = "toolstripForceModeUpdate";
-            toolstripForceModeUpdate.Size = new Size(444, 34);
+            toolstripForceModeUpdate.Size = new Size(418, 34);
             toolstripForceModeUpdate.Text = "Force install modloader";
             toolstripForceModeUpdate.Click += toolstripForceModUpdate_Click;
             // 
@@ -171,19 +182,20 @@
             // 
             forceInstallModToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             forceInstallModToolStripMenuItem.Name = "forceInstallModToolStripMenuItem";
-            forceInstallModToolStripMenuItem.Size = new Size(444, 34);
+            forceInstallModToolStripMenuItem.Size = new Size(418, 34);
             forceInstallModToolStripMenuItem.Text = "Force install latest mod";
             forceInstallModToolStripMenuItem.Click += forceInstallModToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(441, 6);
+            toolStripSeparator2.Size = new Size(415, 6);
             // 
             // changeSteamLaunchToFullOfflineToolStripMenuItem
             // 
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             changeSteamLaunchToFullOfflineToolStripMenuItem.Name = "changeSteamLaunchToFullOfflineToolStripMenuItem";
-            changeSteamLaunchToFullOfflineToolStripMenuItem.Size = new Size(444, 34);
+            changeSteamLaunchToFullOfflineToolStripMenuItem.Size = new Size(418, 34);
             changeSteamLaunchToFullOfflineToolStripMenuItem.Text = "Change LE Steam launch to Full Offline";
             changeSteamLaunchToFullOfflineToolStripMenuItem.Click += changeSteamLaunchToFullOfflineToolStripMenuItem_Click;
             // 
@@ -450,7 +462,6 @@
             materialButton1.UseAccentColor = false;
             materialButton1.UseVisualStyleBackColor = true;
             materialButton1.Visible = false;
-            materialButton1.Click += materialButton1_Click_1;
             // 
             // StatusModInstalled
             // 
@@ -486,6 +497,14 @@
             labelVersion.Size = new Size(107, 19);
             labelVersion.TabIndex = 44;
             labelVersion.Text = "materialLabel3";
+            // 
+            // checkForLauncherUpdateToolStripMenuItem
+            // 
+            checkForLauncherUpdateToolStripMenuItem.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            checkForLauncherUpdateToolStripMenuItem.Name = "checkForLauncherUpdateToolStripMenuItem";
+            checkForLauncherUpdateToolStripMenuItem.Size = new Size(418, 34);
+            checkForLauncherUpdateToolStripMenuItem.Text = "Check for launcher update";
+            checkForLauncherUpdateToolStripMenuItem.Click += checkForLauncherUpdateToolStripMenuItem_Click;
             // 
             // Launcherform
             // 
@@ -574,6 +593,8 @@
         private PictureBox pictureModInstalled;
         private MaterialSkin.Controls.MaterialLabel labelVersion;
         private ToolStripMenuItem changeSteamLaunchToFullOfflineToolStripMenuItem;
+        private ToolStripMenuItem showStartupMessageToolStripMenuItem;
+        private ToolStripMenuItem checkForLauncherUpdateToolStripMenuItem;
         //private MaterialSkin.Controls.MaterialDrawer materialDrawer1;
     }
 }

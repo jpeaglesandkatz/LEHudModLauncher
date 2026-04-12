@@ -59,7 +59,7 @@ public partial class Launcherform : MaterialForm
         checkBoxKeepOpen.SafeSetChecked(Config.Instance.Settings.KeepOpen);
         checkBoxHideConsole.SafeSetChecked(Config.Instance.Settings.HideConsole);
         toolstripAutoUpdate.SafeSetChecked(Config.Instance.Settings.AutoUpdate);
-
+        showStartupMessageToolStripMenuItem.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
         //toolstripCheckModUpdate.SafeSetChecked(Config.Instance.Settings.AutoCheckModVersion);
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
@@ -77,13 +77,15 @@ public partial class Launcherform : MaterialForm
 
         Visible = true;
         ShowGameVersion();
+        ShowStartupMessage(Config.Instance.Settings.ShowStartupMessage);
+        if (Config.Instance.Settings.AutoUpdate) _updater.CheckForUpdate(false);
     }
 
-    public sealed override string Text
-    {
-        get => base.Text;
-        set => base.Text = value;
-    }
+    //public sealed override string Text
+    //{
+    //    get => base.Text;
+    //    set => base.Text = value;
+    //}
 
     private void Showifvalidgamefolder()
 
@@ -121,24 +123,16 @@ public partial class Launcherform : MaterialForm
         return false;
     }
 
-    public bool AllDLComplete()
 
-    {
-
-
-
-        return false;
-    }
-
-    private async Task<bool> DownloadStuff()
+    private bool DownloadStuff()
 
     {
         if (!Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename))) return false;
         var gamePath = Config.Instance.Settings.GameDir;
         FileDownloader.DownloadList? dllist;
 
-        if (!Directory.Exists(Path.Combine(gamePath + @"\modsdl_do_not_delete", "")))
-            Directory.CreateDirectory(Path.Combine(gamePath + @"\modsdl_do_not_delete", ""));
+        if (!Directory.Exists(Path.Combine(gamePath, "modsdl_do_not_delete")))
+            Directory.CreateDirectory(Path.Combine(gamePath, "modsdl_do_not_delete"));
         try
         {
             // get download links
@@ -146,19 +140,20 @@ public partial class Launcherform : MaterialForm
         }
         catch (Exception ex)
         {
+            MessageBox.Show("Errorr " + ex.Message);
             Logger.Global.Error($"Failed to download dllist {ex.Message}\n{ex.StackTrace}");
             toolStripStatus.SafeSetEnabled(true);
             toolStripStatus.SafeSetText("Error getting download list");
             return false;
         }
         toolStripStatus.SafeSetEnabled(true);
-        toolStripStatus.SafeSetText(dllist?.Files.Count + " files to download");
+        //toolStripStatus.SafeSetText(dllist?.Files.Count + " files to download");
         for (int i = 0; i < dllist?.Files.Count; i++)
         {
             try
             {
-                if (dllist != null && !_utils.IsLocalFileUpToDate(Path.Combine(gamePath + @"\modsdl_do_not_delete", dllist.Files[i].Filename), dllist.Files[i].Url))
-                    _fileDownloader.DownloadFile(dllist.Files[i].Url, Path.Combine(gamePath + @"\modsdl_do_not_delete", ""), dllist.Files[i].Filename);
+                if (dllist != null && !_utils.IsLocalFileUpToDate(Path.Combine(gamePath, "modsdl_do_not_delete", dllist.Files[i].Filename), dllist.Files[i].Url))
+                    _fileDownloader.DownloadFile(dllist.Files[i].Url, Path.Combine(gamePath, "modsdl_do_not_delete"), dllist.Files[i].Filename);
             }
             catch (Exception ex)
             {
@@ -167,8 +162,12 @@ public partial class Launcherform : MaterialForm
                 Logger.Global.Error($"Error downloading file {dllist.Files[i].Name} {ex.Message}\n{ex.StackTrace}");
             }
         }
+        if (Exists(Path.Combine(Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"), "StartupMessage.rar")))
+            _utils.ExtractFileLib("StartupMessage.rar", Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"),
+                Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete"));
         return true;
     }
+
 
     private void CleanupDirs(bool melclean)
     {
@@ -234,7 +233,7 @@ public partial class Launcherform : MaterialForm
             var modfileinfo = new FileInfo(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll", ""));
             pictureModInstalled.Image = Properties.Resources.check_64dp_green;
             labelVersion.SafeSetText($"({modfileinfo.LastWriteTime.ToString(CultureInfo.CurrentCulture)})");
-            labelVersion.SafeSetText("");
+
             return true;
         }
         return false;
@@ -276,7 +275,7 @@ public partial class Launcherform : MaterialForm
                 }
 
 
-            }            
+            }
             catch (Exception ex)
             {
                 Logger.Global.Error($"Error installing mod {ex}");
@@ -300,7 +299,7 @@ public partial class Launcherform : MaterialForm
                 Logger.Global.Error($"Error installing Desktop.Robot.dll {ex}");
                 return false;
             }
-            
+
 
         }
         return IsModInstalled();
@@ -365,7 +364,7 @@ public partial class Launcherform : MaterialForm
             if (_skinManager == null) return;
             _skinManager.Theme = MaterialSkinManager.Themes.LIGHT;
             _skinManager.ColorScheme = new ColorScheme(
-                Primary.Cyan900, Primary.Cyan800,
+                Primary.Cyan900, Primary.Cyan700,
                 Primary.Cyan800, Accent.Orange700,
                 TextShade.WHITE
             );
@@ -721,62 +720,18 @@ public partial class Launcherform : MaterialForm
         }
     }
 
-    private async void ShowStartupMessage(bool forced = false)
+    private void ShowStartupMessage(bool forced = false)
     {
-        var rtfPath = AppDomain.CurrentDomain.BaseDirectory;
+        var rtfPath = Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete");
         var showMessage = forced;
+        var messageFileToLoad = Path.Combine(Config.Instance.Settings.GameDir, "modsdl_do_not_delete", "StartupMessage.rtf");
 
-        Logger.Global.Debug(rtfPath);
-        const string dlurl =
-            "https://github.com/jpeaglesandkatz/LEHudModLauncher/releases/download/1.0/StartUpMessage.zip";
 
-        try
-        {
-            if (Exists(Path.Combine(rtfPath, "StartupMessage.zip")) &&
-                !_utils.IsLocalFileUpToDate(Path.Combine(rtfPath, "StartupMessage.zip"), dlurl))
-            {
-                if (!_utils.IsLocalFileUpToDate(Path.Combine(rtfPath, "StartupMessage.zip"), dlurl))
-                {
-                    Delete(Path.Combine(rtfPath, "StartupMessage.zip"));
-                    if (Exists(Path.Combine(rtfPath, "StartupMessage.rtf")))
-                        Delete(Path.Combine(rtfPath, "StartupMessage.rtf"));
-                    _fileDownloader.DownloadFile(dlurl, AppDomain.CurrentDomain.BaseDirectory,
-                        "StartupMessage.zip");
-                    _utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory,
-                        AppDomain.CurrentDomain.BaseDirectory);
-                    // force display of status message once if newer message found                        
-                    showMessage = true;
-                }
-                else if (Exists(Path.Combine(rtfPath, "StartupMessage.zip")))
-                {
-                    _utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory,
-                        AppDomain.CurrentDomain.BaseDirectory);
-                    showMessage = true;
-                }
-            }
-            else if (!Exists(Path.Combine(rtfPath, "StartupMessage.zip")))
-            {
-                _fileDownloader.DownloadFile(dlurl, AppDomain.CurrentDomain.BaseDirectory,
-                    "StartupMessage.zip");
-                _utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory,
-                    AppDomain.CurrentDomain.BaseDirectory);
-                showMessage = true;
-            }
-            else if (Exists(Path.Combine(rtfPath, "StartupMessage.zip")))
-                _utils.ExtractFile("StartupMessage.zip", AppDomain.CurrentDomain.BaseDirectory,
-                    AppDomain.CurrentDomain.BaseDirectory);
-        }
-        catch (Exception ex)
-        {
-            Logger.Global.Error(new StringBuilder().Append("Error while loading startup message: ")
-                .Append(ex.Message)
-                .ToString());
-        }
 
-        if ((!showMessage || !Exists(Path.Combine(rtfPath, "StartupMessage.rtf"))) &&
+        if ((!showMessage || !Exists(messageFileToLoad) &&
             (!Config.Instance.Settings.ShowStartupMessage ||
-             !Exists(Path.Combine(rtfPath, "StartupMessage.rtf")))) return;
-        var messageFileToLoad = Path.Combine(rtfPath, "StartupMessage.rtf");
+             !Exists(messageFileToLoad)))) return;
+
         var dlg = new StartupDialog(messageFileToLoad,
             Config.Instance.Settings.ShowStartupMessage);
         try
@@ -784,7 +739,12 @@ public partial class Launcherform : MaterialForm
             _ = dlg.ShowDialog();
 
             Config.Instance.UpdateShowStartupMessage(dlg.NewShowSetting);
-            //checkBoxStartUpMessage.SafeSetChecked(dlg.NewShowSetting);
+            showStartupMessageToolStripMenuItem.SafeSetChecked(dlg.NewShowSetting);
+        }
+        catch (Exception ex)
+        {
+            Logger.Global.Error($"Error showing startup message: {ex.Message}\n{ex.StackTrace}");
+            MessageBox.Show($"Error showing startup message:\n{ex.Message}", "Error", OK, Error);
         }
         finally
         {
@@ -840,18 +800,7 @@ public partial class Launcherform : MaterialForm
         Config.Instance.UpdateMainWindowPosition(Location.X, Location.Y);
     }
 
-    private async void checkForLauncherUpdateNowToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            var updater = new UpdateChecker();
-            await updater.CheckForUpdateAsync(true);
-        }
-        catch (Exception ex)
-        {
-            Logger.Global.Error($"Error checking for updates: {ex.Message}\n{ex.StackTrace}");
-        }
-    }
+
 
     private void toolstripAutoUpdate_CheckStateChanged(object sender, EventArgs e)
     {
@@ -939,116 +888,10 @@ public partial class Launcherform : MaterialForm
         if (radioKb.Checked) Config.Instance.UpdateKbGamePadSelect(0);
     }
 
-    private void materialButton1_Click_1(object sender, EventArgs e)
-    {
-        var themePickerForm = new ThemePickerForm
-        {
-            Site = null,
-            AccessibleDefaultActionDescription = null,
-            AccessibleDescription = null,
-            AccessibleName = null,
-            AccessibleRole = AccessibleRole.None,
-            AllowDrop = false,
-            Anchor = AnchorStyles.None,
-            AutoScrollOffset = default,
-            DataContext = null,
-            BackgroundImage = null,
-            BackgroundImageLayout = ImageLayout.None,
-            Bounds = default,
-            Capture = false,
-            CausesValidation = false,
-            ContextMenuStrip = null,
-            Cursor = null,
-            Dock = DockStyle.None,
-            Enabled = false,
-            Font = null,
-            ForeColor = default,
-            Height = 0,
-            IsAccessible = false,
-            Left = 0,
-            Name = null,
-            Parent = null,
-            Region = null,
-            RightToLeft = RightToLeft.No,
-            Tag = null,
-            Top = 0,
-            UseWaitCursor = false,
-            Visible = false,
-            Width = 0,
-            WindowTarget = null,
-            Padding = default,
-            ImeMode = ImeMode.NoControl,
-            AutoScrollMargin = default,
-            AutoScrollPosition = default,
-            AutoScrollMinSize = default,
-            BindingContext = null,
-            AutoScaleDimensions = default,
-            AutoScaleMode = AutoScaleMode.None,
-            ActiveControl = null,
-            AutoSize = false,
-            BackColor = default,
-            ClientSize = default,
-            Location = default,
-            Margin = default,
-            MaximumSize = default,
-            MinimumSize = default,
-            Size = default,
-            TabIndex = 0,
-            TabStop = false,
-            AutoScroll = false,
-            AutoValidate = AutoValidate.Disable,
-            AcceptButton = null,
-            AllowTransparency = false,
-            AutoScaleBaseSize = default,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            CancelButton = null,
-            ControlBox = false,
-            DesktopBounds = default,
-            DesktopLocation = default,
-            DialogResult = DialogResult.None,
-            HelpButton = false,
-            Icon = null,
-            IsMdiContainer = false,
-            KeyPreview = false,
-            MainMenuStrip = null,
-            MaximizeBox = false,
-            MdiChildrenMinimizedAnchorBottom = false,
-            MdiParent = null,
-            MinimizeBox = false,
-            Opacity = 0,
-            Owner = null,
-            RightToLeftLayout = false,
-            ShowInTaskbar = false,
-            ShowIcon = false,
-            SizeGripStyle = SizeGripStyle.Auto,
-            StartPosition = FormStartPosition.Manual,
-            TopLevel = false,
-            TopMost = false,
-            TransparencyKey = default,
-            Text = null,
-            FormBorderStyle = FormBorderStyle.None,
-            WindowState = FormWindowState.Normal,
-            Depth = 0,
-            MouseState = MouseState.HOVER,
-            Sizable = false,
-            FormStyle = FormStyles.StatusAndActionBar_None,
-            DrawerShowIconsWhenHidden = false,
-            DrawerWidth = 0,
-            DrawerAutoHide = false,
-            DrawerAutoShow = false,
-            DrawerIndicatorWidth = 0,
-            DrawerIsOpen = false,
-            DrawerUseColors = false,
-            DrawerHighlightWithAccent = false,
-            DrawerBackgroundWithAccent = false,
-            DrawerTabControl = null
-        };
-        themePickerForm.Show();
-    }
 
     public class UpdateChecker
     {
-        public async Task CheckForUpdateAsync(bool reportstatus = false)
+        public void CheckForUpdate(bool reportstatus = false)
         {
             var fileDownloader = new FileDownloader();
 
@@ -1062,7 +905,7 @@ public partial class Launcherform : MaterialForm
 
                 fileDownloader.DownloadFile(updateJsonUrl, Config.Instance.Settings.TmpDownloadFolder,
                     "update.json");
-                var json = await ReadAllTextAsync(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
+                var json = ReadAllText(Path.Combine(Config.Instance.Settings.TmpDownloadFolder, "update.json"));
 
                 var updateInfo = JsonConvert.DeserializeObject<UpdateInfo>(json);
 
@@ -1266,6 +1109,7 @@ public partial class Launcherform : MaterialForm
     private void buttonStartupMessage_Click_1(object sender, EventArgs e)
     {
         ShowStartupMessage(true);
+        showStartupMessageToolStripMenuItem.SafeSetChecked(Config.Instance.Settings.ShowStartupMessage);
     }
 
     private void forceInstallModToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1336,5 +1180,24 @@ public partial class Launcherform : MaterialForm
             }
         }
     }
+
+    private void showStartupMessageToolStripMenuItem_CheckStateChanged(object sender, EventArgs e)
+    {
+        Config.Instance.UpdateShowStartupMessage(showStartupMessageToolStripMenuItem.Checked);
+    }
+
+    private void checkForLauncherUpdateToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            
+            _updater.CheckForUpdate(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.Global.Error($"Error checking for updates: {ex.Message}\n{ex.StackTrace}");
+        }
+    }
+
 
 }
