@@ -175,17 +175,33 @@ public partial class Launcherform : MaterialForm
         {
             Logger.Global.Info("CleanupDirs started...");
 
-            var melonLoaderPath = Path.Combine(Config.Instance.Settings.GameDir, "Melonloader");
+            var melonLoaderPath = Path.Combine(Config.Instance.Settings.GameDir, "MelonLoader");
             var modsPath = Path.Combine(Config.Instance.Settings.GameDir, "Mods");
-            //if (File.Exists(Path.Combine(Config.Instance.Settings.GameDir, "version.dll"))) File.Delete(Path.Combine(Config.Instance.Settings.GameDir, "version.dll"));
-            //if (File.Exists(Path.Combine(Config.Instance.Settings.GameDir, "version.bak"))) File.Delete(Path.Combine(Config.Instance.Settings.GameDir, "version.bak"));
-            if (Directory.Exists(melonLoaderPath) && melclean) Directory.Delete(melonLoaderPath, true);
-            else Logger.Global.Debug($"[{nameof(CleanupDirs)}] Melonloader dir not found, skipping delete.");
-            if (!Directory.Exists(modsPath)) Directory.CreateDirectory(modsPath);
+
+            if (melclean)
+            {
+                if (Directory.Exists(melonLoaderPath))
+                {
+                    Directory.Delete(melonLoaderPath, true);
+                    if (File.Exists(Path.Combine(Config.Instance.Settings.GameDir, "version.dll.bak"))) File.Delete(Path.Combine(Config.Instance.Settings.GameDir, "version.dll.bak"));
+                    if (File.Exists(Path.Combine(Config.Instance.Settings.GameDir, "version.dll"))) File.Delete(Path.Combine(Config.Instance.Settings.GameDir, "version.dll"));
+                    Logger.Global.Info($"Deleted directory: {melonLoaderPath} and deleted version.dll and version.dll.bak");
+                }
+                else
+                {
+                    Logger.Global.Debug($"[{nameof(CleanupDirs)}] MelonLoader dir not found, skipping delete.");
+                }
+            }
+
+            if (!Directory.Exists(modsPath))
+            {
+                Directory.CreateDirectory(modsPath);
+                Logger.Global.Info($"Created directory: {modsPath}");
+            }
         }
         catch (Exception ex)
         {
-
+            Logger.Global.Error($"CleanupDirs error: {ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -193,34 +209,36 @@ public partial class Launcherform : MaterialForm
     private bool InstallMelonLoader(bool forceinst)
 
     {
-        var gamePath = Path.Combine(Config.Instance.Settings.GameDir);
+        var gamePath = Config.Instance.Settings.GameDir;
         if (!forceinst) return false;
-        if (!forceinst && IsMelonValid()) return true;
+
         try
         {
-            if (File.Exists(Path.Combine(gamePath, "modsdl_do_not_delete", "Melon.zip")))
+            var melonZip = Path.Combine(gamePath, "modsdl_do_not_delete", "Melon.zip");
+            if (!File.Exists(melonZip))
             {
-                if (forceinst)
-                {
-                    toolStripStatus.SafeSetEnabled(true);
-                    toolStripStatus.SafeSetText(@"Installing Melonloader....");
-                    CleanupDirs(true); // force erase existing melon loader
-                    Logger.Global.Debug($"Extracting melonloader... to {gamePath}");
-                    _utils.ExtractFileLib("Melon.zip", Path.GetFullPath(Path.Combine(gamePath, "modsdl_do_not_delete")), Path.Combine(gamePath), false);
-                }
-
+                Logger.Global.Debug($"InstallMelonLoader: {melonZip} not found");
+                return false;
             }
-            toolStripStatus.SafeSetText(@"Melonloader Installation finished. Running the game after install may take a while....");
+
+            toolStripStatus.SafeSetEnabled(true);
+            toolStripStatus.SafeSetText(@"Installing Melonloader....");
+            CleanupDirs(forceinst); // force erase existing melon loader
+            Logger.Global.Debug($"Extracting melonloader... to {gamePath}");
+
+            _utils.ExtractFileLib("Melon.zip", Path.GetFullPath(Path.Combine(gamePath, "modsdl_do_not_delete")), Path.Combine(gamePath), false);
+
+            toolStripStatus.SafeSetText(@"Melonloader installation finished. Running the game after install may take a while....");
         }
         catch (Exception ex)
         {
-            Logger.Global.Error($"Error installing Melonloader {ex}");
+            Logger.Global.Error($"Error installing Melonloader: {ex.Message}\n{ex.StackTrace}");
             toolStripStatus.SafeSetEnabled(false);
-            IsMelonValid();
             return false;
         }
-        IsMelonValid();
-        return true;
+
+        // Re-check installation
+        return IsMelonValid();
     }
 
 
@@ -627,13 +645,10 @@ public partial class Launcherform : MaterialForm
 
     private void GameProcess_Exited(object? sender, EventArgs e)
     {
-        // This event is raised on a background thread → marshal back to UI
+        // Ensure UI work runs on UI thread and return immediately on background thread.
         if (InvokeRequired)
         {
-            BeginInvoke(() => GameProcess_Exited(sender, e));
-            statusStripLabel.SafeSetText("Game Exited!");
-            if (_gameProcess != null) _gameProcess.Exited -= GameProcess_Exited;
-
+            BeginInvoke(new Action(() => GameProcess_Exited(sender, e)));
             return;
         }
 
@@ -645,6 +660,12 @@ public partial class Launcherform : MaterialForm
         buttonGetGameFolder.Enabled = true;
         materialTextBoxPath.Enabled = true;
         materialButtonBrowse.Enabled = true;
+
+        if (_gameProcess != null)
+        {
+            _gameProcess.Exited -= GameProcess_Exited;
+            _gameProcess = null;
+        }
     }
 
     private void launcherform_FormClosing(object sender, FormClosingEventArgs e)
@@ -997,11 +1018,25 @@ public partial class Launcherform : MaterialForm
 
     private static bool VerifySha256(string filePath, string expectedHash)
     {
-        using var sha = SHA256.Create();
-        using var stream = OpenRead(filePath);
-        var hash = sha.ComputeHash(stream);
-        var actual = Convert.ToHexString(hash).ToUpperInvariant();
-        return string.Equals(actual, expectedHash, StringComparison.OrdinalIgnoreCase);
+        try
+        {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            {
+                Logger.Global.Debug($"VerifySha256: file not found: {filePath}");
+                return false;
+            }
+
+            using var stream = File.OpenRead(filePath);
+            using var sha = SHA256.Create();
+            var hash = sha.ComputeHash(stream);
+            var actual = Convert.ToHexString(hash).ToUpperInvariant();
+            return string.Equals(actual, expectedHash, StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception ex)
+        {
+            Logger.Global.Error($"VerifySha256 failed for {filePath}: {ex.Message}");
+            return false;
+        }
     }
 
     public static void CreateSha256(string filePath)
