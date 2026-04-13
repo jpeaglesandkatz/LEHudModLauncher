@@ -590,7 +590,7 @@ public partial class Launcherform : MaterialForm
                 {
                     FileName = $"\"{gamedir}\\{GameFilename}\"",
                     //FileName = $"steam://rungameid/{899770}",
-                    Arguments = "--fulloffline",
+                    Arguments = "--offline",
                     UseShellExecute = true,
                     CreateNoWindow = false,
                     WorkingDirectory = $"\"{gamedir}\""
@@ -828,13 +828,17 @@ public partial class Launcherform : MaterialForm
             if (tempgamedir != null)
             {
                 Config.Instance.UpdateGameDir(tempgamedir);
-                if (Exists(Path.Combine(tempgamedir, GameFilename)) && Config.Instance.Settings.AutoUpdate)
+                if (File.Exists(Path.Combine(tempgamedir, GameFilename)) && Config.Instance.Settings.AutoUpdate)
                     // _ = CheckModsForUpdate(true, true, false, false);
                     //textGamePath.Text = tempgamedir;
                     materialTextBoxPath.SafeSetText(tempgamedir);
                 ShowGameVersion();
             }
-            else MessageBox.Show("Game folder not found. Please select it manually.", "Error", OK, Error);
+            else
+            {
+                //MessageBox.Show("Game folder not found. Please select it manually.", "Error", OK, Error);
+                Logger.Global.Error("Game folder not found.... ");
+            }
         }
 
         Showifvalidgamefolder();
