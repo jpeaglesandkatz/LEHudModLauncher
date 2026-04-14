@@ -47,6 +47,8 @@ public partial class Launcherform : MaterialForm
     public bool UserHasInternet = true;
     public DownloadList dllist;
 
+    private Thread? _logThread;
+    private readonly object _attachedLogLock = new();
 
     private readonly Bitmap _imagecheck = Properties.Resources.check_64dp_green;
     private readonly Bitmap _imagecross = Properties.Resources.close_64dp_red;
@@ -63,7 +65,7 @@ public partial class Launcherform : MaterialForm
         if (Config.Instance.Settings.KbGamePadSelect == 0) radioKb.SafeSelect(); else radioGamepad.SafeSelect();
         _isDarkTheme = Config.Instance.Settings.DarkMode;
         toolStripStatus.SafeSetEnabled(true);
-        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir, "UserData", "Loader.cfg"));
 
         GetGamePath();
 
@@ -95,14 +97,11 @@ public partial class Launcherform : MaterialForm
 
     {
         bool shaCheck;
-        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net6\MelonLoader.dll", "")))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir, "MelonLoader", "net6", "MelonLoader.dll")))
         {
-            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
-                "8825deded3c5d882695c01215e57493fb05af8cf5c406753cfa2999f9222c68b");
-            // New sha256 for official 0.72 version of Melon loader (29/3/2026)
-            //shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\net35\MelonLoader.dll", ""),
-            //    "9DA4175149E7EBA5F67511461A658D15CD062C287E34FC9A03B1EFC8FDC8D21C");
-
+            shaCheck = VerifySha256(Path.Combine(Config.Instance.Settings.GameDir, "MelonLoader", "net6", "MelonLoader.dll"),
+                "c04d373f24f68bfdd10624e2bed0f8a97e4edcc97f84ca9db49da1e6620d86c6");
+            
         }
         else
         {
@@ -245,9 +244,9 @@ public partial class Launcherform : MaterialForm
     private bool IsModInstalled()
     {
         pictureModInstalled.Image = Properties.Resources.close_64dp_red;
-        if (Exists(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll", "")))
+        if (Exists(Path.Combine(Config.Instance.Settings.GameDir, "Mods", "LastEpoch_Hud.dll")))
         {
-            var modfileinfo = new FileInfo(Path.Combine(Config.Instance.Settings.GameDir + @"\Mods\LastEpoch_Hud.dll", ""));
+            var modfileinfo = new FileInfo(Path.Combine(Config.Instance.Settings.GameDir, "Mods", "LastEpoch_Hud.dll"));
             pictureModInstalled.Image = Properties.Resources.check_64dp_green;
             labelVersion.SafeSetText($"({modfileinfo.LastWriteTime.ToString(CultureInfo.CurrentCulture)})");
 
@@ -744,18 +743,48 @@ public partial class Launcherform : MaterialForm
     private void AttachedLogForm_Resize(object? sender, EventArgs e)
     {
         if (_attachedLogForm == null) return;
-        Config.Instance.UpdateLogWindowWidth(_attachedLogForm.Width);
-        Config.Instance.UpdateLogWindowHeight(_attachedLogForm.Height);
+        try
+        {
+            var w = _attachedLogForm.Width;
+            var h = _attachedLogForm.Height;
+
+            // Update config on UI thread
+            if (InvokeRequired)
+            {
+                BeginInvoke(() =>
+                {
+                    Config.Instance.UpdateLogWindowWidth(w);
+                    Config.Instance.UpdateLogWindowHeight(h);
+                });
+            }
+            else
+            {
+                Config.Instance.UpdateLogWindowWidth(w);
+                Config.Instance.UpdateLogWindowHeight(h);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Global.Error($"AttachedLogForm_Resize error: {ex.Message}");
+        }
     }
 
     private void PositionLogWindow()
     {
         if (_attachedLogForm is { IsDisposed: false })
         {
-            _attachedLogForm.Location = new Point(
-                Location.X + Width - 4,
-                Location.Y
-            );
+            var target = new Point(Location.X + Width - 4, Location.Y);
+            try
+            {
+                if (_attachedLogForm.InvokeRequired)
+                    _attachedLogForm.BeginInvoke(new Action(() => _attachedLogForm.Location = target));
+                else
+                    _attachedLogForm.Location = target;
+            }
+            catch (Exception ex)
+            {
+                Logger.Global.Error($"PositionLogWindow error: {ex.Message}");
+            }
         }
     }
 
@@ -768,7 +797,17 @@ public partial class Launcherform : MaterialForm
     {
         if (_attachedLogForm is { IsDisposed: false })
         {
-            _attachedLogForm.Close();
+            try
+            {
+                if (_attachedLogForm.InvokeRequired)
+                    _attachedLogForm.BeginInvoke(new Action(() => _attachedLogForm.Close()));
+                else
+                    _attachedLogForm.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Global.Error($"Error closing attached log form: {ex.Message}");
+            }
         }
 
         base.OnFormClosing(e);
@@ -803,7 +842,7 @@ public partial class Launcherform : MaterialForm
 
         if (Exists(Path.Combine(materialTextBoxPath.Text, GameFilename))) Config.Instance.UpdateGameDir(Path.Combine(materialTextBoxPath.Text, ""));
         else return;
-        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg", ""));
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir, "UserData", "Loader.cfg"));
         IsMelonValid();
         IsModInstalled();
         Showifvalidgamefolder();
@@ -826,7 +865,7 @@ public partial class Launcherform : MaterialForm
 
             if (Exists(Path.Combine(Config.Instance.Settings.GameDir, GameFilename)))
             {
-                _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\\UserData\Loader.cfg", ""));
+                _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir, "UserData", "Loader.cfg"));
             }
             else textGameVersion.SafeSetText("Unknown");
         }
@@ -1084,30 +1123,78 @@ public partial class Launcherform : MaterialForm
     private void checkBoxHideConsole_CheckStateChanged(object sender, EventArgs e)
     {
         Config.Instance.UpdateHideConsole(checkBoxHideConsole.Checked);
-        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
-        Logger.Global.Debug(Path.Combine(Config.Instance.Settings.GameDir + @"\UserData\Loader.cfg", ""));
+        _utils.SetHideConsole(Path.Combine(Config.Instance.Settings.GameDir, "UserData", "Loader.cfg"));
+        Logger.Global.Debug(Path.Combine(Config.Instance.Settings.GameDir, "UserData", "Loader.cfg"));
     }
 
     private void buttonAttachLog_Click_2(object sender, EventArgs e)
     {
-        var logPath = Path.Combine(Config.Instance.Settings.GameDir + @"\MelonLoader\Latest.log", "");
-        if (_attachedLogForm == null || _attachedLogForm.IsDisposed)
+        var logPath = Path.Combine(Config.Instance.Settings.GameDir, "MelonLoader", "Latest.log");
+        lock (_attachedLogLock)
         {
-            _attachedLogForm = new LogViewerForm(logPath);
-            _attachedLogForm.StartPosition = FormStartPosition.Manual;
-            _attachedLogForm.Size = new Size(
-                Config.Instance.Settings.LogWindowWidth,
-                Config.Instance.Settings.LogWindowHeight
-            );
-            _attachedLogForm.Resize += AttachedLogForm_Resize;
-            PositionLogWindow();
-            _attachedLogForm.Show();
-            LocationChanged += Launcherform_LocationChanged;
-            SizeChanged += Launcherform_LocationChanged;
-        }
-        else
-        {
-            _attachedLogForm.Activate();
+            if (_attachedLogForm == null || _attachedLogForm.IsDisposed)
+            {
+                // Capture initial position on the UI thread
+                var initialLocation = new Point(Location.X + Width - 4, Location.Y);
+
+                _logThread = new Thread(() =>
+                {
+                    try
+                    {
+                        var form = new LogViewerForm(logPath)
+                        {
+                            StartPosition = FormStartPosition.Manual,
+                            Size = new Size(Config.Instance.Settings.LogWindowWidth, Config.Instance.Settings.LogWindowHeight),
+                            Location = initialLocation
+                        };
+
+                        form.Resize += AttachedLogForm_Resize;
+
+                        // store reference so main thread can Invoke on it
+                        lock (_attachedLogLock)
+                        {
+                            _attachedLogForm = form;
+                        }
+
+                        Application.Run(form);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Global.Error($"Log window thread error: {ex.Message}\n{ex.StackTrace}");
+                    }
+                    finally
+                    {
+                        lock (_attachedLogLock)
+                        {
+                            _attachedLogForm = null;
+                            _logThread = null;
+                        }
+                    }
+                })
+                {
+                    IsBackground = true
+                };
+                _logThread.SetApartmentState(ApartmentState.STA);
+                _logThread.Start();
+
+                // keep log window positioned when main moves/resizes
+                LocationChanged += Launcherform_LocationChanged;
+                SizeChanged += Launcherform_LocationChanged;
+            }
+            else
+            {
+                try
+                {
+                    if (_attachedLogForm.InvokeRequired)
+                        _attachedLogForm.BeginInvoke(new Action(() => _attachedLogForm.Activate()));
+                    else
+                        _attachedLogForm.Activate();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Global.Error($"Error activating log window: {ex.Message}");
+                }
+            }
         }
     }
 
